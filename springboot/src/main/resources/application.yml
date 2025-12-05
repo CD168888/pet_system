@@ -1,0 +1,74 @@
+# ==================== 应用基础配置 ====================
+spring:
+  application:
+    name: springboot
+  # ==================== 数据库配置 ====================
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://39.97.235.40:3306/pet_system?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+  # ==================== Spring Security配置 ====================
+  security:
+    user:
+      name: admin
+      password: admin
+  # ==================== 静态资源配置 ====================
+  mvc:
+    static-path-pattern: /**
+  web:
+    resources:
+      static-locations: classpath:/static/
+  # ==================== 文件上传配置 ====================
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  # ==================== Jackson JSON配置 ====================
+  jackson:
+    default-property-inclusion: non_empty
+
+server:
+  port: 12345
+  servlet:
+    context-path: /
+
+# ==================== MyBatis-Plus配置 ====================
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    use-built-in-alias-types: true
+
+# ==================== SpringDoc OpenAPI/Swagger配置 ====================
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  paths-to-match: /**
+  packages-to-scan: org.example.springboot
+  enable-spring-security: false
+
+# ==================== Knife4j增强配置 ====================
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+  basic:
+    enable: true
+    username: admin
+    password: admin
+
+# ==================== 业务配置 ====================
+user:
+  defaultPassword: "123456"
+order:
+  payment:
+    timeout: 15
