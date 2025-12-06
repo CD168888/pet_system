@@ -1,152 +1,191 @@
 <template>
-  <div class="home-page">
-    <!-- 首页轮播图 -->
-    <section class="home-banner">
-      <banner-carousel 
-        :bannerList="bannerList" 
-        height="500px" 
-        indicator-position="outside" 
-        :interval="5000" 
-        arrow="always"
-      />
-    </section>
+  <div class="home-container">
+    <!-- Hero区域 - 轮播图 -->
+    <div class="hero-section">
+      <div class="hero-background">
+        <banner-carousel :bannerList="bannerList" height="100%" indicator-position="outside" :interval="5000" arrow="always" />
+        <div class="hero-particles"></div>
+      </div>
+    </div>
 
     <!-- 公告区域 -->
     <section class="announcement-section">
       <div class="section-container">
-        <announcement-list 
-          title="最新公告" 
-          :limit="5" 
-          @view-more="navigateTo('/announcement')"
-        />
+        <announcement-list title="最新公告" :limit="5" @view-more="navigateTo('/announcement')" />
       </div>
     </section>
 
     <!-- 核心功能区 -->
-    <section class="core-features">
+    <section class="quick-nav-section">
       <div class="section-container">
         <div class="section-header">
-          <h2 class="section-title">为爱宠提供温馨的家</h2>
-          <p class="section-subtitle">我们致力于为每一位宠物提供最好的服务</p>
+          <h2 class="section-title">
+            <svg class="title-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span class="gradient-text">核心服务</span>
+          </h2>
         </div>
-        
-        <div class="feature-cards">
-          <div class="feature-card" v-for="(feature, index) in coreFeatures" :key="index" @click="navigateTo(feature.link)">
-            <div class="feature-icon" :style="{ backgroundColor: feature.bgColor }">
-              <el-icon>
+
+        <div class="category-grid">
+          <div class="category-card glass-effect" v-for="(feature, index) in coreFeatures" :key="index" @click="navigateTo(feature.link)">
+            <div class="category-icon-wrapper">
+              <el-icon :size="32">
                 <component :is="feature.icon" />
               </el-icon>
             </div>
-            <h3 class="feature-title">{{ feature.title }}</h3>
-            <p class="feature-desc">{{ feature.description }}</p>
+            <h3 class="category-name">{{ feature.title }}</h3>
+            <p class="category-desc">{{ feature.description }}</p>
           </div>
         </div>
       </div>
     </section>
-    
+
     <!-- 宠物推荐区 -->
-    <section class="pet-recommend">
+    <section class="featured-section">
       <div class="section-container">
         <div class="section-header">
-          <h2 class="section-title">等待被领养的可爱宠物</h2>
-          <p class="section-subtitle">这些可爱的生命正期待一个温暖的家</p>
+          <h2 class="section-title">
+            <svg class="title-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span class="gradient-text">宠物推荐</span>
+          </h2>
+          <router-link to="/pet" class="view-more-btn glass-btn">
+            查看全部 <el-icon><ArrowRight /></el-icon>
+          </router-link>
         </div>
-        
-        <div class="pets-wrapper">
-          <div class="pet-list" v-loading="petsLoading">
-            <div class="pet-card" v-for="(pet, index) in recommendPets" :key="index" @click="navigateTo(`/pet/${pet.id}`)">
-              <div class="pet-img-wrapper">
-                <img :src="pet.imageUrl" :alt="pet.name" class="pet-img">
-                <div class="pet-status" :class="pet.status === '可领养' ? 'status-available' : 'status-adopted'">
-                  {{ pet.status }}
-                </div>
-              </div>
-              <div class="pet-info">
-                <h3 class="pet-name">{{ pet.name }}</h3>
-                <div class="pet-tags">
-                  <span class="pet-tag">{{ pet.category }}</span>
-                  <span class="pet-tag">{{ pet.breed }}</span>
-                </div>
-                <div class="pet-props">
-                  <span class="pet-prop">{{ pet.age }}岁</span>
-                  <span class="pet-prop">{{ pet.gender }}</span>
+
+        <el-skeleton :loading="petsLoading" animated :count="8" :throttle="500">
+          <template #template>
+            <div class="scenic-grid">
+              <div v-for="i in 8" :key="i" class="skeleton-item">
+                <el-skeleton-item variant="image" style="width: 100%; height: 200px" />
+                <div style="padding: 16px;">
+                  <el-skeleton-item variant="h3" style="width: 80%; margin-bottom: 8px" />
+                  <el-skeleton-item variant="text" style="width: 60%; margin-bottom: 8px" />
+                  <el-skeleton-item variant="text" style="width: 40%" />
                 </div>
               </div>
             </div>
-          </div>
-          
-          <div class="more-btn-container">
-            <el-button class="more-btn" @click="navigateTo('/pet')">
-              查看更多宠物
-              <el-icon class="el-icon--right">
-                <arrow-right />
-              </el-icon>
-            </el-button>
-          </div>
-        </div>
+          </template>
+          <template #default>
+            <div class="scenic-grid">
+              <div v-for="(pet, index) in recommendPets" :key="index" class="scenic-card glass-card" @click="navigateTo(`/pet/${pet.id}`)">
+                <div class="card-image-wrapper">
+                  <img :src="pet.imageUrl" :alt="pet.name" />
+                  <div class="image-gradient-overlay"></div>
+                  <div class="card-badges">
+                    <span :class="pet.status === '可领养' ? 'badge badge-free' : 'badge badge-adopted'">
+                      {{ pet.status }}
+                    </span>
+                  </div>
+                </div>
+                <div class="card-content">
+                  <h3 class="scenic-name">{{ pet.name }}</h3>
+                  <div class="pet-info">
+                    <div class="pet-tags">
+                      <span class="pet-tag">{{ pet.category }}</span>
+                      <span class="pet-tag">{{ pet.breed }}</span>
+                    </div>
+                    <div class="pet-props">
+                      <span class="pet-prop">{{ pet.age }}岁</span>
+                      <span class="pet-prop">{{ pet.gender }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </el-skeleton>
       </div>
     </section>
-    
+
     <!-- 宠物用品区 -->
-    <section class="pet-products">
+    <section class="inspiration-section">
       <div class="section-container">
         <div class="section-header">
-          <h2 class="section-title">精选宠物用品</h2>
-          <p class="section-subtitle">为您的爱宠提供高品质的生活必需品</p>
+          <h2 class="section-title">
+            <svg class="title-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span class="gradient-text">精选用品</span>
+          </h2>
+          <router-link to="/product" class="view-more-btn glass-btn">
+            浏览更多 <el-icon><ArrowRight /></el-icon>
+          </router-link>
         </div>
-        
-        <div class="products-wrapper">
-          <div class="product-list" v-loading="productsLoading">
-            <div class="product-card" v-for="(product, index) in recommendProducts" :key="index" @click="navigateTo(`/product/${product.id}`)">
-              <div class="product-img-wrapper">
-                <img :src="product.imageUrl" :alt="product.name" class="product-img">
-                <div class="product-tag" v-if="product.tag">{{ product.tag }}</div>
-              </div>
-              <div class="product-info">
-                <h3 class="product-name">{{ product.name }}</h3>
-                <p class="product-brief">{{ product.brief }}</p>
-                <div class="product-price-row">
-                  <span class="product-price">¥{{ product.price }}</span>
-                  <span class="product-orig-price" v-if="product.originalPrice">¥{{ product.originalPrice }}</span>
+
+        <el-skeleton :loading="productsLoading" animated :count="8" :throttle="500">
+          <template #template>
+            <div class="scenic-grid">
+              <div v-for="i in 8" :key="i" class="skeleton-item">
+                <el-skeleton-item variant="image" style="width: 100%; height: 200px" />
+                <div style="padding: 16px;">
+                  <el-skeleton-item variant="h3" style="width: 80%; margin-bottom: 8px" />
+                  <el-skeleton-item variant="text" style="width: 60%; margin-bottom: 8px" />
+                  <el-skeleton-item variant="text" style="width: 40%" />
                 </div>
               </div>
             </div>
-          </div>
-          
-          <div class="more-btn-container">
-            <el-button class="more-btn" @click="navigateTo('/product')">
-              浏览更多用品
-              <el-icon class="el-icon--right">
-                <arrow-right />
-              </el-icon>
-            </el-button>
-          </div>
-        </div>
-      </div>
-    </section>
-    
-    <!-- 服务特色区 -->
-    <section class="services-feature">
-      <div class="section-container">
-        <div class="section-header">
-          <h2 class="section-title">专业宠物服务</h2>
-          <p class="section-subtitle">为您的爱宠提供一站式全方位呵护</p>
-        </div>
-        
-        <div class="services-cards">
-          <div class="service-card" v-for="(service, index) in specialServices" :key="index">
-            <div class="service-img-wrapper">
-              <img :src="service.imageUrl" :alt="service.title" class="service-img">
-              <div class="service-icon" :style="{ backgroundColor: service.iconBg }">
-                <el-icon>
-                  <component :is="service.icon" />
-                </el-icon>
+          </template>
+          <template #default>
+            <div class="scenic-grid">
+              <div v-for="(product, index) in recommendProducts" :key="index" class="scenic-card glass-card" @click="navigateTo(`/product/${product.id}`)">
+                <div class="card-image-wrapper">
+                  <img :src="product.imageUrl" :alt="product.name" />
+                  <div class="image-gradient-overlay"></div>
+                  <div class="card-badges">
+                    <span v-if="product.tag" class="badge badge-free">{{ product.tag }}</span>
+                  </div>
+                </div>
+                <div class="card-content">
+                  <h3 class="scenic-name">{{ product.name }}</h3>
+                  <p class="scenic-desc">{{ product.brief }}</p>
+                  <div class="product-price-row">
+                    <span class="product-price">¥{{ product.price }}</span>
+                    <span class="product-orig-price" v-if="product.originalPrice">¥{{ product.originalPrice }}</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="service-content">
-              <h3 class="service-title">{{ service.title }}</h3>
-              <p class="service-desc">{{ service.description }}</p>
-              <el-button class="service-btn" @click="navigateTo(service.link)">
+          </template>
+        </el-skeleton>
+      </div>
+    </section>
+
+    <!-- 服务特色区 -->
+    <section class="featured-section">
+      <div class="section-container">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg class="title-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="gradient-text">专业服务</span>
+          </h2>
+          <router-link to="/service" class="view-more-btn glass-btn">
+            了解更多 <el-icon><ArrowRight /></el-icon>
+          </router-link>
+        </div>
+
+        <div class="scenic-grid">
+          <div v-for="(service, index) in specialServices" :key="index" class="scenic-card glass-card" @click="navigateTo(service.link)">
+            <div class="card-image-wrapper">
+              <img :src="service.imageUrl" :alt="service.title" />
+              <div class="image-gradient-overlay"></div>
+            </div>
+            <div class="card-content">
+              <h3 class="scenic-name">{{ service.title }}</h3>
+              <p class="scenic-desc">{{ service.description }}</p>
+              <el-button class="service-btn glass-btn" @click.stop="navigateTo(service.link)">
                 了解更多
               </el-button>
             </div>
@@ -164,13 +203,13 @@ import request from '@/utils/request';
 import { ElMessage } from 'element-plus';
 import BannerCarousel from '@/components/frontend/BannerCarousel.vue';
 import AnnouncementList from '@/components/frontend/AnnouncementList.vue';
-import { 
-  HomeFilled, 
-  ShoppingBag, 
-  Service, 
-  FirstAid, 
-  Scissors, 
-  House, 
+import {
+  HomeFilled,
+  ShoppingBag,
+  Service,
+  FirstAid,
+  Scissors,
+  House,
   Medal,
   ArrowRight
 } from '@element-plus/icons-vue';
@@ -183,9 +222,16 @@ const fetchBanners = async () => {
   try {
     await request.get('/banner/list', { status: 1 }, { // 只获取状态为启用的轮播图
       onSuccess: (data) => {
-        // 如果有轮播图数据，直接使用；否则使用默认数据
+        // 如果有轮播图数据，对其进行处理以匹配默认数据结构；否则使用默认数据
         if (data && data.length > 0) {
-          bannerList.value = data;
+          // 处理API返回的数据，确保包含所有必要的字段
+          bannerList.value = data.map(item => ({
+            title: item.title || '',
+            subtitle: item.subtitle || '',
+            description: item.description || '',
+            imageUrl: item.imageUrl || '',
+            linkUrl: item.linkUrl || ''
+          }));
         } else {
           useDefaultBanners();
         }
@@ -206,16 +252,22 @@ const useDefaultBanners = () => {
   bannerList.value = [
     {
       title: '寻找温暖的家',
+      subtitle: '让每一只毛孩子都能找到属于自己的爱巢',
+      description: '我们提供专业的宠物领养服务，帮助流浪动物重新找到温暖的家庭。所有宠物都经过健康检查和疫苗接种，确保它们能够健康快乐地生活。',
       imageUrl: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
       linkUrl: '/pet'
     },
     {
       title: '专业宠物服务',
+      subtitle: '全方位呵护您的爱宠健康与美丽',
+      description: '由资深宠物美容师和兽医组成的专业团队，为您的爱宠提供美容、洗澡、寄养、医疗等一站式服务，让您的宠物始终保持最佳状态。',
       imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1460&q=80',
       linkUrl: '/service'
     },
     {
       title: '精选宠物用品',
+      subtitle: '为您的爱宠提供高品质生活体验',
+      description: '严选国内外知名品牌宠物用品，包括食品、玩具、窝具、服饰等，全方位满足您爱宠的生活需求，让它们享受舒适快乐的每一天。',
       imageUrl: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1469&q=80',
       linkUrl: '/product'
     }
@@ -355,7 +407,7 @@ const getImageUrl = (images) => {
   if (!images) return '';
   const imageList = images.split(',');
   if (imageList.length === 0) return '';
-  
+
   const firstImage = imageList[0].trim();
   if (firstImage.startsWith('http')) {
     return firstImage;
@@ -376,555 +428,545 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.home-page {
+// 全局变量
+:root {
+  --gradient-primary: linear-gradient(135deg, #67b6f5 0%, #5aa9e6 100%);
+  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --gradient-warm: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.home-container {
+  width: 100%;
+  font-family: "PingFang SC", "Helvetica Neue", Helvetica, Arial, "Microsoft YaHei", sans-serif;
+  color: #1a202c;
   min-height: 100vh;
-  background-color: #FFF9E6;
 }
 
-/* 轮播图样式 */
-.home-banner {
-  margin-bottom: 60px;
+// Hero区域样式
+.hero-section {
+  position: relative;
+  height: 600px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 公告区域样式 */
-.announcement-section {
-  padding: 20px 0;
-  margin-bottom: 40px;
-  
-  .section-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+
+  :deep(.banner-carousel) {
+    height: 100%;
+    z-index: 1;
+
+    .el-carousel {
+      height: 100%;
+      z-index: 1;
+    }
+
+    .el-carousel__item {
+      height: 100%;
+      z-index: 1;
+    }
+
+    .el-carousel__item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 }
 
-/* 核心功能区样式 */
-.section-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+.hero-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 2;
+  pointer-events: none;
 }
 
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.h-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 800px;
+  padding: 0 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 为每个卡片添加延迟动画
+.scenic-card, .guide-card {
+  @for $i from 1 through 12 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.1}s;
+    }
+  }
+}
+
+// 通用容器样式
+.section-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 80px 20px;
+}
+
+// 区域样式
+.announcement-section, .quick-nav-section, .featured-section, .inspiration-section {
+  position: relative;
+}
+
+// 公告区域特殊样式
+.announcement-section {
+  padding: 40px 0;
+}
+
+// 标题样式
 .section-header {
-  text-align: center;
-  margin-bottom: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .section-title {
-  font-family: 'Nunito Sans', sans-serif;
-  font-size: 32px;
-  color: #683e35;
-  margin-bottom: 12px;
+  font-size: 38px;
+  font-weight: 800;
+  margin: 0;
+  color: #1a202c;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #67b6f5 0%, #5aa9e6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   position: relative;
   display: inline-block;
-  
+
   &::after {
     content: '';
     position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: -10px;
+    left: 0;
     width: 60px;
-    height: 3px;
-    background: linear-gradient(to right, #FFB6C1, #FFEE93);
-    border-radius: 3px;
+    height: 4px;
+    background: linear-gradient(135deg, #67b6f5 0%, #5aa9e6 100%);
+    border-radius: 2px;
   }
 }
 
-.section-subtitle {
-  color: #6E4C1E;
-  font-size: 16px;
-  opacity: 0.8;
+.title-icon {
+  width: 32px;
+  height: 32px;
+  color: #67b6f5;
+  flex-shrink: 0;
 }
 
-.feature-cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 60px;
-}
-
-.feature-card {
-  background-color: white;
-  border-radius: 12px;
-  padding: 30px;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+.view-more-btn, .more-link {
+  color: #67b6f5;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-weight: 600;
   transition: all 0.3s ease;
-  cursor: pointer;
-  
+  padding: 0;
+
+  .el-icon {
+    margin-left: 6px;
+    transition: transform 0.3s ease;
+  }
+
   &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    color: #5aa9e6;
+    .el-icon {
+      transform: translateX(4px);
+    }
   }
 }
 
-.feature-icon {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
+.glass-btn {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(103, 182, 245, 0.2);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(103, 182, 245, 0.2);
+  }
+}
+
+// 快速导航样式
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.category-card {
+  position: relative;
+  border-radius: 24px;
+  padding: 40px 30px;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  overflow: hidden;
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeInUp 0.6s ease both;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+    .category-icon-wrapper {
+      transform: scale(1.15) rotate(5deg);
+    }
+  }
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.category-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
-  
-  i {
-    font-size: 28px;
-    color: white;
-  }
+  transition: all 0.4s ease;
+  color: #67b6f5;
+  box-shadow: 0 4px 15px rgba(103, 182, 245, 0.2);
 }
 
-.feature-title {
-  font-family: 'Nunito Sans', sans-serif;
+.category-name {
   font-size: 20px;
-  color: #683e35;
-  margin-bottom: 12px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  color: #1a202c;
 }
 
-.feature-desc {
-  color: #666;
+.category-desc {
   font-size: 14px;
+  margin: 0;
+  color: #5a6c7d;
   line-height: 1.6;
 }
 
-/* 宠物推荐区样式 */
-.pet-recommend {
-  padding: 50px 0;
-  background-color: white;
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 15px;
-    background: linear-gradient(135deg, #FFB6C1 25%, transparent 25%) -10px 0,
-                linear-gradient(225deg, #FFB6C1 25%, transparent 25%) -10px 0,
-                linear-gradient(315deg, #FFB6C1 25%, transparent 25%),
-                linear-gradient(45deg, #FFB6C1 25%, transparent 25%);
-    background-size: 20px 20px;
-    background-color: #FFEE93;
+// 景点网格布局（复用为宠物、用品、服务布局）
+.scenic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.scenic-card, .glass-card {
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeInUp 0.6s ease both;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .pet-list {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-bottom: 30px;
-  }
-  
-  .pet-card {
-    background-color: #FFF9E6;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    
-    &:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-      
-      .pet-img {
-        transform: scale(1.1);
-      }
+
+  &:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 50px rgba(103, 182, 245, 0.2);
+
+    .card-image-wrapper img {
+      transform: scale(1.15);
+    }
+
+    .image-gradient-overlay {
+      opacity: 0.6;
     }
   }
-  
-  .pet-img-wrapper {
-    height: 200px;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .pet-img {
+}
+
+.card-image-wrapper {
+  height: 240px;
+  overflow: hidden;
+  position: relative;
+
+  img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
-  .pet-status {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
+}
+
+.image-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 70%, rgba(0, 0, 0, 0.6) 100%);
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.card-badges {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2;
+}
+
+.badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  &.badge-free {
+    background: linear-gradient(135deg, #52c787, #4ecdc4);
     color: white;
   }
-  
-  .status-available {
-    background-color: #67c23a;
-  }
-  
-  .status-adopted {
-    background-color: #909399;
-  }
-  
-  .pet-info {
-    padding: 15px;
-  }
-  
-  .pet-name {
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 18px;
-    color: #683e35;
-    margin: 0 0 8px;
-  }
-  
-  .pet-tags {
-    display: flex;
-    gap: 5px;
-    margin-bottom: 8px;
-    
-    .pet-tag {
-      background-color: #FFB6C1;
-      color: white;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-    }
-  }
-  
-  .pet-props {
-    display: flex;
-    gap: 15px;
-    
-    .pet-prop {
-      font-size: 14px;
-      color: #666;
-    }
-  }
-  
-  .more-btn-container {
-    text-align: center;
-  }
-  
-  .more-btn {
-    background-color: transparent;
-    color: #FFA726;
-    border: 1px solid #FFA726;
-    padding: 10px 20px;
-    border-radius: 30px;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      background-color: #FFA726;
-      color: white;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(255, 167, 38, 0.15);
-    }
-    
-    i {
-      margin-left: 5px;
-      transition: transform 0.3s ease;
-    }
-    
-    &:hover i {
-      transform: translateX(3px);
-    }
-  }
-}
 
-/* 宠物用品区样式 */
-.pet-products {
-  padding: 70px 0;
-  background-color: #FFF9E6;
-  position: relative;
-  
-  .products-wrapper {
-    width: 100%;
-  }
-  
-  .product-list {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-bottom: 30px;
-  }
-  
-  .product-card {
-    background-color: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    
-    &:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-      
-      .product-img {
-        transform: scale(1.1);
-      }
-    }
-  }
-  
-  .product-img-wrapper {
-    height: 200px;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .product-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-  }
-  
-  .product-tag {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    background-color: #FFA726;
+  &.badge-adopted {
+    background: linear-gradient(135deg, #ff9a56, #ff6b6b);
     color: white;
   }
-  
-  .product-info {
-    padding: 15px;
-  }
-  
-  .product-name {
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 18px;
-    color: #683e35;
-    margin: 0 0 8px;
-  }
-  
-  .product-brief {
-    color: #666;
-    font-size: 14px;
-    line-height: 1.6;
-  }
-  
-  .product-price-row {
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-  }
-  
-  .product-price {
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 16px;
-    color: #683e35;
-    font-weight: 600;
-  }
-  
-  .product-orig-price {
-    font-size: 14px;
-    color: #999;
-    text-decoration: line-through;
-    margin-left: 10px;
-  }
-  
-  .more-btn-container {
-    text-align: center;
-  }
-  
-  .more-btn {
-    background-color: transparent;
-    color: #FFA726;
-    border: 1px solid #FFA726;
-    padding: 10px 20px;
-    border-radius: 30px;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      background-color: #FFA726;
-      color: white;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(255, 167, 38, 0.15);
-    }
-    
-    i {
-      margin-left: 5px;
-      transition: transform 0.3s ease;
-    }
-    
-    &:hover i {
-      transform: translateX(3px);
-    }
+
+  &.badge-price {
+    background: linear-gradient(135deg, #ff9a56, #ff6b6b);
+    color: white;
   }
 }
 
-/* 服务特色区样式 */
-.services-feature {
-  padding: 70px 0;
-  background-color: #FFF9E6;
-  position: relative;
-  
-  .services-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
+.card-content {
+  padding: 24px;
+}
+
+.scenic-name {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a202c;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+}
+
+.scenic-desc {
+  font-size: 14px;
+  color: #718096;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+// 宠物信息样式
+.pet-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pet-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pet-tag {
+  background: rgba(103, 182, 245, 0.1);
+  color: #67b6f5;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pet-props {
+  display: flex;
+  gap: 16px;
+  color: #5a6c7d;
+  font-size: 14px;
+}
+
+// 产品价格样式
+.product-price-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.product-price {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ff6b6b;
+}
+
+.product-orig-price {
+  font-size: 16px;
+  color: #a0aec0;
+  text-decoration: line-through;
+}
+
+// 服务按钮样式
+.service-btn {
+  margin-top: 16px;
+}
+
+// 骨架屏样式
+.skeleton-item {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+// 响应式样式
+@media (max-width: 992px) {
+  .scenic-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
-  
-  .service-card {
-    background-color: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-      
-      .service-img {
-        transform: scale(1.1);
-      }
-    }
-  }
-  
-  .service-img-wrapper {
-    height: 180px;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .service-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-  }
-  
-  .service-icon {
-    position: absolute;
-    bottom: -20px;
-    left: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    
-    i {
-      font-size: 20px;
-      color: white;
-    }
-  }
-  
-  .service-content {
-    padding: 25px 20px 20px;
-  }
-  
-  .service-title {
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 20px;
-    color: #683e35;
-    margin: 0 0 10px;
-  }
-  
-  .service-desc {
-    color: #666;
-    font-size: 14px;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    height: 66px;
-    overflow: hidden;
-  }
-  
-  .service-btn {
-    color: #FFA726;
-    background-color: transparent;
-    border: none;
-    padding: 0;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      color: #FF9800;
-      text-decoration: underline;
-    }
+
+  .section-container {
+    padding: 60px 20px;
   }
 }
 
-/* 响应式设计 */
-@media screen and (max-width: 992px) {
-  .feature-cards {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 768px) {
+  .hero-section {
+    height: 500px;
   }
-  
-  .pet-list {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  .product-list {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  .services-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
 
-@media screen and (max-width: 768px) {
   .section-title {
     font-size: 28px;
   }
-  
-  .section-subtitle {
-    font-size: 14px;
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
   }
-  
-  .pet-list {
-    grid-template-columns: repeat(2, 1fr);
+
+  .category-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
   }
-  
-  .product-list {
-    grid-template-columns: repeat(2, 1fr);
+
+  .category-card {
+    padding: 30px 20px;
   }
-  
-  .feature-title {
-    font-size: 18px;
+
+  .category-icon-wrapper {
+    width: 60px;
+    height: 60px;
   }
-  
-  .feature-desc {
-    font-size: 13px;
+
+  .scenic-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
-  
-  .service-title {
-    font-size: 18px;
-  }
-  
-  .service-desc {
-    font-size: 13px;
+
+  .section-container {
+    padding: 40px 15px;
   }
 }
 
-@media screen and (max-width: 576px) {
-  .feature-cards {
-    grid-template-columns: 1fr;
+@media (max-width: 480px) {
+  .hero-section {
+    height: 400px;
   }
-  
-  .pet-list {
-    grid-template-columns: 1fr;
-  }
-  
-  .product-list {
-    grid-template-columns: 1fr;
-  }
-  
-  .services-cards {
-    grid-template-columns: 1fr;
-  }
-  
+
   .section-title {
     font-size: 24px;
   }
+
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .category-card {
+    padding: 25px 20px;
+  }
+
+  .card-image-wrapper {
+    height: 200px;
+  }
 }
 </style>
-
-
