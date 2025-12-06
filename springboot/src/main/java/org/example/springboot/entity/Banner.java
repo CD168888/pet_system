@@ -39,6 +39,16 @@ public class Banner implements Serializable {
     private String linkUrl;
 
     /**
+     * 副标题
+     */
+    private String subtitle;
+
+    /**
+     * 描述
+     */
+    private String description;
+
+    /**
      * 排序
      */
     private Integer sort;
