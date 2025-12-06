@@ -546,11 +546,6 @@ onMounted(() => {
   position: relative;
 }
 
-// 公告区域特殊样式
-.announcement-section {
-  padding: 40px 0;
-}
-
 // 标题样式
 .section-header {
   display: flex;
