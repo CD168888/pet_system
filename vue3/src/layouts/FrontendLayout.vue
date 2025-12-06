@@ -394,25 +394,32 @@
       z-index: 0;
     }
   }  
-  /* 顶部导航栏 - 玻璃态效果 */
+  /* 顶部导航栏 - 灵动岛效果 */
   .header {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     position: sticky;
     top: 0;
     z-index: 1000;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
   }
   
   .header-container {
     display: flex;
     align-items: center;
     max-width: 1400px;
+    width: 100%;
     margin: 0 auto;
-    padding: 0 20px;
-    height: 64px;
+    padding: 0 30px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 30px;
   }
   
   .logo {
@@ -466,7 +473,6 @@
   .main-menu :deep(.el-menu-item:hover,
                    .el-menu-item.is-active) {
     color: #ff9800;
-    background: rgba(255, 152, 0, 0.1);
     border-radius: 8px;
   }
   
@@ -486,7 +492,6 @@
   .main-menu :deep(.el-sub-menu__title:hover,
                    .el-sub-menu.is-active > .el-sub-menu__title) {
     color: #ff9800;
-    background: rgba(255, 152, 0, 0.1);
     border-radius: 8px;
   }
   
@@ -737,6 +742,7 @@
     .header-container {
       height: 64px;
       padding: 0 16px;
+      max-width: 700px;
     }
     
     .logo {
@@ -760,6 +766,8 @@
   @media (max-width: 768px) {
     .header-container {
       height: 56px;
+      max-width: 500px;
+      border-radius: 28px;
     }
     
     .logo-text {
@@ -784,6 +792,11 @@
   }
   
   @media (max-width: 480px) {
+    .header-container {
+      max-width: calc(100% - 32px);
+      padding: 0 12px;
+    }
+    
     .main-content {
       padding: 1rem 12px;
     }
