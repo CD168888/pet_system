@@ -558,7 +558,7 @@ watchEffect(() => {
     align-items: center;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 2px solid rgba(135, 206, 235, 0.3);
+    border-bottom: 2px solid rgba(200, 200, 200, 0.3);
     
     .announcement-time {
       margin-left: 15px;
@@ -596,12 +596,12 @@ watchEffect(() => {
     }
     
     &::-webkit-scrollbar-thumb {
-      background: rgba(135, 206, 235, 0.6);
+      background: rgba(160, 160, 160, 0.6);
       border-radius: 4px;
     }
     
     &::-webkit-scrollbar-thumb:hover {
-      background: rgba(135, 206, 235, 0.8);
+      background: rgba(140, 140, 140, 0.8);
     }
     
     .no-content {
@@ -616,7 +616,7 @@ watchEffect(() => {
 /* 自定义弹窗样式 */
 :deep(.announcement-dialog) {
   .el-dialog__header {
-    background: linear-gradient(135deg, rgba(135, 206, 235, 0.8), rgba(255, 182, 193, 0.6));
+    background-color: #f8f9fa;
     border-radius: 8px 8px 0 0;
     padding: 20px;
   }

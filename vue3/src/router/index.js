@@ -191,6 +191,13 @@ const frontendRoutes = [
         name: 'Search',
         component: () => import('@/views/frontend/Search.vue'),
         meta: { title: '搜索结果' }
+      },
+      // 添加公告列表路由
+      {
+        path: 'announcement',
+        name: 'AnnouncementList',
+        component: () => import('@/views/frontend/announcement/List.vue'),
+        meta: { title: '公告列表' }
       }
     ] 
   },

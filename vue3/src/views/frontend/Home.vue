@@ -538,12 +538,17 @@ onMounted(() => {
 .section-container {
   max-width: 1300px;
   margin: 0 auto;
-  padding: 80px 20px;
+  padding: 20px 20px;
 }
 
 // 区域样式
 .announcement-section, .quick-nav-section, .featured-section, .inspiration-section {
   position: relative;
+}
+
+// 公告区域特殊样式
+.announcement-section {
+  padding: 20px 0;
 }
 
 // 标题样式
