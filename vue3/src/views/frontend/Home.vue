@@ -176,7 +176,7 @@
           </router-link>
         </div>
 
-        <div class="scenic-grid">
+        <div class="service-grid">
           <div v-for="(service, index) in specialServices" :key="index" class="scenic-card glass-card" @click="navigateTo(service.link)">
             <div class="card-image-wrapper">
               <img :src="service.imageUrl" :alt="service.title" />
@@ -572,7 +572,7 @@ onMounted(() => {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #67b6f5 0%, #5aa9e6 100%);
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -586,7 +586,7 @@ onMounted(() => {
     left: 0;
     width: 60px;
     height: 4px;
-    background: linear-gradient(135deg, #67b6f5 0%, #5aa9e6 100%);
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
     border-radius: 2px;
   }
 }
@@ -594,12 +594,12 @@ onMounted(() => {
 .title-icon {
   width: 32px;
   height: 32px;
-  color: #67b6f5;
+  color: #FF9800;
   flex-shrink: 0;
 }
 
 .view-more-btn, .more-link {
-  color: #67b6f5;
+  color: #FF9800;
   font-size: 15px;
   display: flex;
   align-items: center;
@@ -614,7 +614,7 @@ onMounted(() => {
   }
 
   &:hover {
-    color: #5aa9e6;
+    color: #F57C00;
     .el-icon {
       transform: translateX(4px);
     }
@@ -627,13 +627,13 @@ onMounted(() => {
   -webkit-backdrop-filter: blur(10px);
   padding: 10px 20px;
   border-radius: 20px;
-  border: 1px solid rgba(103, 182, 245, 0.2);
+  border: 1px solid rgba(255, 152, 0, 0.2);
   transition: all 0.3s ease;
 
   &:hover {
     background: rgba(255, 255, 255, 0.95);
     transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(103, 182, 245, 0.2);
+    box-shadow: 0 8px 16px rgba(255, 152, 0, 0.2);
   }
 }
 
@@ -693,8 +693,8 @@ onMounted(() => {
   justify-content: center;
   margin: 0 auto 20px;
   transition: all 0.4s ease;
-  color: #67b6f5;
-  box-shadow: 0 4px 15px rgba(103, 182, 245, 0.2);
+  color: #FF9800;
+  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
 }
 
 .category-name {
@@ -713,6 +713,13 @@ onMounted(() => {
 
 // 景点网格布局（复用为宠物、用品、服务布局）
 .scenic-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+/* 专业服务区域网格布局 */
+.service-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 30px;
@@ -739,7 +746,7 @@ onMounted(() => {
 
   &:hover {
     transform: translateY(-12px);
-    box-shadow: 0 20px 50px rgba(103, 182, 245, 0.2);
+    box-shadow: 0 20px 50px rgba(255, 152, 0, 0.2);
 
     .card-image-wrapper img {
       transform: scale(1.15);
@@ -903,6 +910,10 @@ onMounted(() => {
 // 响应式样式
 @media (max-width: 992px) {
   .scenic-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .service-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 
@@ -941,6 +952,10 @@ onMounted(() => {
   }
 
   .scenic-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .service-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
 
@@ -965,6 +980,14 @@ onMounted(() => {
   .category-card {
     padding: 25px 20px;
   }
+
+  .scenic-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .service-grid {
+      grid-template-columns: 1fr;
+    }
 
   .card-image-wrapper {
     height: 200px;
