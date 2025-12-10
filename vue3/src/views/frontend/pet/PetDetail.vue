@@ -1,29 +1,37 @@
 <template>
   <div class="pet-detail-page" v-loading="loading">
-    <div class="page-decoration">
-      <div class="decoration-bubble bubble-1"></div>
-      <div class="decoration-bubble bubble-2"></div>
-      <div class="decoration-bubble bubble-3"></div>
-      <div class="decoration-paw paw-1">🐾</div>
-      <div class="decoration-paw paw-2">🐾</div>
-    </div>
-    
-    <div class="breadcrumb-container">
-      <div class="back-button" @click="goBack">
-        <i class="el-icon-arrow-left"></i>
-        返回列表
+    <!-- 添加Page Banner -->
+    <div class="page-banner">
+      <div class="container">
+        <div class="breadcrumb">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item @click="$router.push('/pet')">宠物领养</el-breadcrumb-item>
+            <el-breadcrumb-item>{{ pet?.name || '宠物详情' }}</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+        <h1>{{ pet?.name || '宠物详情' }}</h1>
+        <p>{{ pet?.categoryName || '宠物详情页' }}</p>
+      </div>
+      <div class="banner-decoration">
+        <div class="decoration-paw paw-1">🐾</div>
+        <div class="decoration-paw paw-2">🐾</div>
+        <div class="decoration-paw paw-3">🐾</div>
       </div>
     </div>
+    
+    <!-- 面包屑已移除 -->
     
     <div class="pet-detail-content" v-if="pet">
       <div class="pet-main-info">
         <div class="pet-gallery">
-          <el-carousel :interval="5000" height="450px" arrow="always" 
-            indicator-position="outside" class="pet-carousel">
+          <el-carousel :interval="5000" height="auto" arrow="always" 
+            indicator-position="none" class="pet-carousel">
             <el-carousel-item v-for="(image, index) in getImageList(pet.images)" :key="index">
               <img :src="image" alt="宠物图片" class="carousel-image">
             </el-carousel-item>
           </el-carousel>
+          <!-- 图片提示文字已移除 -->
         </div>
         
         <div class="pet-info-card">
@@ -42,7 +50,7 @@
           
           <div class="pet-attributes">
             <div class="attribute-item">
-              <div class="attribute-icon">🐾</div>
+              <div class="attribute-icon"><el-icon><UserFilled /></el-icon></div>
               <div class="attribute-content">
                 <div class="attribute-label">年龄</div>
                 <div class="attribute-value">{{ pet.age }} 岁</div>
@@ -50,7 +58,10 @@
             </div>
             
             <div class="attribute-item">
-              <div class="attribute-icon">{{ pet.gender === '公' ? '♂️' : '♀️' }}</div>
+              <div class="attribute-icon">
+                <el-icon v-if="pet.gender === '公'"><Male /></el-icon>
+                <el-icon v-else><Female /></el-icon>
+              </div>
               <div class="attribute-content">
                 <div class="attribute-label">性别</div>
                 <div class="attribute-value">{{ pet.gender }}</div>
@@ -58,7 +69,7 @@
             </div>
             
             <div class="attribute-item">
-              <div class="attribute-icon">❤️</div>
+              <div class="attribute-icon"><el-icon><StarFilled /></el-icon></div>
               <div class="attribute-content">
                 <div class="attribute-label">健康状况</div>
                 <div class="attribute-value">{{ pet.healthStatus }}</div>
@@ -75,7 +86,7 @@
             <el-button v-if="pet.adoptionStatus === '可领养'" 
                       class="adopt-button" 
                       @click="handleAdopt">
-              <span class="button-icon">🏠</span>
+              <span class="button-icon"><el-icon><House /></el-icon></span>
               申请领养
             </el-button>
             
@@ -107,7 +118,7 @@
       </div>
       
       <div class="pet-details-tabs">
-        <el-tabs type="border-card" v-model="activeTab" class="custom-tabs">
+        <el-tabs v-model="activeTab" class="custom-tabs">
           <!-- 健康记录标签页 -->
           <el-tab-pane label="健康记录" name="healthRecord">
             <div v-loading="healthRecordLoading" class="tab-content">
@@ -210,7 +221,7 @@
     <!-- 申请领养对话框 -->
     <el-dialog v-model="dialogVisible" title="申请领养" width="500px" class="custom-dialog">
       <div class="dialog-header">
-        <div class="dialog-icon">🏠</div>
+        <div class="dialog-icon"><el-icon><House /></el-icon></div>
         <h3 class="dialog-title">领养申请</h3>
       </div>
       
@@ -227,7 +238,7 @@
       </el-form>
       
       <div class="dialog-tip">
-        <div class="tip-icon">💡</div>
+        <div class="tip-icon"><el-icon><InfoFilled /></el-icon></div>
         <div class="tip-text">提交申请后，我们将在1-3个工作日内进行审核，请保持电话畅通。</div>
       </div>
       
@@ -512,10 +523,96 @@ onMounted(() => {
 <style lang="scss" scoped>
 .pet-detail-page {
   min-height: 100vh;
-  background-color: #FFF9E6;
-  padding: 30px 20px 60px;
+  padding: 0 20px 60px;
   position: relative;
   overflow: hidden;
+}
+
+/* Page Banner */
+.page-banner {
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  padding: 60px 40px;
+  text-align: center;
+  position: relative;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+    
+    .breadcrumb {
+      margin-bottom: 20px;
+      justify-content: center;
+      
+      .el-breadcrumb__item a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        
+        &:hover {
+          color: white;
+        }
+      }
+    }
+  }
+  
+  h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 42px;
+    color: white;
+    margin-bottom: 15px;
+    animation: fadeInDown 0.8s ease;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.9);
+    opacity: 0.9;
+    animation: fadeInUp 0.8s ease;
+  }
+  
+  .banner-decoration {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  
+  .decoration-paw {
+      position: absolute;
+      font-size: 28px;
+      opacity: 0.2;
+      color: white;
+      
+      &.paw-1 {
+        top: 15%;
+        right: 20%;
+        animation: rotate 25s linear infinite, float 6s ease-in-out infinite;
+      }
+      
+      &.paw-2 {
+        bottom: 25%;
+        left: 15%;
+        animation: rotate 20s linear infinite reverse, float 8s ease-in-out infinite;
+        font-size: 22px;
+      }
+      
+      &.paw-3 {
+        top: 60%;
+        right: 30%;
+        animation: rotate 30s linear infinite, float 10s ease-in-out infinite;
+        font-size: 20px;
+      }
+    }
 }
 
 .page-decoration {
@@ -611,37 +708,54 @@ onMounted(() => {
 }
 
 .pet-main-info {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 30px;
   margin-bottom: 40px;
   
   @media (max-width: 992px) {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 }
 
 .pet-gallery {
-  flex: 1;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    flex: 1;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    max-height: 500px; /* 设置最大高度防止图片过高 */
+    
+    &:hover {
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
   
   .pet-carousel {
-    border-radius: 12px;
+    border-radius: 20px;
     overflow: hidden;
+    height: 100%; /* 让轮播图充满容器高度 */
+    
+    :deep(.el-carousel__container) {
+      height: 100% !important; /* 强制容器高度为100% */
+    }
+    
+    :deep(.el-carousel__item) {
+      height: 100% !important; /* 强制轮播项高度为100% */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     
     :deep(.el-carousel__arrow) {
       background-color: rgba(255, 182, 193, 0.8);
       border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      transition: all 0.3s ease;
       
       &:hover {
         background-color: #FFB6C1;
-      }
-    }
-    
-    :deep(.el-carousel__indicators) {
-      .el-carousel__button {
-        background-color: #FFEE93;
+        transform: scale(1.1);
       }
     }
   }
@@ -650,104 +764,143 @@ onMounted(() => {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 20px;
+    min-height: 300px; /* 设置最小高度确保图片区域不会太小 */
   }
 }
 
 .pet-info-card {
-  flex: 1;
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
+    flex: 1;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 35px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  }
   
   .pet-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 20px;
+    gap: 15px;
     
     .pet-name {
       font-family: 'Nunito Sans', sans-serif;
-      font-size: 28px;
+      font-size: 32px;
       color: #683e35;
       margin: 0;
+      font-weight: 700;
+      line-height: 1.3;
     }
     
     .pet-status-badge {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 14px;
+      padding: 8px 16px;
+      border-radius: 25px;
+      font-size: 13px;
       font-weight: 600;
       color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      transition: all 0.3s ease;
     }
   }
   
   .status-available {
-    background: #67c23a;
-    box-shadow: 0 3px 6px rgba(103, 194, 58, 0.2);
+    background: linear-gradient(135deg, #67c23a 0%, #529b2e 100%);
+    box-shadow: 0 3px 12px rgba(103, 194, 58, 0.3);
   }
 
   .status-adopted {
-    background: #909399;
-    box-shadow: 0 3px 6px rgba(144, 147, 153, 0.2);
+    background: linear-gradient(135deg, #909399 0%, #73767a 100%);
+    box-shadow: 0 3px 12px rgba(144, 147, 153, 0.3);
   }
   
   .pet-tags {
     display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
+    gap: 10px;
+    margin-bottom: 25px;
     flex-wrap: wrap;
     
     .pet-tag {
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
+      padding: 8px 16px;
+      border-radius: 25px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
       
       &.tag-category {
-        background: rgba(255, 167, 38, 0.15);
+        background: rgba(255, 167, 38, 0.1);
         color: #ff8f00;
+        border: 1px solid rgba(255, 167, 38, 0.3);
       }
       
       &.tag-type {
-        background: rgba(255, 182, 193, 0.2);
+        background: rgba(255, 182, 193, 0.1);
         color: #d85a77;
+        border: 1px solid rgba(255, 182, 193, 0.3);
       }
       
       &.tag-breed {
-        background: rgba(255, 238, 147, 0.3);
-        color: #b29860;
+        background: rgba(144, 202, 249, 0.1);
+        color: #2196f3;
+        border: 1px solid rgba(144, 202, 249, 0.3);
       }
     }
   }
   
   .pet-attributes {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 15px;
     margin-bottom: 30px;
     
     .attribute-item {
-      flex: 1;
       min-width: 120px;
-      background: #f9f9f9;
-      border-radius: 8px;
-      padding: 15px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 16px 20px;
       display: flex;
       align-items: center;
+      border: 1px solid rgba(255, 182, 193, 0.2);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(255, 182, 193, 0.15);
+      }
       
       .attribute-icon {
-        width: 40px;
-        height: 40px;
+        width: 45px;
+        height: 45px;
         border-radius: 50%;
-        background: rgba(255, 238, 147, 0.3);
+        background: rgba(255, 238, 147, 0.2);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
         margin-right: 12px;
+        
+        .el-icon {
+          width: 24px;
+          height: 24px;
+          color: #683e35;
+        }
       }
       
       .attribute-content {
@@ -757,6 +910,8 @@ onMounted(() => {
           font-size: 12px;
           color: #999;
           margin-bottom: 5px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
         
         .attribute-value {
@@ -774,20 +929,22 @@ onMounted(() => {
     
     .section-title {
       font-family: 'Nunito Sans', sans-serif;
-      font-size: 20px;
+      font-size: 22px;
       color: #683e35;
       margin: 0 0 15px;
       position: relative;
-      padding-left: 15px;
+      padding-left: 25px;
+      font-weight: 600;
       
       &::before {
         content: '';
         position: absolute;
         left: 0;
-        top: 0;
-        bottom: 0;
+        top: 50%;
+        transform: translateY(-50%);
         width: 4px;
-        background: #FFB6C1;
+        height: 22px;
+        background: linear-gradient(135deg, #FFB6C1 0%, #FF92B2 100%);
         border-radius: 2px;
       }
     }
@@ -797,6 +954,10 @@ onMounted(() => {
       line-height: 1.8;
       color: #666;
       white-space: pre-line;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 182, 193, 0.1);
     }
   }
   
@@ -806,121 +967,211 @@ onMounted(() => {
     justify-content: center;
     
     .adopt-button, .cancel-button, .success-button, .rejected-button, .adopted-button {
-      min-width: 180px;
-      height: 46px;
+      min-width: 200px;
+      height: 50px;
       font-size: 16px;
-      border-radius: 8px;
-      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       
       &:hover {
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
       }
       
       .button-icon {
         margin-right: 8px;
+        font-size: 18px;
       }
     }
     
     .adopt-button {
-      background-color: #FFA726;
+      background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
       color: white;
       border: none;
+      box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
       
       &:hover {
-        background-color: #ff9800;
-        box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+        background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        box-shadow: 0 8px 25px rgba(255, 167, 38, 0.4);
       }
     }
     
     .cancel-button {
-      background-color: #f56c6c;
+      background: linear-gradient(135deg, #f56c6c 0%, #f34e4e 100%);
       color: white;
       border: none;
+      box-shadow: 0 4px 15px rgba(245, 108, 108, 0.3);
       
       &:hover {
-        background-color: #f34e4e;
-        box-shadow: 0 4px 12px rgba(245, 108, 108, 0.3);
+        background: linear-gradient(135deg, #f34e4e 0%, #e83a3a 100%);
+        box-shadow: 0 8px 25px rgba(245, 108, 108, 0.4);
       }
     }
     
     .success-button {
-      background-color: #67c23a;
+      background: linear-gradient(135deg, #67c23a 0%, #529b2e 100%);
       color: white;
       border: none;
+      box-shadow: 0 4px 15px rgba(103, 194, 58, 0.3);
+      
+      &:hover {
+        background: linear-gradient(135deg, #529b2e 0%, #437a25 100%);
+        box-shadow: 0 8px 25px rgba(103, 194, 58, 0.4);
+      }
     }
     
     .rejected-button, .adopted-button {
-      background-color: #909399;
+      background: linear-gradient(135deg, #909399 0%, #73767a 100%);
       color: white;
       border: none;
+      box-shadow: 0 4px 15px rgba(144, 147, 153, 0.3);
+      
+      &:hover {
+        background: linear-gradient(135deg, #73767a 0%, #606266 100%);
+        box-shadow: 0 8px 25px rgba(144, 147, 153, 0.4);
+      }
     }
   }
 }
 
 .pet-details-tabs {
   margin-bottom: 40px;
-  
-  .custom-tabs {
+  padding: 30px;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  /* 玻璃态卡片设计 */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px);
+  }
+}
+
+.custom-tabs {
+  position: relative;
+  width: 100%;
+  /* 现代化标签页设计 */
+  &.el-tabs {
+    :deep(.el-tabs__header) {
+      border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+      margin-bottom: 30px;
+    }
+
     :deep(.el-tabs__nav) {
-      background-color: #f9f9f9;
+      display: flex;
+      gap: 50px;
     }
-    
+
     :deep(.el-tabs__item) {
-      color: #666;
-      
-      &.is-active {
-        color: #FFB6C1;
-      }
-      
-      &:hover {
-        color: #FFB6C1;
-      }
+      color: rgba(0, 0, 0, 0.6);
+      font-size: 1.1rem;
+      font-weight: 500;
+      padding: 16px 0;
+      position: relative;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
     }
-    
+
+    :deep(.el-tabs__item:hover) {
+      color: #FF9800;
+      border-bottom-color: rgba(255, 152, 0, 0.3);
+      transform: translateY(-2px);
+    }
+
+    :deep(.el-tabs__item.is-active) {
+      color: #FF9800;
+      border-bottom-color: #FF9800;
+      font-weight: 600;
+    }
+
     :deep(.el-tabs__active-bar) {
-      background-color: #FFB6C1;
+      background-color: #FF9800;
+      height: 3px;
+      border-radius: 3px;
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    :deep(.el-tab-pane) {
+      padding: 35px;
+      animation: fadeIn 0.5s ease-out;
     }
   }
-  
-  .tab-content {
-    padding: 30px 20px;
-    min-height: 200px;
-  }
-  
-  .health-timeline {
+}
+
+.tab-content {
+  padding: 40px 30px;
+  min-height: 200px;
+}
+
+.health-timeline {
+    padding: 20px 0;
+    
     .timeline-item {
-      margin-bottom: 25px;
+      margin-bottom: 30px;
+      position: relative;
+      
+      :deep(.el-timeline-item__tail) {
+        background-color: #FFB6C1;
+        width: 2px;
+      }
       
       :deep(.el-timeline-item__node--success) {
         background-color: #67c23a;
+        box-shadow: 0 0 0 4px rgba(103, 194, 58, 0.1);
       }
       
       :deep(.el-timeline-item__node--warning) {
         background-color: #e6a23c;
+        box-shadow: 0 0 0 4px rgba(230, 162, 60, 0.1);
       }
       
       :deep(.el-timeline-item__node--danger) {
         background-color: #f56c6c;
+        box-shadow: 0 0 0 4px rgba(245, 108, 108, 0.1);
       }
       
       :deep(.el-timeline-item__timestamp) {
         color: #999;
+        font-size: 13px;
+        margin-bottom: 8px;
+        font-weight: 500;
       }
     }
     
     .record-card {
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      transition: transform 0.3s ease;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       
       &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        border-color: rgba(255, 182, 193, 0.3);
       }
       
       :deep(.el-card__header) {
-        padding: 15px 20px;
-        border-bottom: 1px solid #f0f0f0;
+        padding: 20px 25px;
+        border-bottom: 1px solid rgba(255, 182, 193, 0.1);
       }
       
       .record-header {
@@ -929,8 +1180,9 @@ onMounted(() => {
         align-items: center;
         
         .record-title {
-          font-weight: bold;
+          font-weight: 600;
           color: #683e35;
+          font-size: 16px;
         }
         
         .record-hospital {
@@ -940,15 +1192,18 @@ onMounted(() => {
       }
       
       .record-content {
-        padding: 15px 0;
+        padding: 20px 25px;
         
         .record-item {
-          margin-bottom: 10px;
+          margin-bottom: 12px;
           font-size: 14px;
           color: #666;
+          display: flex;
+          gap: 8px;
           
           strong {
             color: #333;
+            min-width: 60px;
           }
           
           &:last-child {
@@ -959,38 +1214,47 @@ onMounted(() => {
         .record-item-group {
           display: flex;
           flex-wrap: wrap;
-          gap: 15px;
-          margin-bottom: 10px;
+          gap: 20px;
+          margin-bottom: 12px;
         }
       }
     }
   }
   
   .custom-table {
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     
     :deep(.el-table__header-wrapper) {
       th {
-        background-color: #f9f9f9;
+        background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(255, 182, 193, 0.05) 100%);
         font-weight: 600;
         color: #683e35;
+        border-bottom: 2px solid rgba(255, 182, 193, 0.2);
       }
     }
     
     :deep(.el-table__row) {
       &:hover {
-        background-color: #fff9f9;
+        background-color: rgba(255, 182, 193, 0.05);
       }
     }
+    
+    :deep(.el-table__cell) {
+      border-bottom: 1px solid rgba(255, 182, 193, 0.1);
+    }
   }
-}
 
 .empty-records {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 200px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  padding: 40px;
+  margin: 20px 0;
   
   :deep(.el-empty__description) {
     color: #999;
@@ -998,13 +1262,17 @@ onMounted(() => {
 }
 
 .pagination-container {
-  margin-top: 30px;
+  margin-top: 40px;
   display: flex;
   justify-content: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
   
   :deep(.el-pagination) {
-    --el-pagination-button-bg-color: white;
+    --el-pagination-button-bg-color: rgba(255, 255, 255, 0.8);
     --el-pagination-hover-color: #FFB6C1;
+    --el-pagination-button-size: 40px;
     
     .el-pagination__jump {
       color: #683e35;
@@ -1012,18 +1280,36 @@ onMounted(() => {
     
     button:not(:disabled):hover {
       color: #FFB6C1;
+      transform: translateY(-2px);
     }
     
     .is-active {
-      background-color: #FFB6C1 !important;
+      background: linear-gradient(135deg, #FFB6C1 0%, #FF92B2 100%) !important;
       color: white !important;
+      box-shadow: 0 4px 15px rgba(255, 182, 193, 0.3);
+    }
+    
+    .el-pagination__button {
+      border-radius: 8px;
+      border: 1px solid rgba(255, 182, 193, 0.1);
+      transition: all 0.3s ease;
     }
   }
 }
 
 .custom-dialog {
   :deep(.el-dialog__header) {
-    padding-bottom: 0;
+    padding: 30px 30px 0;
+    border-bottom: 1px solid rgba(255, 182, 193, 0.1);
+  }
+  
+  :deep(.el-dialog__body) {
+    padding: 30px;
+  }
+  
+  :deep(.el-dialog__footer) {
+    padding: 20px 30px 30px;
+    border-top: 1px solid rgba(255, 182, 193, 0.1);
   }
   
   .dialog-header {
@@ -1032,91 +1318,113 @@ onMounted(() => {
     margin-bottom: 25px;
     
     .dialog-icon {
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      background: rgba(255, 238, 147, 0.3);
+      background: linear-gradient(135deg, rgba(255, 238, 147, 0.4) 0%, rgba(255, 238, 147, 0.2) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 28px;
       margin-right: 15px;
+      box-shadow: 0 4px 15px rgba(255, 238, 147, 0.3);
     }
     
     .dialog-title {
       font-family: 'Nunito Sans', sans-serif;
-      font-size: 22px;
+      font-size: 24px;
       color: #683e35;
       margin: 0;
+      font-weight: 600;
     }
   }
   
   .dialog-tip {
     margin: 20px 0;
-    background: rgba(255, 238, 147, 0.4);
-    border-left: 3px solid #FFEE93;
-    padding: 12px;
-    border-radius: 4px;
+    background: linear-gradient(135deg, rgba(255, 238, 147, 0.4) 0%, rgba(255, 238, 147, 0.2) 100%);
+    border-left: 4px solid #FFEE93;
+    padding: 15px 20px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
+    gap: 12px;
     
     .tip-icon {
       font-size: 20px;
-      margin-right: 10px;
+      color: #FFB6C1;
+      flex-shrink: 0;
     }
     
     .tip-text {
       font-size: 14px;
       color: #683e35;
       line-height: 1.5;
+      margin: 0;
     }
   }
   
   :deep(.el-form-item__label) {
     color: #683e35;
+    font-weight: 500;
   }
   
-  :deep(.el-input__wrapper) {
+  :deep(.el-form-item) {
+    margin-bottom: 20px;
+  }
+  
+  :deep(.el-input__wrapper),
+  :deep(.el-textarea__wrapper) {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 182, 193, 0.2);
+    
     &:hover {
-      box-shadow: 0 0 0 1px #FFB6C1;
+      box-shadow: 0 0 0 2px rgba(255, 182, 193, 0.2);
+      border-color: rgba(255, 182, 193, 0.3);
     }
     
     &.is-focus {
-      box-shadow: 0 0 0 1px #FFB6C1;
+      box-shadow: 0 0 0 2px rgba(255, 182, 193, 0.3);
+      border-color: #FFB6C1;
     }
   }
   
   .dialog-footer {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 20px;
     width: 100%;
     
     .cancel-btn, .submit-btn {
-      min-width: 120px;
-      height: 38px;
-      border-radius: 8px;
+      min-width: 140px;
+      height: 44px;
+      border-radius: 22px;
+      font-weight: 500;
+      font-size: 15px;
+      transition: all 0.3s ease;
     }
     
     .cancel-btn {
-      background: transparent;
-      border: 1px solid #d9d9d9;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 182, 193, 0.3);
       color: #606266;
       
       &:hover {
         border-color: #FFB6C1;
         color: #FFB6C1;
+        box-shadow: 0 4px 15px rgba(255, 182, 193, 0.2);
       }
     }
     
     .submit-btn {
-      background: #FFA726;
+      background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
       color: white;
       border: none;
+      box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
       
       &:hover {
-        background-color: #ff9800;
-        box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 167, 38, 0.4);
       }
     }
   }
@@ -1124,6 +1432,10 @@ onMounted(() => {
 
 .pet-empty {
   margin-top: 100px;
+  padding: 60px 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 @keyframes float {
@@ -1136,8 +1448,21 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
+  .pet-detail-page {
+    padding: 10px;
+  }
+  
+  .pet-info-card {
+    padding: 25px;
+  }
+  
+  .pet-name {
+    font-size: 28px !important;
+  }
+  
   .pet-attributes {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: 10px;
     
     .attribute-item {
       width: 100%;
@@ -1147,11 +1472,37 @@ onMounted(() => {
   .pet-description-section {
     .description-text {
       font-size: 14px;
+      padding: 15px;
     }
   }
   
   .tab-content {
-    padding: 20px 10px;
+    padding: 25px 15px;
+  }
+  
+  .pet-actions {
+    .adopt-button, .cancel-button, .success-button, .rejected-button, .adopted-button {
+      min-width: 100%;
+    }
+  }
+  
+  .record-item-group {
+    flex-direction: column;
+    gap: 10px !important;
+  }
+  
+  .dialog-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .dialog-footer {
+    flex-direction: column;
+    
+    .cancel-btn, .submit-btn {
+      width: 100%;
+    }
   }
 }
 </style> 
