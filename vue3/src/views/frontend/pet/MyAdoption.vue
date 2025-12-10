@@ -322,7 +322,7 @@ onMounted(() => {
   .breadcrumb {
     margin-bottom: 20px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     
     :deep(.el-breadcrumb__item) {
       color: rgba(255, 255, 255, 0.8);
