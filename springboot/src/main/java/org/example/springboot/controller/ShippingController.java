@@ -7,6 +7,7 @@ import jakarta.annotation.Resource;
 import org.example.springboot.common.Result;
 import org.example.springboot.entity.Shipping;
 import org.example.springboot.service.ShippingService;
+import org.example.springboot.util.JwtTokenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -94,7 +95,8 @@ public class ShippingController {
     
     @Operation(summary = "确认收货")
     @PutMapping("/confirm")
-    public Result<?> confirmReceipt(@RequestParam Long orderId, @RequestAttribute("userId") Long userId) {
+    public Result<?> confirmReceipt(@RequestParam Long orderId) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         boolean success = shippingService.confirmReceipt(orderId, userId);
         if (success) {
             return Result.success("确认收货成功");

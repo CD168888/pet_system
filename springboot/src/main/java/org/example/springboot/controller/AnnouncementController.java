@@ -82,14 +82,8 @@ public class AnnouncementController {
     @Operation(summary = "添加公告")
     @PostMapping
     public Result<?> addAnnouncement(@RequestBody Announcement announcement) {
-        // 获取当前登录用户ID
-        User currentUser = JwtTokenUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new ServiceException("用户未登录！");
-        }
-
-        announcement.setCreatedBy(currentUser.getId());
-        
+        Long userId = JwtTokenUtils.getCurrentUserId();
+        announcement.setCreatedBy(userId);
         boolean success = announcementService.addAnnouncement(announcement);
         if (!success) {
             throw new ServiceException("添加公告失败");

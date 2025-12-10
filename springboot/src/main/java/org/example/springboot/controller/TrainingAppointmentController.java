@@ -9,6 +9,7 @@ import org.example.springboot.DTO.TrainingQueryDTO;
 import org.example.springboot.common.Result;
 import org.example.springboot.entity.TrainingAppointment;
 import org.example.springboot.service.TrainingAppointmentService;
+import org.example.springboot.util.JwtTokenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -44,10 +45,10 @@ public class TrainingAppointmentController {
     @Operation(summary = "根据用户ID查询预约列表")
     @GetMapping("/user")
     public Result<?> getAppointmentsByUserId(
-            @RequestParam Long userId,
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "1") Integer currentPage,
             @RequestParam(defaultValue = "10") Integer size) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         LOGGER.info("查询用户预约列表: userId={}, status={}, currentPage={}, size={}",
                 userId, status, currentPage, size);
         
@@ -64,7 +65,6 @@ public class TrainingAppointmentController {
     @Operation(summary = "分页查询所有预约列表（管理端）")
     @GetMapping("/page")
     public Result<?> getAppointmentsByPage(
-            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) String courseName,
             @RequestParam(required = false) String petName,
@@ -74,6 +74,7 @@ public class TrainingAppointmentController {
             @RequestParam(required = false) String endDate,
             @RequestParam(defaultValue = "1") Integer currentPage,
             @RequestParam(defaultValue = "10") Integer size) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         LOGGER.info("分页查询预约列表: userId={}, courseId={}, courseName={}, petName={}, contactPhone={}, status={}, " +
                 "startDate={}, endDate={}, currentPage={}, size={}",
                 userId, courseId, courseName, petName, contactPhone, status, startDate, endDate, currentPage, size);

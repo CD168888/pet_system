@@ -7,6 +7,7 @@ import jakarta.annotation.Resource;
 import org.example.springboot.common.Result;
 import org.example.springboot.entity.OrderReview;
 import org.example.springboot.service.OrderReviewService;
+import org.example.springboot.util.JwtTokenUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -57,10 +58,10 @@ public class OrderReviewController {
     @Operation(summary = "分页查询评价")
     @GetMapping("/page")
     public Result<?> getReviewsByPage(
-            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long productId,
             @RequestParam(defaultValue = "1") Integer currentPage,
             @RequestParam(defaultValue = "10") Integer size) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         Page<OrderReview> page = orderReviewService.getReviewsByPage(userId, productId, currentPage, size);
         return Result.success(page);
     }

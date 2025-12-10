@@ -25,12 +25,12 @@ public class AdoptionController {
     @Operation(summary = "分页查询领养申请")
     @GetMapping("/page")
     public Result<?> getAdoptionsByPage(
-            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long petId,
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "1") Integer currentPage,
             @RequestParam(defaultValue = "10") Integer size) {
         LOGGER.info("分页查询领养申请");
+        Long userId = JwtTokenUtils.getCurrentUserId();
         return Result.success(adoptionService.getAdoptionsByPage(userId, petId, status, currentPage, size));
     }
 
@@ -57,11 +57,7 @@ public class AdoptionController {
     @Operation(summary = "取消领养申请")
     @DeleteMapping("/{id}")
     public Result<?> cancelAdoption(@PathVariable Long id) {
-        User currentUser = JwtTokenUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new ServiceException("用户未登录");
-        }
-        Long userId = currentUser.getId();
+        Long userId = JwtTokenUtils.getCurrentUserId();
         LOGGER.info("取消领养申请，ID: {}, 用户ID: {}", id, userId);
         adoptionService.cancelAdoption(id, userId);
         return Result.success();
@@ -83,11 +79,7 @@ public class AdoptionController {
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "1") Integer currentPage,
             @RequestParam(defaultValue = "10") Integer size) {
-        User currentUser = JwtTokenUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new ServiceException("用户未登录");
-        }
-        Long userId = currentUser.getId();
+        Long userId = JwtTokenUtils.getCurrentUserId();
         LOGGER.info("获取用户申请记录，用户ID: {}", userId);
         return Result.success(adoptionService.getUserAdoptions(userId, status, currentPage, size));
     }

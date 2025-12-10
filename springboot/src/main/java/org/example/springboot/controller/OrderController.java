@@ -8,6 +8,7 @@ import org.example.springboot.DTO.OrderCreateDTO;
 import org.example.springboot.common.Result;
 import org.example.springboot.entity.Order;
 import org.example.springboot.service.OrderService;
+import org.example.springboot.util.JwtTokenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,8 @@ public class OrderController {
     
     @Operation(summary = "创建订单")
     @PostMapping
-    public Result<?> createOrder(@RequestParam("userId") Long userId, @RequestBody OrderCreateDTO orderCreateDTO, HttpSession session) {
+    public Result<?> createOrder(@RequestBody OrderCreateDTO orderCreateDTO, HttpSession session) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         List<Order> orders = orderService.createOrder(userId, orderCreateDTO, session);
         return Result.success("订单创建成功", orders);
     }
@@ -47,8 +49,8 @@ public class OrderController {
     @Operation(summary = "获取用户订单列表")
     @GetMapping("/user")
     public Result<?> getUserOrders(
-            @RequestAttribute("userId") Long userId,
             @RequestParam(required = false) String orderNo) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         List<Order> orders = orderService.getOrdersByUserIdAndOrderNo(userId, orderNo);
         return Result.success(orders);
     }
@@ -56,10 +58,10 @@ public class OrderController {
     @Operation(summary = "分页查询订单")
     @GetMapping("/page")
     public Result<?> getOrdersByPage(
-            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "1") Integer currentPage,
             @RequestParam(defaultValue = "10") Integer size) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         Page<Order> page = orderService.getOrdersByPage(userId, status, currentPage, size);
         return Result.success(page);
     }
@@ -77,7 +79,8 @@ public class OrderController {
     
     @Operation(summary = "取消订单")
     @PutMapping("/{id}/cancel")
-    public Result<?> cancelOrder(@PathVariable Long id, @RequestParam("userId") Long userId) {
+    public Result<?> cancelOrder(@PathVariable Long id) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         boolean success = orderService.cancelOrder(id, userId);
         if (success) {
             return Result.success("取消成功");
@@ -88,7 +91,8 @@ public class OrderController {
     
     @Operation(summary = "确认收货")
     @PutMapping("/{id}/confirm")
-    public Result<?> confirmReceipt(@PathVariable Long id, @RequestParam("userId") Long userId) {
+    public Result<?> confirmReceipt(@PathVariable Long id) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         boolean success = orderService.confirmReceipt(id, userId);
         if (success) {
             return Result.success("确认收货成功");

@@ -9,6 +9,7 @@ import org.example.springboot.DTO.ServiceAppointmentDTO;
 import org.example.springboot.common.Result;
 import org.example.springboot.entity.ServiceAppointment;
 import org.example.springboot.service.ServiceAppointmentService;
+import org.example.springboot.util.JwtTokenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -67,7 +68,6 @@ public class ServiceAppointmentController {
     @Operation(summary = "分页查询所有预约列表（管理端）")
     @GetMapping("/page")
     public Result<?> getAppointmentsByPage(
-            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) String serviceName,
             @RequestParam(required = false) String petName,
             @RequestParam(required = false) String contactPhone,
@@ -76,6 +76,7 @@ public class ServiceAppointmentController {
             @RequestParam(required = false) String endDate,
             @RequestParam(defaultValue = "1") Integer currentPage,
             @RequestParam(defaultValue = "10") Integer size) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         LOGGER.info("分页查询预约列表: userId={}, serviceName={}, petName={}, contactPhone={}, status={}, " +
                 "startDate={}, endDate={}, currentPage={}, size={}", 
                 userId, serviceName, petName, contactPhone, status, startDate, endDate, currentPage, size);

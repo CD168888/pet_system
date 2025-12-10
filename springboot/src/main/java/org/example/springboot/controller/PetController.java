@@ -29,7 +29,6 @@ public class PetController {
     @GetMapping("/page")
     public Result<?> getPetsByPage(
             @RequestParam(required = false) String name,
-
             @RequestParam(required = false) String breed,
             @RequestParam(required = false) String adoptionStatus,
             @RequestParam(required = false) Long categoryId,
@@ -73,11 +72,7 @@ public class PetController {
     @Operation(summary = "获取宠物列表带用户申请状态")
     @GetMapping("/with-user-status")
     public Result<?> getPetsWithUserStatus() {
-        User currentUser = JwtTokenUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new ServiceException("用户未登录");
-        }
-        Long userId = currentUser.getId();
+        Long userId = JwtTokenUtils.getCurrentUserId();
         LOGGER.info("获取带用户申请状态的宠物列表，用户ID: {}", userId);
         List<PetWithAdoptionStatusDTO> result = petService.getPetsWithUserAdoptionStatus(userId);
         return Result.success(result);
@@ -86,11 +81,7 @@ public class PetController {
     @Operation(summary = "获取宠物详情带用户申请状态")
     @GetMapping("/{id}/with-user-status")
     public Result<?> getPetWithUserStatus(@PathVariable Long id) {
-        User currentUser = JwtTokenUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new ServiceException("用户未登录");
-        }
-        Long userId = currentUser.getId();
+        Long userId = JwtTokenUtils.getCurrentUserId();
         LOGGER.info("获取带用户申请状态的宠物详情，宠物ID: {}, 用户ID: {}", id, userId);
         PetWithAdoptionStatusDTO result = petService.getPetWithUserAdoptionStatus(id, userId);
         return Result.success(result);

@@ -7,6 +7,7 @@ import jakarta.annotation.Resource;
 import org.example.springboot.common.Result;
 import org.example.springboot.entity.OrderReturn;
 import org.example.springboot.service.OrderReturnService;
+import org.example.springboot.util.JwtTokenUtils;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "订单退货接口")
@@ -52,10 +53,10 @@ public class OrderReturnController {
     @Operation(summary = "分页查询退货申请")
     @GetMapping("/page")
     public Result<?> getReturnsByPage(
-            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "1") Integer currentPage,
             @RequestParam(defaultValue = "10") Integer size) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         Page<OrderReturn> page = orderReturnService.getReturnsByPage(userId, status, currentPage, size);
         return Result.success(page);
     }
