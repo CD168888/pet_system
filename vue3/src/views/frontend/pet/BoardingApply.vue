@@ -1,26 +1,23 @@
 <template>
   <div class="boarding-apply-page">
-    <!-- 页面装饰 -->
-    <div class="page-decoration">
-      <div class="decoration-bubble bubble-1"></div>
-      <div class="decoration-bubble bubble-2"></div>
-      <div class="decoration-bubble bubble-3"></div>
-      <div class="decoration-paw paw-1">🐾</div>
-      <div class="decoration-paw paw-2">🐾</div>
-    </div>
-    
     <div class="boarding-content">
-      <div class="breadcrumb-container">
-        <div class="back-button" @click="goBack">
-          <el-icon><ArrowLeft /></el-icon>
-          返回
-        </div>
+      <div class="page-banner">
+        <div class="container">
+          <div class="breadcrumb">
+            <el-breadcrumb separator="/">
+              <el-breadcrumb-item><a href="/">首页</a></el-breadcrumb-item>
+              <el-breadcrumb-item>申请寄养</el-breadcrumb-item>
+            </el-breadcrumb>
+          </div>
+        <h1>宠物寄养申请</h1>
+        <p>为您的爱宠提供专业舒适的寄养服务</p>
       </div>
-      
-      <div class="page-header">
-        <h1 class="page-title">申请寄养服务</h1>
-        <p class="page-subtitle">填写信息，为您的爱宠申请舒适的寄养环境</p>
+      <div class="banner-decoration">
+        <div class="decoration-paw paw-1">🐾</div>
+        <div class="decoration-paw paw-2">🐾</div>
+        <div class="decoration-paw paw-3">🐾</div>
       </div>
+    </div>
       
       <div class="boarding-main">
         <div class="booking-grid">
@@ -502,8 +499,6 @@ const handleCascaderChange = (categoryId) => {
 <style lang="scss" scoped>
 .boarding-apply-page {
   min-height: 100vh;
-  background-color: #FFF9E6;
-  padding: 30px 20px 60px;
   position: relative;
   overflow: hidden;
 }
@@ -565,14 +560,14 @@ const handleCascaderChange = (categoryId) => {
 }
 
 .boarding-content {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
-}
+  padding: 0;
 
 .breadcrumb-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto 20px;
   position: relative;
   z-index: 2;
@@ -600,22 +595,88 @@ const handleCascaderChange = (categoryId) => {
   }
 }
 
-.page-header {
+.page-banner {
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  padding: 60px 40px;
   text-align: center;
-  margin-bottom: 30px;
+  position: relative;
+  margin: 0 0 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
   
-  .page-title {
-    margin: 0;
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+    
+    .breadcrumb {
+      margin-bottom: 20px;
+      justify-content: center;
+      
+      .el-breadcrumb__item a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        
+        &:hover {
+          color: white;
+        }
+      }
+    }
+  }
+  
+  h1 {
     font-family: 'Nunito Sans', sans-serif;
-    font-size: 32px;
-    color: #683e35;
+    font-size: 42px;
+    color: white;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
-  .page-subtitle {
-    margin: 10px 0 0;
-    color: #666;
-    font-size: 16px;
+  p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.9);
+    opacity: 0.9;
   }
+  
+  .banner-decoration {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  
+  .decoration-paw {
+      position: absolute;
+      font-size: 28px;
+      opacity: 0.2;
+      color: white;
+      
+      &.paw-1 {
+        top: 15%;
+        right: 20%;
+        animation: rotate 25s linear infinite, float 6s ease-in-out infinite;
+      }
+      
+      &.paw-2 {
+        bottom: 25%;
+        left: 15%;
+        animation: rotate 20s linear infinite reverse, float 8s ease-in-out infinite;
+        font-size: 22px;
+      }
+      
+      &.paw-3 {
+        top: 60%;
+        right: 30%;
+        animation: rotate 30s linear infinite, float 10s ease-in-out infinite;
+        font-size: 20px;
+      }
+    }
 }
 
 .boarding-main {
@@ -623,42 +684,50 @@ const handleCascaderChange = (categoryId) => {
 }
 
 .booking-grid {
-  display: flex;
-  gap: 25px;
-  margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 30px;
+  margin: 0 auto 40px;
+  max-width: 1400px;
+  padding: 0 20px;
   
   @media (max-width: 992px) {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
   
-  .service-info {
-    flex: 1;
-    background: white;
-    border-radius: 12px;
+  .service-info, .booking-form {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
     padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     
     &:hover {
-      transform: translateY(-5px);
+      transform: translateY(-3px);
+      box-shadow: 0 15px 20px rgba(0, 0, 0, 0.15);
     }
     
     .section-title {
       font-family: 'Nunito Sans', sans-serif;
-      font-size: 20px;
+      font-size: 22px;
       color: #683e35;
       margin: 0 0 20px;
       position: relative;
-      padding-left: 15px;
+      padding-left: 25px;
+      font-weight: 600;
       
       &::before {
         content: '';
         position: absolute;
         left: 0;
-        top: 0;
-        bottom: 0;
+        top: 50%;
+        transform: translateY(-50%);
         width: 4px;
-        background: #FFB6C1;
+        height: 22px;
+        background: linear-gradient(135deg, #FFB6C1 0%, #FF92B2 100%);
         border-radius: 2px;
       }
     }
@@ -757,27 +826,25 @@ const handleCascaderChange = (categoryId) => {
   
   .booking-form {
     flex: 1;
-    background: white;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     
     h2 {
       font-family: 'Nunito Sans', sans-serif;
-      font-size: 20px;
+      font-size: 22px;
       color: #683e35;
       margin: 0 0 25px;
       position: relative;
-      padding-left: 15px;
+      padding-left: 25px;
+      font-weight: 600;
       
       &::before {
         content: '';
         position: absolute;
         left: 0;
-        top: 0;
-        bottom: 0;
+        top: 50%;
+        transform: translateY(-50%);
         width: 4px;
-        background: #FFB6C1;
+        height: 22px;
+        background: linear-gradient(135deg, #FFB6C1 0%, #FF92B2 100%);
         border-radius: 2px;
       }
     }
@@ -791,19 +858,22 @@ const handleCascaderChange = (categoryId) => {
       margin-top: 30px;
       display: flex;
       justify-content: center;
-      gap: 15px;
+      gap: 20px;
     }
   }
 }
 
 .notice-card {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 248, 225, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 182, 193, 0.2);
+  border-radius: 24px;
   padding: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  margin-bottom: 30px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  margin: 0 auto 30px;
+  max-width: 1200px;
   border-left: 4px solid #E6A23C;
-  background-color: rgba(255, 248, 225, 0.5);
   
   h3 {
     color: #F57C00;
@@ -834,41 +904,61 @@ const handleCascaderChange = (categoryId) => {
 }
 
 .submit-btn {
-  min-width: 120px;
-  height: 40px;
-  background-color: #FFA726;
-  color: white;
+  min-width: 200px;
+  height: 50px;
+  font-size: 16px;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  font-weight: 600;
   border: none;
-  border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
   
   &:hover:not(:disabled) {
     transform: translateY(-3px);
-    background-color: darken(#FFA726, 5%);
-    box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
+    box-shadow: 0 8px 25px rgba(255, 167, 38, 0.4);
   }
   
   &:disabled {
     background-color: #f0f0f0;
     color: #999;
+    box-shadow: none;
   }
   
   .el-icon {
-    margin-right: 5px;
+    margin-right: 8px;
+    font-size: 18px;
   }
 }
 
 .reset-btn {
-  min-width: 120px;
-  height: 40px;
-  color: #666;
-  border-color: #dcdfe6;
-  border-radius: 8px;
+  min-width: 200px;
+  height: 50px;
+  font-size: 16px;
+  border-radius: 25px;
   transition: all 0.3s ease;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: white;
+  color: #683e35;
+  border: 2px solid #683e35;
   
   &:hover, &:focus {
-    color: #683e35;
-    border-color: #683e35;
+    color: white;
+    background-color: #683e35;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   }
 }
 
@@ -917,6 +1007,15 @@ const handleCascaderChange = (categoryId) => {
   }
 }
 
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 // 表单样式覆盖
 :deep(.el-input__wrapper), :deep(.el-textarea__wrapper) {
   box-shadow: 0 0 0 1px #dcdfe6 inset;
@@ -931,21 +1030,98 @@ const handleCascaderChange = (categoryId) => {
 }
 
 // 响应式调整
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
+  // 移除1200px断点处的max-width限制，保持与PetList.vue一致的响应式策略
+}
+
+@media (max-width: 992px) {
   .boarding-apply-page {
-    padding: 20px 16px;
+    padding: 20px 0 60px;
   }
   
-  .page-header {
-    .page-title {
-      font-size: 24px;
+  .page-banner {
+    padding: 60px 20px;
+    margin: 0 15px 30px;
+    
+    h1 {
+      font-size: 32px;
+    }
+    
+    p {
+      font-size: 16px;
     }
   }
   
   .booking-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    padding: 0 15px;
+    
+    .service-info, .booking-form {
+      padding: 25px;
+    }
+  }
+  
+  .notice-card {
+    margin: 0 15px 30px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-banner {
+    padding: 50px 20px;
+    margin: 0 10px 25px;
+    
+    h1 {
+      font-size: 28px;
+    }
+    
+    p {
+      font-size: 14px;
+    }
+  }
+  
+  .booking-grid {
+    padding: 0 10px;
+    
     .service-info, .booking-form {
       padding: 20px;
     }
   }
+  
+  .notice-card {
+    margin: 0 10px 25px;
+    padding: 18px;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-banner {
+    padding: 40px 16px;
+    margin: 0 10px 20px;
+    
+    h1 {
+      font-size: 24px;
+    }
+    
+    p {
+      font-size: 13px;
+    }
+  }
+  
+  .booking-grid {
+    gap: 20px;
+    
+    .service-info, .booking-form {
+      padding: 18px;
+    }
+  }
+  
+  .notice-card {
+    margin: 0 10px 20px;
+    padding: 16px;
+  }
+}
 }
 </style> 
