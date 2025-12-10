@@ -749,6 +749,22 @@ onMounted(() => {
     .quantity-input {
       width: 140px;
       
+      :deep(.el-input-number) {
+        width: auto;
+        min-width: 140px;
+        display: inline-flex;
+        align-items: center;
+      }
+      
+      :deep(.el-input__inner) {
+        width: auto;
+        min-width: 80px;
+        max-width: 120px;
+        text-align: center;
+        flex: 1;
+        padding: 0 10px;
+      }
+      
       :deep(.el-input-number__decrease),
       :deep(.el-input-number__increase) {
         background-color: #f9f9f9;
