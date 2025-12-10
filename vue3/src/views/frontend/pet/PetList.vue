@@ -1,8 +1,16 @@
 <template>
   <div class="pet-list-page">
     <div class="page-banner">
-      <h1>寻找你的伴侣</h1>
-      <p>每一只宠物都在等待一个温暖的家</p>
+      <div class="container">
+        <div class="breadcrumb">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>宠物领养</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+        <h1>寻找你的伴侣</h1>
+        <p>每一只宠物都在等待一个温暖的家</p>
+      </div>
       <div class="banner-decoration">
         <div class="decoration-paw paw-1">🐾</div>
         <div class="decoration-paw paw-2">🐾</div>
@@ -15,7 +23,7 @@
         <div class="filter-card">
           <div class="filter-header">
             <h3>寻找宠物</h3>
-            <div class="filter-icon">🔍</div>
+            <div class="filter-icon"><el-icon><Search /></el-icon></div>
           </div>
           
           <el-form :model="searchForm" label-width="70px" class="search-form">
@@ -76,7 +84,7 @@
         </div>
 
         <div class="filter-tip">
-          <div class="tip-icon">💡</div>
+          <div class="tip-icon"><el-icon><Bulb /></el-icon></div>
           <div class="tip-text">我们的宠物全部接受过健康检查和疫苗接种</div>
         </div>
         
@@ -115,11 +123,11 @@
                 <div class="pet-overlay">
                   <div class="pet-quick-info">
                     <div class="quick-info-item">
-                      <span class="quick-icon">🔍</span>
+                      <span class="quick-icon"><el-icon><Search /></el-icon></span>
                       <span>{{ pet.age }}岁</span>
                     </div>
                     <div class="quick-info-item">
-                      <span class="quick-icon">{{ pet.gender === '公' ? '♂️' : '♀️' }}</span>
+                      <span class="quick-icon"><el-icon v-if="pet.gender === '公'"><Male /></el-icon><el-icon v-else><Female /></el-icon></span>
                       <span>{{ pet.gender }}</span>
                     </div>
                   </div>
@@ -134,13 +142,13 @@
                 </div>
                 <div class="pet-meta">
                   <div class="meta-item">
-                    <span class="meta-icon">🔍</span>
+                    <span class="meta-icon"><el-icon><Search /></el-icon></span>
                     <span>{{ pet.age }}岁</span>
                   </div>
                   <div class="meta-item">
-                    <span class="meta-icon">{{ pet.gender === '公' ? '♂️' : '♀️' }}</span>
-                    <span>{{ pet.gender }}</span>
-                  </div>
+                      <span class="meta-icon"><el-icon v-if="pet.gender === '公'"><Male /></el-icon><el-icon v-else><Female /></el-icon></span>
+                      <span>{{ pet.gender }}</span>
+                    </div>
                 </div>
                 <div class="pet-button">
                   <span>了解更多</span>
@@ -335,6 +343,29 @@ onMounted(() => {
   position: relative;
   margin-bottom: 40px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+    
+    .breadcrumb {
+      margin-bottom: 20px;
+      justify-content: center;
+      
+      .el-breadcrumb__item a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        
+        &:hover {
+          color: white;
+        }
+      }
+    }
+  }
   
   h1 {
     font-family: 'Nunito Sans', sans-serif;
@@ -397,6 +428,8 @@ onMounted(() => {
   display: flex;
   gap: 25px;
   padding: 0 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .filter-section {
@@ -525,22 +558,42 @@ onMounted(() => {
             border-radius: 12px;
             font-weight: 600;
             font-size: 14px;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
           }
           
           .search-btn {
-            background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
             border: none;
             color: white;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+            
+            &::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: -100%;
+              width: 100%;
+              height: 100%;
+              background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+              transition: all 0.5s ease;
+              z-index: -1;
+            }
             
             &:hover {
-              transform: translateY(-2px);
-              box-shadow: 0 6px 16px rgba(255, 167, 38, 0.4);
+              transform: translateY(-3px);
+              box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+            }
+            
+            &:hover::before {
+              left: 100%;
             }
             
             &:active {
-              transform: translateY(0);
+              transform: translateY(-1px);
             }
           }
           
@@ -549,10 +602,31 @@ onMounted(() => {
             border: 1px solid rgba(255, 182, 193, 0.3);
             color: #6E4C1E;
             
+            &::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: -100%;
+              width: 100%;
+              height: 100%;
+              background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+              transition: all 0.5s ease;
+              z-index: -1;
+            }
+            
             &:hover {
               background: rgba(255, 182, 193, 0.1);
               border-color: rgba(255, 182, 193, 0.5);
-              transform: translateY(-2px);
+              transform: translateY(-3px);
+              box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            }
+            
+            &:hover::before {
+              left: 100%;
+            }
+            
+            &:active {
+              transform: translateY(-1px);
             }
           }
         }
@@ -669,11 +743,11 @@ onMounted(() => {
 }
 
 .pet-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
-  border: 1px solid rgba(255, 182, 193, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   cursor: pointer;
@@ -691,8 +765,42 @@ onMounted(() => {
     }
     
     .pet-button {
-      background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+      background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
       color: white;
+      border-radius: 12px;
+      padding: 8px 16px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      display: inline-block;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: all 0.5s ease;
+        z-index: -1;
+      }
+      
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+      }
+      
+      &:hover::before {
+        left: 100%;
+      }
+      
+      &:active {
+        transform: translateY(-1px);
+      }
       
       .button-icon {
         transform: translateX(5px);
@@ -995,6 +1103,7 @@ onMounted(() => {
   .page-banner {
     margin: 20px;
     padding: 60px 20px;
+    border-radius: 24px;
     
     h1 {
       font-size: 32px;
@@ -1029,6 +1138,7 @@ onMounted(() => {
 @media (max-width: 576px) {
   .page-banner {
     padding: 40px 20px;
+    border-radius: 24px;
     
     h1 {
       font-size: 28px;
