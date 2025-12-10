@@ -17,11 +17,23 @@ import { useUserStore } from './store/user'
 // 添加全局错误处理器来抑制ResizeObserver警告
 const originalConsoleError = console.error
 console.error = (...args) => {
-  if (args[0] && args[0].includes && args[0].includes('ResizeObserver loop')) {
+  // 更全面地捕获ResizeObserver相关错误
+  const errorMessage = args[0] || ''
+  if (
+    (typeof errorMessage === 'string' && errorMessage.includes('ResizeObserver loop')) ||
+    (typeof errorMessage === 'string' && errorMessage.includes('ResizeObserver loop completed with undelivered notifications'))
+  ) {
     return
   }
   originalConsoleError(...args)
 }
+
+// 同时处理window的error事件
+window.addEventListener('error', (event) => {
+  if (event.message && event.message.includes('ResizeObserver loop')) {
+    event.preventDefault()
+  }
+}, true)
 
 const app = createApp(App)
 const pinia = createPinia()
