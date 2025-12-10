@@ -28,7 +28,10 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * 订单服务实现类
@@ -47,6 +50,8 @@ public class OrderService {
     private ShippingMapper shippingMapper;
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private CartService cartService;
     
     @Value("${order.payment.timeout:15}")
     private Integer orderPaymentTimeout; // 默认15分钟
@@ -55,10 +60,11 @@ public class OrderService {
      * 创建订单
      * @param userId 用户ID
      * @param orderCreateDTO 订单创建DTO
+     * @param session HTTP会话
      * @return 订单对象
      */
     @Transactional
-    public Order createOrder(Long userId, OrderCreateDTO orderCreateDTO) {
+    public List<Order> createOrder(Long userId, OrderCreateDTO orderCreateDTO, HttpSession session) {
         if (orderCreateDTO.getItems() == null || orderCreateDTO.getItems().isEmpty()) {
             throw new ServiceException("订单商品不能为空");
         }
@@ -74,11 +80,10 @@ public class OrderService {
             throw new ServiceException("联系电话不能为空");
         }
         
-        // 2. 生成订单号
-        String orderNo = generateOrderNo();
-        
         // 3. 遍历购物车项，创建订单
         List<CartItemDTO> items = orderCreateDTO.getItems();
+        List<String> orderNos = new ArrayList<>(); // 存储所有创建的订单号
+        
         for (CartItemDTO item : items) {
             // 检查商品是否存在
             Product product = productService.getProductById(item.getProductId());
@@ -95,6 +100,10 @@ public class OrderService {
             if (product.getStock() < item.getQuantity()) {
                 throw new ServiceException("商品库存不足：" + product.getName());
             }
+            
+            // 为每个商品生成独立的订单号
+            String orderNo = generateOrderNo();
+            orderNos.add(orderNo);
             
             // 创建订单对象
             Order order = new Order();
@@ -132,12 +141,18 @@ public class OrderService {
             }
         }
         
-        // 查询刚创建的订单
+        // 查询所有创建的订单
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Order::getOrderNo, orderNo);
+        queryWrapper.in(Order::getOrderNo, orderNos);
         queryWrapper.eq(Order::getUserId, userId);
-        queryWrapper.last("LIMIT 1");
-        return orderMapper.selectOne(queryWrapper);
+        queryWrapper.orderByDesc(Order::getCreateTime);
+        
+        // 创建订单成功后，删除购物车中的对应商品
+        for (CartItemDTO item : items) {
+            cartService.removeFromCart(session, item.getProductId());
+        }
+        
+        return orderMapper.selectList(queryWrapper);
     }
     
     /**
@@ -337,9 +352,10 @@ public class OrderService {
      * @return 订单号
      */
     private String generateOrderNo() {
-        // 订单号格式：时间戳 + 随机4位数
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        String random = UUID.randomUUID().toString().substring(0, 4);
+        // 订单号格式：时间戳（毫秒级） + 随机6位数
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+        // 使用UUID的更多位来减少重复概率
+        String random = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 6);
         return timestamp + random;
     }
     

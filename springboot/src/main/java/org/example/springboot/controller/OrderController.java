@@ -11,6 +11,7 @@ import org.example.springboot.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,9 +32,9 @@ public class OrderController {
     
     @Operation(summary = "创建订单")
     @PostMapping
-    public Result<?> createOrder(@RequestParam("userId") Long userId, @RequestBody OrderCreateDTO orderCreateDTO) {
-        Order order = orderService.createOrder(userId, orderCreateDTO);
-        return Result.success("订单创建成功", order);
+    public Result<?> createOrder(@RequestParam("userId") Long userId, @RequestBody OrderCreateDTO orderCreateDTO, HttpSession session) {
+        List<Order> orders = orderService.createOrder(userId, orderCreateDTO, session);
+        return Result.success("订单创建成功", orders);
     }
     
     @Operation(summary = "根据ID获取订单")
