@@ -10,17 +10,26 @@
     </div>
     
     <div class="appointments-content">
-      <div class="page-header">
-        <h1 class="page-title">我的训练预约</h1>
-        <p class="page-subtitle">查看和管理您的训练预约记录</p>
-      </div>
-      
-      <div class="breadcrumb-container">
+    <div class="page-banner">
+      <div class="breadcrumb">
+        <el-breadcrumb separator="/">
+          <el-breadcrumb-item><a href="/">首页</a></el-breadcrumb-item>
+          <el-breadcrumb-item><a href="/training">训练课程</a></el-breadcrumb-item>
+          <el-breadcrumb-item>我的训练预约</el-breadcrumb-item>
+        </el-breadcrumb>
         <div class="back-button" @click="goToTrainingList">
           <el-icon><ArrowLeft /></el-icon>
           返回课程列表
         </div>
       </div>
+      <h1 class="page-title">我的训练预约</h1>
+      <p class="page-subtitle">查看和管理您的训练预约记录</p>
+      <div class="banner-decoration">
+        <div class="decoration-paw">🐾</div>
+        <div class="decoration-paw">🐾</div>
+        <div class="decoration-paw">🐾</div>
+      </div>
+    </div>
       
       <el-card shadow="never" class="appointments-card" v-loading="loading">
         <template #header>
@@ -512,58 +521,122 @@ onMounted(() => {
   margin: 0 auto;
 }
 
-.page-header {
+.page-banner {
+  position: relative;
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  padding: 60px 40px;
+  overflow: hidden;
   text-align: center;
-  margin-bottom: 30px;
+  z-index: 1;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
   
-  .page-title {
-    margin: 0;
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 32px;
+  .breadcrumb {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    
+    :deep(.el-breadcrumb__item) {
+      font-size: 14px;
+      color: #6E4C1E;
+      opacity: 0.8;
+      
+      a {
+        color: #6E4C1E;
+        text-decoration: none;
+        
+        &:hover {
+          color: #683e35;
+        }
+      }
+    }
+    
+    :deep(.el-breadcrumb__separator) {
+      color: #6E4C1E;
+      opacity: 0.5;
+    }
+    
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      color: #683e35;
+      transition: all 0.3s ease;
+      
+      .el-icon {
+        margin-right: 8px;
+      }
+      
+      &:hover {
+        transform: translateX(-3px);
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+  
+  h1.page-title {
+    font-size: 36px;
     color: #683e35;
+    margin-bottom: 10px;
+    margin: 0;
   }
   
   .page-subtitle {
-    margin: 10px 0 0;
-    color: #666;
     font-size: 16px;
+    color: #6E4C1E;
+    opacity: 0.8;
+    margin: 10px 0 0;
   }
-}
-
-.breadcrumb-container {
-  margin-bottom: 20px;
   
-  .back-button {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 16px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    cursor: pointer;
-    font-weight: 500;
-    color: #683e35;
-    transition: all 0.3s ease;
+  .banner-decoration {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
     
-    .el-icon {
-      margin-right: 8px;
-    }
-    
-    &:hover {
-      transform: translateX(-3px);
-      background-color: #FFF0F0;
+    .decoration-paw {
+      font-size: 40px;
+      opacity: 0.2;
     }
   }
 }
 
 .appointments-card {
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 182, 193, 0.3);
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
   margin-bottom: 30px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  
+  &:hover {
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-2px);
+    border-color: rgba(255, 182, 193, 0.5);
+  }
   
   :deep(.el-card__header) {
     padding: 20px 25px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  :deep(.el-card__body) {
+    padding: 25px;
   }
 }
 
@@ -922,19 +995,39 @@ onMounted(() => {
   }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
+@media (max-width: 1024px) {
+  .page-banner {
+    padding: 40px 30px;
+    
+    h1.page-title {
+      font-size: 30px !important;
+    }
+    
+    .breadcrumb {
+      flex-direction: column;
+      gap: 15px;
+      
+      .back-button {
+        margin-top: 10px;
+      }
+    }
   }
-  50% {
-    transform: translateY(-15px);
+  
+  .appointments-card {
+    margin: 0 10px 30px;
+    
+    :deep(.el-card__body) {
+      padding: 20px;
+    }
   }
 }
 
-@media screen and (max-width: 768px) {
-  .page-header {
-    .page-title {
-      font-size: 26px;
+@media (max-width: 768px) {
+  .page-banner {
+    padding: 30px 20px;
+    
+    h1.page-title {
+      font-size: 26px !important;
     }
     
     .page-subtitle {
@@ -942,6 +1035,29 @@ onMounted(() => {
     }
   }
   
+  .appointments-content {
+    padding: 0;
+  }
+  
+  .appointments-card {
+    margin: 0 10px 20px;
+    border-radius: 16px;
+    
+    :deep(.el-card__header) {
+      padding: 15px 20px;
+    }
+    
+    :deep(.el-card__body) {
+      padding: 15px;
+    }
+  }
+  
+  .card-header h2 {
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width: 768px) {
   .appointment-info-card {
     .info-descriptions {
       :deep(.el-descriptions) {
