@@ -6,18 +6,27 @@
       <div class="paw" v-for="i in 4" :key="`paw-${i}`"></div>
     </div>
 
-    <div class="appointments-content">
-      <div class="breadcrumb">
-        <div class="back-button" @click="goToServiceList">
-          <el-icon><ArrowLeft /></el-icon>
-          <span>返回服务列表</span>
+    <!-- 页面Banner -->
+    <div class="page-banner">
+      <div class="container">
+        <div class="breadcrumb">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item @click="$router.push('/service')">服务预约</el-breadcrumb-item>
+            <el-breadcrumb-item>我的服务预约</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+        <h1 class="page-title">我的服务预约</h1>
+        <p class="page-subtitle">在这里管理您的所有服务预约记录</p>
+        <div class="banner-decoration">
+          <div class="decoration-paw paw-1">🐾</div>
+          <div class="decoration-paw paw-2">🐾</div>
+          <div class="decoration-paw paw-3">🐾</div>
         </div>
       </div>
+    </div>
 
-      <div class="page-header">
-        <h1>我的服务预约</h1>
-        <p>在这里管理您的所有服务预约记录</p>
-      </div>
+    <div class="appointments-content">
 
       <el-card class="appointments-card" shadow="hover" v-loading="loading">
         <div class="filter-section">
@@ -331,8 +340,62 @@ onMounted(() => {
   position: relative;
   min-height: calc(100vh - 60px);
   padding: 40px 20px;
-  background-color: #fdf7f2;
   overflow: hidden;
+
+  .page-banner {
+    position: relative;
+    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+    padding: 60px 40px;
+    overflow: hidden;
+    text-align: center;
+    z-index: 1;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    
+    .breadcrumb {
+      margin-bottom: 20px;
+      
+      :deep(.el-breadcrumb__item) {
+        font-size: 14px;
+        color: #6E4C1E;
+        opacity: 0.8;
+      }
+      
+      :deep(.el-breadcrumb__separator) {
+        color: #6E4C1E;
+        opacity: 0.5;
+      }
+    }
+    
+    h1.page-title {
+      margin: 0;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 36px;
+      color: #683e35;
+      margin-bottom: 10px;
+    }
+    
+    .page-subtitle {
+      font-size: 16px;
+      color: #6E4C1E;
+      opacity: 0.8;
+      margin: 0;
+    }
+    
+    .banner-decoration {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-around;
+      .decoration-paw {
+        font-size: 40px;
+        opacity: 0.2;
+      }
+    }
+  }
 
   .page-decoration {
     position: absolute;
@@ -424,54 +487,23 @@ onMounted(() => {
     max-width: 1200px;
     margin: 0 auto;
 
-    .breadcrumb {
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-      color: #666;
 
-      .back-button {
-        display: inline-flex;
-        align-items: center;
-        margin-right: 10px;
-        color: #FFA500;
-        cursor: pointer;
-        transition: color 0.3s;
-
-        &:hover {
-          color: #FF8C00;
-        }
-
-        i {
-          margin-right: 5px;
-        }
-      }
-    }
-
-    .page-header {
-      text-align: center;
-      margin-bottom: 30px;
-
-      h1 {
-        font-size: 32px;
-        color: #FF8C00;
-        margin-bottom: 10px;
-        font-weight: 600;
-      }
-
-      p {
-        font-size: 16px;
-        color: #666;
-      }
-    }
 
     .appointments-card {
-      background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-      padding: 24px;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
       margin-bottom: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 182, 193, 0.3);
+      padding: 25px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15) !important;
+        transform: translateY(-2px);
+      }
 
       .filter-section {
         display: flex;
@@ -507,8 +539,11 @@ onMounted(() => {
 
       .appointment-card {
         position: relative;
-        background-color: white;
-        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 182, 193, 0.2);
+        border-radius: 16px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         padding: 20px;
         transition: transform 0.3s, box-shadow 0.3s;
@@ -516,7 +551,7 @@ onMounted(() => {
 
         &:hover {
           transform: translateY(-5px);
-          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
 
         .appointment-badge {
@@ -527,7 +562,7 @@ onMounted(() => {
           font-size: 12px;
           font-weight: 500;
           color: white;
-          border-radius: 0 12px 0 12px;
+          border-radius: 0 16px 0 16px;
 
           &.status-pending {
             background-color: #E6A23C;
@@ -635,11 +670,33 @@ onMounted(() => {
 }
 
 // 响应式调整
+@media (max-width: 1024px) {
+  .appointments-page {
+    .page-banner {
+      padding: 40px 30px;
+    }
+    
+    .page-title {
+      font-size: 30px !important;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .appointments-page {
-    padding: 20px 16px;
+    padding: 0;
+    
+    .page-banner {
+      padding: 30px 20px;
+    }
+    
+    .page-title {
+      font-size: 26px !important;
+    }
 
     .appointments-content {
+      padding: 0 15px 40px;
+      
       .page-header {
         h1 {
           font-size: 26px;
