@@ -612,8 +612,10 @@ const confirmOrder = async () => {
             // 刷新购物车
             fetchCart()
             
-            // 跳转到订单详情页
-            router.push({ name: 'OrderDetail', params: { id: res.id } })
+            // 跳转到订单详情页，传递订单号
+            if (res && res.length > 0) {
+              router.push({ name: 'OrderDetail', params: { orderNo: res[0].orderNo } })
+            }
           }
         })
       } catch (error) {
