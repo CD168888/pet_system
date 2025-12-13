@@ -2,18 +2,32 @@
   <div class="orders-page">
     <!-- 页面装饰 -->
     <div class="page-decoration">
-      <div class="decoration-bubble bubble-1"></div>
-      <div class="decoration-bubble bubble-2"></div>
-      <div class="decoration-bubble bubble-3"></div>
       <div class="decoration-paw paw-1">🐾</div>
       <div class="decoration-paw paw-2">🐾</div>
+      <div class="decoration-paw paw-3">🐾</div>
+    </div>
+    
+    <!-- 页面Banner -->
+    <div class="page-banner">
+      <div class="container">
+        <div class="breadcrumb">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item @click="$router.push('/product')">宠物物资</el-breadcrumb-item>
+            <el-breadcrumb-item>我的订单</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+        <h1 class="page-title">我的订单</h1>
+        <p class="page-subtitle">查看和管理您的所有订单</p>
+        <div class="banner-decoration">
+          <div class="decoration-paw paw-1">🐾</div>
+          <div class="decoration-paw paw-2">🐾</div>
+          <div class="decoration-paw paw-3">🐾</div>
+        </div>
+      </div>
     </div>
     
     <div class="orders-content">
-      <div class="page-header">
-        <h1 class="page-title">我的订单</h1>
-        <p class="page-subtitle">查看和管理您的所有订单</p>
-      </div>
       
       <el-card shadow="never" class="orders-card">
         <template #header>
@@ -60,7 +74,7 @@
           
           <!-- 订单列表 -->
           <div v-else class="orders-list">
-            <div v-for="order in orderList" :key="order.id" class="order-item">
+            <div v-for="order in orderList" :key="order.orderNo" class="order-item">
               <div class="order-header">
                 <div class="order-info">
                   <span class="order-no">订单号：{{ order.orderNo }}</span>
@@ -80,7 +94,7 @@
                       </span>
                     </el-tooltip>
                     <countdown-timer
-                      :order-id="order.id"
+                      :order-id="order.productList[0].id"
                       @expired="handleOrderExpired(order)"
                     />
                   </div>
@@ -88,16 +102,16 @@
               </div>
               
               <div class="order-content">
-                <div class="product-info">
+                <div v-for="product in order.productList" :key="product.id" class="product-info">
                   <el-image
-                    :src="getImageUrl(order.productImage)"
+                    :src="getImageUrl(product.productImage)"
                     fit="cover"
                     class="product-image"
-                    @click="goToProductDetail(order.productId)">
+                    @click="goToProductDetail(product.productId)">
                   </el-image>
                   <div class="product-details">
-                    <div class="product-name" @click="goToProductDetail(order.productId)">{{ order.productName }}</div>
-                    <div class="product-price">¥{{ order.price }} × {{ order.quantity }}</div>
+                    <div class="product-name" @click="goToProductDetail(product.productId)">{{ product.productName }}</div>
+                    <div class="product-price">¥{{ product.price }} × {{ product.quantity }}</div>
                   </div>
                 </div>
                 
@@ -108,13 +122,13 @@
               </div>
               
               <div class="order-footer">
-                <el-button size="small" class="detail-btn" @click="viewOrderDetail(order.id)">
+                <el-button size="small" class="detail-btn" @click="viewOrderDetail(order.orderNo)">
                   <el-icon><InfoFilled /></el-icon>
                   查看详情
                 </el-button>
                 
                 <template v-if="order.status === '待付款'">
-                  <el-button type="danger" plain size="small" class="cancel-btn" @click="cancelOrder(order.id)">
+                  <el-button type="danger" plain size="small" class="cancel-btn" @click="cancelOrder(order.productList[0].id)">
                     <el-icon><Close /></el-icon>
                     取消订单
                   </el-button>
@@ -125,7 +139,7 @@
                 </template>
                 
                 <template v-if="order.status === '待收货'">
-                  <el-button type="success" size="small" class="receive-btn" @click="confirmReceipt(order.id)">
+                  <el-button type="success" size="small" class="receive-btn" @click="confirmReceipt(order.productList[0].id)">
                     <el-icon><Check /></el-icon>
                     确认收货
                   </el-button>
@@ -207,8 +221,8 @@
           </h3>
           <div class="order-details">
             <p><span class="label">订单号：</span>{{ currentOrder?.orderNo }}</p>
-            <p><span class="label">商品：</span>{{ currentOrder?.productName }}</p>
-            <p><span class="label">数量：</span>{{ currentOrder?.quantity }}</p>
+            <p><span class="label">商品：</span>{{ currentOrder?.productList?.[0]?.productName }}</p>
+            <p><span class="label">数量：</span>{{ currentOrder?.productList?.[0]?.quantity }}</p>
             <p class="pay-amount"><span class="label">支付金额：</span><span>¥{{ currentOrder?.totalAmount }}</span></p>
           </div>
         </div>
@@ -556,7 +570,7 @@ const orderStatusOptions = [
 const fetchOrders = async () => {
   loading.value = true
   try {
-    await request.get('/order/page', {
+    await request.get('/order/merged/page', {
       status: currentStatus.value,
       currentPage: currentPage.value,
       size: pageSize.value
@@ -578,7 +592,7 @@ const handleOrderExpired = (order) => {
   ElMessage.warning('订单已超时未支付，系统将自动取消')
   
   // 调用后端API取消订单
-  request.put(`/order/${order.id}/cancel?userId=${userStore.userInfo.id}`, null, {
+  request.put(`/order/${order.productList[0].id}/cancel?userId=${userStore.userInfo.id}`, null, {
     successMsg: '订单已自动取消',
     onSuccess: () => {
       // 更新订单状态为已取消
@@ -630,8 +644,8 @@ const formatDateString = (date) => {
 }
 
 // 查看订单详情
-const viewOrderDetail = (id) => {
-  router.push({ name: 'OrderDetail', params: { id: id.toString() } })
+const viewOrderDetail = (orderNo) => {
+  router.push({ name: 'OrderDetail', params: { orderNo: orderNo } })
 }
 
 // 取消订单
@@ -670,7 +684,8 @@ const payOrder = (order) => {
 const confirmPayment = async () => {
   paying.value = true
   try {
-    await request.put(`/order/${currentOrder.value.id}/status`, null, {
+    // 使用订单号批量更新订单状态
+    await request.put(`/order/${currentOrder.value.orderNo}/status`, null, {
       params: {
         status: '待发货'
       },
@@ -682,6 +697,7 @@ const confirmPayment = async () => {
     })
   } catch (error) {
     console.error('支付失败:', error)
+    ElMessage.error('支付失败，请稍后重试')
   } finally {
     paying.value = false
   }
@@ -1071,8 +1087,7 @@ onMounted(() => {
 .orders-page {
   position: relative;
   min-height: 100vh;
-  background-color: #FFF9E6;
-  padding: 30px 20px 60px;
+  padding: 0;
   overflow: hidden;
 }
 
@@ -1085,52 +1100,89 @@ onMounted(() => {
   pointer-events: none;
   z-index: 0;
   
-  .decoration-bubble {
-    position: absolute;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
-    opacity: 0.05;
-    
-    &.bubble-1 {
-      width: 300px;
-      height: 300px;
-      top: -150px;
-      left: -100px;
-      animation: float 15s infinite ease-in-out;
-    }
-    
-    &.bubble-2 {
-      width: 200px;
-      height: 200px;
-      bottom: 10%;
-      right: -50px;
-      animation: float 18s infinite ease-in-out;
-    }
-    
-    &.bubble-3 {
-      width: 150px;
-      height: 150px;
-      top: 40%;
-      right: 10%;
-      animation: float 12s infinite ease-in-out;
-    }
-  }
-  
   .decoration-paw {
     position: absolute;
-    font-size: 40px;
+    font-size: 60px;
     opacity: 0.1;
     
     &.paw-1 {
-      top: 20%;
+      top: 10%;
       left: 5%;
       animation: float 15s infinite ease-in-out;
     }
     
     &.paw-2 {
-      bottom: 10%;
-      right: 10%;
+      top: 60%;
+      right: 15%;
       animation: float 18s infinite ease-in-out reverse;
+    }
+    
+    &.paw-3 {
+      bottom: 10%;
+      left: 20%;
+      animation: float 20s infinite ease-in-out;
+    }
+  }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.page-banner {
+  position: relative;
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  padding: 60px 40px;
+  overflow: hidden;
+  text-align: center;
+  z-index: 1;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+  
+  .breadcrumb {
+    margin-bottom: 20px;
+    
+    :deep(.el-breadcrumb__item) {
+      font-size: 14px;
+      color: #6E4C1E;
+      opacity: 0.8;
+    }
+    
+    :deep(.el-breadcrumb__separator) {
+      color: #6E4C1E;
+      opacity: 0.5;
+    }
+  }
+  
+  h1.page-title {
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 36px;
+    color: #683e35;
+    margin-bottom: 10px;
+  }
+  
+  p.page-subtitle {
+    margin: 0;
+    color: #6E4C1E;
+    opacity: 0.9;
+    font-size: 16px;
+  }
+  
+  .banner-decoration {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-around;
+    
+    .decoration-paw {
+      font-size: 40px;
+      opacity: 0.2;
     }
   }
 }
@@ -1140,34 +1192,26 @@ onMounted(() => {
   z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.page-header {
-  text-align: center;
-  margin-bottom: 30px;
-  
-  .page-title {
-    margin: 0;
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 32px;
-    color: #683e35;
-  }
-  
-  .page-subtitle {
-    margin: 10px 0 0;
-    color: #666;
-    font-size: 16px;
-  }
+  padding: 0 20px 60px;
 }
 
 .orders-card {
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
   margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 182, 193, 0.3);
   
   :deep(.el-card__header) {
-    padding: 20px 25px;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 25px;
+    border-bottom: 1px solid rgba(255, 182, 193, 0.3);
+    background: transparent;
+  }
+  
+  :deep(.el-card__body) {
+    padding: 25px;
   }
 }
 
@@ -1223,108 +1267,132 @@ onMounted(() => {
 .orders-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 30px;
 }
 
 .order-item {
-  background-color: white;
-  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  border: 1px solid rgba(255, 182, 193, 0.2);
   
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 30px rgba(255, 167, 38, 0.15);
+    border-color: rgba(255, 182, 193, 0.5);
   }
 }
 
 .order-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
+  align-items: flex-start;
+  padding: 20px;
+  margin-bottom: 25px;
   background-color: #f8f9fa;
-  border-bottom: 1px solid #ebeef5;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   
   .order-info {
     display: flex;
-    align-items: center;
-    gap: 20px;
+    flex-direction: column;
+    gap: 8px;
     
     .order-no {
-      font-weight: 600;
-      color: #333;
+      font-size: 18px;
+      font-weight: 700;
+      color: #683e35;
     }
     
     .order-time {
-      color: #909399;
       font-size: 14px;
+      color: #909399;
     }
+  }
+  
+  .order-status {
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
   }
 }
 
 .order-content {
-  padding: 20px;
+  padding: 0 20px;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  margin-bottom: 25px;
   
   .product-info {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    
-    .product-image {
-      width: 80px;
-      height: 80px;
-      border-radius: 8px;
-      object-fit: cover;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
-      cursor: pointer;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(255, 182, 193, 0.3);
       
-      &:hover {
-        transform: scale(1.05);
-      }
-    }
-    
-    .product-details {
-      margin-left: 15px;
-      
-      .product-name {
-        font-weight: 500;
-        margin-bottom: 10px;
-        color: #333;
+      .product-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
         cursor: pointer;
         
         &:hover {
-          color: #FFA726;
+          transform: scale(1.05);
         }
       }
       
-      .product-price {
-        color: #666;
-        font-size: 14px;
+      .product-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        
+        .product-name {
+          font-size: 14px;
+          color: #683e35;
+          margin-bottom: 5px;
+          line-height: 1.4;
+          font-weight: 500;
+          cursor: pointer;
+          
+          &:hover {
+            color: #FFA726;
+          }
+        }
+        
+        .product-price {
+          font-size: 16px;
+          font-weight: 600;
+          color: #FFA726;
+        }
       }
-    }
   }
   
   .order-amount {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    margin-left: 20px;
+    gap: 5px;
+    padding: 15px 20px 0 20px;
+    margin-bottom: 25px;
     
     .amount-label {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 5px;
+      font-size: 16px;
+      color: #6E4C1E;
+      font-weight: 500;
     }
     
     .amount-value {
-      color: #f56c6c;
-      font-size: 20px;
+      color: #FFA726;
+      font-size: 28px;
       font-weight: bold;
     }
   }
@@ -1333,43 +1401,58 @@ onMounted(() => {
 .order-footer {
   display: flex;
   justify-content: flex-end;
-  padding: 15px 20px;
-  background-color: white;
-  border-top: 1px solid #f0f0f0;
   gap: 10px;
+  padding: 25px;
+  border-top: 1px solid rgba(255, 182, 193, 0.3);
+  background-color: rgba(255, 255, 255, 0.5);
   
-  .detail-btn, .cancel-btn, .pay-btn, .receive-btn, .delete-btn {
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    border-radius: 20px;
+  .detail-btn, .cancel-btn, .pay-btn, .receive-btn, .delete-btn, .apply-return-btn, .view-return-btn, .view-review-btn, .write-review-btn {
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    font-weight: 600;
     
     .el-icon {
       margin-right: 5px;
     }
     
     &:hover {
-      transform: translateY(-3px);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
   }
   
-  .pay-btn {
+  .pay-btn, .receive-btn, .write-review-btn {
     background-color: #FFA726;
     border-color: #FFA726;
     
     &:hover {
-      background-color: darken(#FFA726, 5%);
-      border-color: darken(#FFA726, 5%);
-      box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+      background-color: #FB8C00;
+      border-color: #FB8C00;
+      box-shadow: 0 4px 12px rgba(255, 167, 38, 0.4);
     }
   }
   
-  .receive-btn {
-    background-color: #67C23A;
-    border-color: #67C23A;
+  .cancel-btn, .delete-btn {
+    background-color: #FFB6C1;
+    border-color: #FFB6C1;
     
     &:hover {
-      background-color: darken(#67C23A, 5%);
-      border-color: darken(#67C23A, 5%);
-      box-shadow: 0 4px 12px rgba(103, 194, 58, 0.3);
+      background-color: #FF8C94;
+      border-color: #FF8C94;
+      box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+    }
+  }
+  
+  .detail-btn, .view-return-btn, .view-review-btn, .apply-return-btn {
+    background-color: #FFEE93;
+    border-color: #FFEE93;
+    
+    &:hover {
+      background-color: #FFE082;
+      border-color: #FFE082;
+      box-shadow: 0 4px 12px rgba(255, 238, 147, 0.4);
     }
   }
 }
@@ -1593,16 +1676,18 @@ onMounted(() => {
 }
 
 .action-btn {
+  min-width: 150px;
   background-color: #FFA726;
   border-color: #FFA726;
-  border-radius: 20px;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  font-weight: 600;
   
   &:hover {
-    background-color: darken(#FFA726, 5%);
-    border-color: darken(#FFA726, 5%);
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+    background-color: #FB8C00;
+    border-color: #FB8C00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 167, 38, 0.4);
   }
   
   .el-icon {
@@ -1695,55 +1780,143 @@ onMounted(() => {
 }
 
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0);
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.03;
   }
   50% {
-    transform: translateY(-15px);
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 0.05;
+  }
+  100% {
+    transform: translateY(0px) rotate(360deg);
+    opacity: 0.03;
   }
 }
 
-@media screen and (max-width: 768px) {
-  .page-header {
-    .page-title {
-      font-size: 26px;
-    }
-    
-    .page-subtitle {
-      font-size: 14px;
-    }
+@media (max-width: 1200px) {
+  .orders-content {
+    padding: 0 20px 60px;
   }
   
-  .order-header, .order-content {
-    flex-direction: column;
-    align-items: flex-start;
+  .orders-card {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .page-banner {
+    padding: 40px 30px;
+  }
+  
+  .page-title {
+    font-size: 30px !important;
   }
   
   .order-header {
-    .order-info {
-      margin-bottom: 10px;
-    }
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
   }
   
   .order-content {
-    .order-amount {
-      margin-top: 15px;
-      margin-left: 0;
-      align-self: flex-end;
-    }
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .order-amount {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-banner {
+    padding: 30px 20px;
+  }
+  
+  .page-title {
+    font-size: 26px !important;
+  }
+  
+  .orders-content {
+    padding: 0 15px 40px;
+  }
+  
+  .order-item {
+    padding: 15px;
   }
   
   .order-footer {
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: center;
   }
   
-  .pay-dialog {
-    width: 90% !important;
-    
-    :deep(.el-dialog__body) {
-      padding: 20px;
-    }
+  .product-image {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  
+  .product-name {
+    font-size: 14px !important;
+  }
+  
+  .product-price {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-banner {
+    padding: 20px 15px;
+  }
+  
+  .page-title {
+    font-size: 22px !important;
+  }
+  
+  .page-subtitle {
+    font-size: 14px !important;
+  }
+  
+  .orders-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .status-filter {
+    width: 100% !important;
+  }
+  
+  .order-info {
+    gap: 5px !important;
+  }
+  
+  .order-no {
+    font-size: 16px !important;
+  }
+  
+  .order-time {
+    font-size: 12px !important;
+  }
+  
+  .order-status {
+    padding: 6px 16px !important;
+    font-size: 12px !important;
+  }
+  
+  .amount-value {
+    font-size: 22px !important;
+  }
+  
+  .detail-btn, .cancel-btn, .pay-btn, .receive-btn, .delete-btn, .apply-return-btn, .view-return-btn, .view-review-btn, .write-review-btn {
+    padding: 6px 16px !important;
+    font-size: 12px !important;
+  }
+  
+  .action-btn {
+    min-width: 120px !important;
   }
 }
 </style> 

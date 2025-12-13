@@ -1,32 +1,33 @@
 <template>
   <div class="order-detail-page">
-    <!-- 页面装饰元素 -->
+    <!-- 页面装饰 -->
     <div class="page-decoration">
-      <div class="decoration-bubble bubble-1"></div>
-      <div class="decoration-bubble bubble-2"></div>
-      <div class="decoration-bubble bubble-3"></div>
       <div class="decoration-paw paw-1">🐾</div>
       <div class="decoration-paw paw-2">🐾</div>
+      <div class="decoration-paw paw-3">🐾</div>
+    </div>
+    
+    <!-- 页面Banner -->
+    <div class="page-banner">
+      <div class="container">
+        <div class="breadcrumb">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item @click="$router.push('/order')">我的订单</el-breadcrumb-item>
+            <el-breadcrumb-item>订单详情</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+        <h1>订单详情</h1>
+        <p>查看订单的详细信息和物流状态</p>
+        <div class="banner-decoration">
+          <div class="decoration-paw paw-1">🐾</div>
+          <div class="decoration-paw paw-2">🐾</div>
+          <div class="decoration-paw paw-3">🐾</div>
+        </div>
+      </div>
     </div>
     
     <div class="order-detail-content">
-      <!-- 页面头部 -->
-      <div class="page-header">
-        <h1 class="page-title">订单详情</h1>
-        <p class="page-subtitle">查看订单的详细信息和物流状态</p>
-      </div>
-      
-      <!-- 面包屑导航 -->
-      <div class="breadcrumb-nav">
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item :to="{ path: '/order' }">我的订单</el-breadcrumb-item>
-          <el-breadcrumb-item>订单详情</el-breadcrumb-item>
-        </el-breadcrumb>
-        <el-button class="back-button" @click="goBack" size="small" plain>
-          <el-icon><ArrowLeft /></el-icon>返回
-        </el-button>
-      </div>
       
       <!-- 订单详情卡片 -->
       <el-card class="order-detail-card" shadow="never" v-loading="loading">
@@ -44,7 +45,7 @@
               <el-tag :type="getStatusTagType(order.status)" size="large">{{ order.status }}</el-tag>
               
               <!-- 添加支付倒计时 -->
-              <div v-if="order.status === '待付款'" class="payment-countdown">
+              <div v-if="order && order.status === '待付款'" class="payment-countdown">
                 <el-tooltip
                   :content="'支付截止时间: ' + formatDate(order.paymentDeadline)"
                   placement="top"
@@ -55,6 +56,7 @@
                   </span>
                 </el-tooltip>
                 <countdown-timer
+                  v-if="order.id"
                   :order-id="order.id"
                   @expired="handleOrderExpired"
                 />
@@ -104,7 +106,6 @@
               <el-descriptions-item label="支付时间" :span="order.paymentTime ? 1 : 2">
                 {{ order.paymentTime ? formatDate(order.paymentTime) : '暂未支付' }}
               </el-descriptions-item>
-              <el-descriptions-item v-if="order.paymentTime" label="订单备注">{{ order.remark || '无' }}</el-descriptions-item>
             </el-descriptions>
           </div>
           
@@ -144,29 +145,39 @@
               <h3>商品信息</h3>
             </div>
             
-            <div class="product-card">
-              <div class="product-info">
-                <el-image
-                  :src="getImageUrl(order.productImage)"
+            <div v-if="orders && orders.length > 0" class="product-list">
+              <div v-for="item in orders" :key="item.id" class="product-card">
+                <div class="product-info">
+                  <el-image
+                  :src="getImageUrl(item.productImage)"
                   fit="cover"
                   class="product-image"
-                  @click="viewProduct">
+                  @click="viewProduct(item.productId)">
                 </el-image>
                 <div class="product-details">
-                  <div class="product-name" @click="viewProduct">{{ order.productName }}</div>
-                  <div class="product-price">单价：¥{{ order.price }}</div>
-                  <div class="product-quantity">数量：{{ order.quantity }}</div>
+                  <div class="product-name" @click="viewProduct(item.productId)">{{ item.productName }}</div>
+                    <div class="product-price">单价：¥{{ item.price }}</div>
+                    <div class="product-quantity">数量：{{ item.quantity }}</div>
+                  </div>
+                </div>
+                <div class="product-total">
+                  <div class="product-total-item">
+                    <span>商品金额：</span>
+                    <span>¥{{ (item.price * item.quantity).toFixed(2) }}</span>
+                  </div>
                 </div>
               </div>
-              <div class="product-total">
-                <div class="product-total-item">
-                  <span>商品金额：</span>
-                  <span>¥{{ order.price * order.quantity }}</span>
+              
+              <!-- 订单总金额 -->
+              <div class="order-total">
+                <div class="order-total-item">
+                  <span>商品总金额：</span>
+                  <span>¥{{ getTotalAmount() }}</span>
                 </div>
-          
-                <div class="product-total-item order-amount">
+                
+                <div class="order-total-item order-amount">
                   <span>实付款：</span>
-                  <span>¥{{ order.totalAmount }}</span>
+                  <span>¥{{ getTotalAmount() }}</span>
                 </div>
               </div>
             </div>
@@ -263,9 +274,21 @@
           </h3>
           <div class="order-details">
             <p><span class="label">订单号：</span>{{ order?.orderNo }}</p>
-            <p><span class="label">商品：</span>{{ order?.productName }}</p>
-            <p><span class="label">数量：</span>{{ order?.quantity }}</p>
-            <p class="pay-amount"><span class="label">支付金额：</span><span>¥{{ order?.totalAmount }}</span></p>
+            <div><span class="label">商品列表：</span></div>
+            <div class="product-list">
+              <div v-for="(item, index) in orders" :key="index" class="product-item">
+                <div class="product-info">
+                  <img v-if="item.productImage" :src="getImageUrl(item.productImage)" :alt="item.productName" class="product-image" />
+                  <div class="product-details">
+                    <div class="product-name">{{ item.productName }}</div>
+                    <div class="product-quantity">数量：{{ item.quantity }}</div>
+                    <div class="product-price">单价：¥{{ (item.price || 0).toFixed(2) }}</div>
+                  </div>
+                </div>
+                <div class="product-subtotal">¥{{ ((item.price || 0) * (item.quantity || 1)).toFixed(2) }}</div>
+              </div>
+            </div>
+            <p class="pay-amount"><span class="label">支付金额：</span><span>¥{{ getTotalAmount().toFixed(2) }}</span></p>
           </div>
         </div>
         
@@ -327,32 +350,32 @@
       <div v-if="shipping" class="tracking-dialog-content">
         <el-timeline>
           <el-timeline-item
-            v-if="order.status === '已完成' || shipping.shippingStatus === '已签收'"
+            v-if="order.status === '已完成' || (shipping && shipping.shippingStatus === '已签收')"
             timestamp="签收"
             placement="top"
             type="success"
             :hollow="false">
             <h4>包裹已签收</h4>
-            <p>{{ formatDate(shipping.receiptTime) }}</p>
+            <p>{{ shipping && shipping.receiptTime ? formatDate(shipping.receiptTime) : '' }}</p>
           </el-timeline-item>
           
           <el-timeline-item
-            v-if="shipping.shippingStatus === '已退回'"
+            v-if="shipping && shipping.shippingStatus === '已退回'"
             timestamp="退回"
             placement="top"
             type="danger"
             :hollow="false">
             <h4>包裹已退回</h4>
-            <p>{{ formatDate(shipping.updateTime) }}</p>
+            <p>{{ shipping && shipping.updateTime ? formatDate(shipping.updateTime) : '' }}</p>
           </el-timeline-item>
           
           <el-timeline-item
             timestamp="运输中"
             placement="top"
             type="primary"
-            :hollow="order.status !== '待收货' || shipping.shippingStatus === '已退回'">
+            :hollow="order?.status !== '待收货' || (shipping && shipping.shippingStatus === '已退回')">
             <h4>包裹正在配送</h4>
-            <p>{{ formatDate(shipping.deliveryTime) }}</p>
+            <p>{{ shipping && shipping.deliveryTime ? formatDate(shipping.deliveryTime) : '' }}</p>
           </el-timeline-item>
           
           <el-timeline-item
@@ -360,15 +383,15 @@
             placement="top"
             type="info">
             <h4>商家已发货</h4>
-            <p>{{ formatDate(shipping.deliveryTime) }}</p>
+            <p>{{ shipping && shipping.deliveryTime ? formatDate(shipping.deliveryTime) : '' }}</p>
           </el-timeline-item>
           
           <el-timeline-item
             timestamp="待发货"
             placement="top"
-            :type="order.status === '待发货' ? 'warning' : 'info'">
+            :type="order?.status === '待发货' ? 'warning' : 'info'">
             <h4>订单已支付，等待商家发货</h4>
-            <p>{{ formatDate(order.paymentTime) }}</p>
+            <p>{{ order && order.paymentTime ? formatDate(order.paymentTime) : '' }}</p>
           </el-timeline-item>
           
           <el-timeline-item
@@ -376,7 +399,7 @@
             placement="top"
             type="info">
             <h4>订单已创建</h4>
-            <p>{{ formatDate(order.createTime) }}</p>
+            <p>{{ order && order.createTime ? formatDate(order.createTime) : '' }}</p>
           </el-timeline-item>
         </el-timeline>
         
@@ -385,8 +408,8 @@
             <el-icon><InfoFilled /></el-icon>
             快递信息
           </h3>
-          <p><strong>物流公司：</strong>{{ shipping.deliveryCompany }}</p>
-          <p><strong>物流单号：</strong>{{ shipping.trackingNo }}</p>
+          <p><strong>物流公司：</strong>{{ shipping?.deliveryCompany || '未知' }}</p>
+          <p><strong>物流单号：</strong>{{ shipping?.trackingNo || '未知' }}</p>
           <p class="tracking-note">您也可以到物流公司官网查询物流进度</p>
         </div>
       </div>
@@ -427,11 +450,12 @@ import CountdownTimer from '@/components/CountdownTimer.vue'
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
-const orderId = route.params.id
+const orderNo = route.params.orderNo
 
 // 数据定义
 const loading = ref(false)
 const order = ref(null)
+const orders = ref([]) // 存储同一个订单号下的所有商品订单
 const shipping = ref(null)
 const returnInfo = ref(null)
 const reviewInfo = ref(null)
@@ -448,34 +472,60 @@ const trackingDialogVisible = ref(false)
 const fetchOrderDetail = async () => {
   loading.value = true
   try {
-    await request.get(`/order/${orderId}`, null, {
+    // 根据订单号获取所有订单
+    await request.get(`/order/user?orderNo=${orderNo}`, null, {
       onSuccess: (res) => {
-        order.value = res
-        // 如果订单状态是待收货或已完成，查询物流信息
-        if (res.status === '待收货' || res.status === '已完成') {
-          fetchShippingInfo()
-        }
-        // 如果订单已退货，获取退货信息
-        if (res.isReturned) {
-          fetchReturnInfo()
-        }
-        // 如果订单已评价，获取评价信息
-        if (res.isReviewed) {
-          fetchReviewInfo()
+        if (res && res.length > 0) {
+          orders.value = res
+          order.value = res[0] // 使用第一个订单作为主要订单信息
+          
+          // 如果订单状态是待收货或已完成，查询物流信息
+          if (res[0].status === '待收货' || res[0].status === '已完成') {
+            fetchShippingInfo()
+          } else {
+            shipping.value = null
+          }
+          // 如果订单已退货，获取退货信息
+          if (res[0].isReturned) {
+            fetchReturnInfo()
+          } else {
+            returnInfo.value = null
+          }
+          // 如果订单已评价，获取评价信息
+          if (res[0].isReviewed) {
+            fetchReviewInfo()
+          } else {
+            reviewInfo.value = null
+          }
+        } else {
+          // 如果没有订单数据，重置所有状态
+          orders.value = []
+          order.value = null
+          shipping.value = null
+          returnInfo.value = null
+          reviewInfo.value = null
         }
       }
     })
   } catch (error) {
     console.error('获取订单详情失败:', error)
+    // 错误时重置所有数据
+    orders.value = []
+    order.value = null
+    shipping.value = null
+    returnInfo.value = null
+    reviewInfo.value = null
   } finally {
     loading.value = false
   }
 }
 
+
+
 // 获取物流信息
 const fetchShippingInfo = async () => {
   try {
-    await request.get(`/shipping/order/${orderId}`, null, {
+    await request.get(`/shipping/order/${order.value.id}`, null, {
       onSuccess: (res) => {
         shipping.value = res
       }
@@ -488,7 +538,7 @@ const fetchShippingInfo = async () => {
 // 获取退货信息
 const fetchReturnInfo = async () => {
   try {
-    await request.get(`/order/return/order/${orderId}`, null, {
+    await request.get(`/order/return/order/${order.value.id}`, null, {
       onSuccess: (res) => {
         returnInfo.value = res
       }
@@ -501,7 +551,7 @@ const fetchReturnInfo = async () => {
 // 获取评价信息
 const fetchReviewInfo = async () => {
   try {
-    await request.get(`/order/review/order/${orderId}`, null, {
+    await request.get(`/order/review/order/${order.value.id}`, null, {
       onSuccess: (res) => {
         reviewInfo.value = res
       }
@@ -549,14 +599,20 @@ const getStatusTagType = (status) => {
   }
 }
 
+// 计算订单总金额
+const getTotalAmount = () => {
+  if (!orders.value || orders.value.length === 0) return 0
+  return orders.value.reduce((total, item) => total + (item.totalAmount || 0), 0)
+}
+
 // 返回上一页
 const goBack = () => {
   router.go(-1)
 }
 
 // 查看商品详情
-const viewProduct = () => {
-  router.push({ name: 'ProductDetail', params: { id: order.value.productId } })
+const viewProduct = (productId) => {
+  router.push({ name: 'ProductDetail', params: { id: productId } })
 }
 
 // 取消订单
@@ -571,7 +627,7 @@ const cancelOrder = () => {
     }
   ).then(async () => {
     try {
-      await request.put(`/order/${orderId}/cancel?userId=${userStore.userInfo.id}`, null, {
+      await request.put(`/order/${order.value.id}/cancel?userId=${userStore.userInfo.id}`, null, {
         successMsg: '订单已取消',
         onSuccess: () => {
           fetchOrderDetail()
@@ -590,11 +646,22 @@ const payOrder = () => {
   payDialogVisible.value = true
 }
 
+// 页面加载时检查订单状态，如果是待付款则自动打开支付对话框
+onMounted(() => {
+  fetchOrderDetail()
+  // 延迟一下确保数据加载完成
+  setTimeout(() => {
+    if (orders.value && orders.value.length > 0 && orders.value[0].status === '待付款') {
+      payDialogVisible.value = true
+    }
+  }, 500)
+})
+
 // 确认支付
 const confirmPayment = async () => {
   paying.value = true
   try {
-    await request.put(`/order/${orderId}/status`, null, {
+    await request.put(`/order/${order.value.orderNo}/status`, null, {
       params: {
         status: '待发货'
       },
@@ -623,7 +690,7 @@ const confirmReceipt = () => {
     }
   ).then(async () => {
     try {
-      await request.put(`/order/${orderId}/confirm?userId=${userStore.userInfo.id}`, null, {
+      await request.put(`/order/${order.value.id}/confirm?userId=${userStore.userInfo.id}`, null, {
         successMsg: '已确认收货',
         onSuccess: () => {
           fetchOrderDetail()
@@ -657,7 +724,7 @@ const deleteOrder = () => {
     }
   ).then(async () => {
     try {
-      await request.delete(`/order/${orderId}`, {
+      await request.delete(`/order/${order.value.id}`, {
         successMsg: '订单已删除',
         onSuccess: () => {
           router.push('/order')
@@ -690,15 +757,17 @@ const handleOrderExpired = () => {
   ElMessage.warning('订单已超时未支付，系统将自动取消')
   
   // 调用后端API取消订单
-  request.put(`/order/${orderId}/cancel?userId=${userStore.userInfo.id}`, null, {
-    successMsg: '订单已自动取消',
-    onSuccess: () => {
-      // 重新获取订单信息
-      fetchOrderDetail()
-    },
-    errorMsg: '订单取消失败',
-    showError: true
-  })
+  if (order.value && order.value.id) {
+    request.put(`/order/${order.value.id}/cancel?userId=${userStore.userInfo.id}`, null, {
+      successMsg: '订单已自动取消',
+      onSuccess: () => {
+        // 重新获取订单信息
+        fetchOrderDetail()
+      },
+      errorMsg: '订单取消失败',
+      showError: true
+    })
+  }
 }
 
 // 页面加载时获取订单详情
@@ -711,9 +780,39 @@ onMounted(() => {
 .order-detail-page {
   position: relative;
   min-height: 100vh;
-  background-color: #FFF9E6;
-  padding: 30px 20px 60px;
   overflow: hidden;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.page-banner {
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  padding: 60px 40px;
+  overflow: hidden;
+  text-align: center;
+  z-index: 1;
+  border-radius: 0 0 24px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 30px;
+  
+  h1 {
+    font-size: 36px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+  }
 }
 
 .page-decoration {
@@ -725,79 +824,75 @@ onMounted(() => {
   pointer-events: none;
   z-index: 0;
   
-  .decoration-bubble {
-    position: absolute;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
-    opacity: 0.05;
-    
-    &.bubble-1 {
-      width: 300px;
-      height: 300px;
-      top: -150px;
-      left: -100px;
-      animation: float 15s infinite ease-in-out;
-    }
-    
-    &.bubble-2 {
-      width: 200px;
-      height: 200px;
-      bottom: 10%;
-      right: -50px;
-      animation: float 18s infinite ease-in-out;
-    }
-    
-    &.bubble-3 {
-      width: 150px;
-      height: 150px;
-      top: 40%;
-      right: 10%;
-      animation: float 12s infinite ease-in-out;
-    }
-  }
-  
   .decoration-paw {
     position: absolute;
-    font-size: 40px;
     opacity: 0.1;
+    animation: float 15s infinite ease-in-out;
     
     &.paw-1 {
-      top: 20%;
+      font-size: 60px;
+      top: 10%;
       left: 5%;
-      animation: float 15s infinite ease-in-out;
+      animation-delay: 0s;
     }
     
     &.paw-2 {
-      bottom: 10%;
+      font-size: 40px;
+      top: 60%;
+      right: 15%;
+      animation-delay: 3s;
+    }
+    
+    &.paw-3 {
+      font-size: 80px;
+      bottom: 15%;
+      left: 10%;
+      animation-delay: 6s;
+    }
+  }
+}
+
+.banner-decoration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  pointer-events: none;
+  
+  .decoration-paw {
+    position: absolute;
+    opacity: 0.2;
+    
+    &.paw-1 {
+      font-size: 40px;
+      bottom: -10px;
+      left: 10%;
+      transform: rotate(-20deg);
+    }
+    
+    &.paw-2 {
+      font-size: 30px;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    &.paw-3 {
+      font-size: 40px;
+      bottom: -10px;
       right: 10%;
-      animation: float 18s infinite ease-in-out reverse;
+      transform: rotate(20deg);
     }
   }
 }
 
 .order-detail-content {
-  position: relative;
-  z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.page-header {
-  text-align: center;
-  margin-bottom: 30px;
-  
-  .page-title {
-    margin: 0;
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 32px;
-    color: #683e35;
-  }
-  
-  .page-subtitle {
-    margin: 10px 0 0;
-    color: #666;
-    font-size: 16px;
-  }
+  padding: 0 20px 40px;
+  position: relative;
+  z-index: 1;
 }
 
 .breadcrumb-nav {
@@ -1145,25 +1240,80 @@ onMounted(() => {
   }
   
   .order-details {
-    p {
-      margin: 8px 0;
-      display: flex;
+      p {
+        margin: 8px 0;
+        display: flex;
+        
+        .label {
+          width: 80px;
+          color: #666;
+        }
+      }
       
-      .label {
-        width: 80px;
-        color: #666;
+      .product-list {
+        margin: 10px 0 20px 0px;
+        background: #fafafa;
+        border-radius: 8px;
+        padding: 10px;
+      }
+      
+      .product-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        margin-bottom: 8px;
+        background: white;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      
+      .product-info {
+        display: flex;
+        align-items: center;
+      }
+      
+      .product-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-right: 12px;
+        border: 1px solid #e8e8e8;
+      }
+      
+      .product-details {
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .product-name {
+        font-weight: 500;
+        margin-bottom: 4px;
+        color: #333;
+      }
+      
+      .product-quantity, .product-price {
+        font-size: 12px;
+        color: #999;
+        margin: 2px 0;
+      }
+      
+      .product-subtotal {
+        font-weight: bold;
+        color: #ff4d4f;
+        font-size: 14px;
+      }
+      
+      .pay-amount {
+        margin-top: 15px;
+        font-size: 16px;
+        color: #ff4d4f;
+        font-weight: bold;
+        text-align: right;
+        padding-right: 10px;
       }
     }
-    
-    .pay-amount {
-      font-weight: bold;
-      
-      span:last-child {
-        color: #f56c6c;
-        font-size: 20px;
-      }
-    }
-  }
 }
 
 .pay-methods {

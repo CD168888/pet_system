@@ -1,10 +1,13 @@
 package org.example.springboot.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.example.springboot.DTO.CartItemDTO;
+import org.example.springboot.DTO.MergedOrderDTO;
 import org.example.springboot.DTO.OrderCreateDTO;
 import org.example.springboot.entity.Order;
 import org.example.springboot.entity.Product;
@@ -21,17 +24,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import jakarta.servlet.http.HttpSession;
+import java.util.stream.Collectors;
 
 /**
  * 订单服务实现类
@@ -82,7 +88,9 @@ public class OrderService {
         
         // 3. 遍历购物车项，创建订单
         List<CartItemDTO> items = orderCreateDTO.getItems();
-        List<String> orderNos = new ArrayList<>(); // 存储所有创建的订单号
+        
+        // 为整个订单生成一个订单号
+        String orderNo = generateOrderNo();
         
         for (CartItemDTO item : items) {
             // 检查商品是否存在
@@ -100,10 +108,6 @@ public class OrderService {
             if (product.getStock() < item.getQuantity()) {
                 throw new ServiceException("商品库存不足：" + product.getName());
             }
-            
-            // 为每个商品生成独立的订单号
-            String orderNo = generateOrderNo();
-            orderNos.add(orderNo);
             
             // 创建订单对象
             Order order = new Order();
@@ -143,7 +147,7 @@ public class OrderService {
         
         // 查询所有创建的订单
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.in(Order::getOrderNo, orderNos);
+        queryWrapper.eq(Order::getOrderNo, orderNo);
         queryWrapper.eq(Order::getUserId, userId);
         queryWrapper.orderByDesc(Order::getCreateTime);
         
@@ -205,6 +209,49 @@ public class OrderService {
     }
 
     /**
+     * 分页查询用户订单（按订单号合并）
+     * @param userId 用户ID
+     * @param status 订单状态
+     * @param currentPage 当前页
+     * @param size 每页大小
+     * @return 分页合并后的订单列表
+     */
+    public Page<MergedOrderDTO> getMergedOrdersByPage(Long userId, String status, Integer currentPage, Integer size) {
+        // 1. 查询所有符合条件的订单
+        LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(userId != null, Order::getUserId, userId);
+        queryWrapper.eq(StringUtils.isNotBlank(status), Order::getStatus, status);
+        queryWrapper.orderByDesc(Order::getCreateTime);
+        
+        List<Order> allOrders = orderMapper.selectList(queryWrapper);
+        allOrders.forEach(this::fillOrderInfo);
+        
+        // 2. 按订单号分组
+        Map<String, List<Order>> groupedOrders = allOrders.stream()
+                .collect(Collectors.groupingBy(Order::getOrderNo));
+        
+        // 3. 转换为MergedOrderDTO列表
+        List<MergedOrderDTO> mergedOrders = groupedOrders.values().stream()
+                .map(MergedOrderDTO::fromOrders)
+                .sorted(Comparator.comparing(MergedOrderDTO::getCreateTime, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+        
+        // 4. 手动分页
+        int start = (currentPage - 1) * size;
+        int end = Math.min(start + size, mergedOrders.size());
+        List<MergedOrderDTO> pageContent = start >= mergedOrders.size() ? 
+                Collections.emptyList() : mergedOrders.subList(start, end);
+        
+        // 5. 创建分页结果
+        Page<MergedOrderDTO> page = new Page<>(currentPage, size);
+        page.setRecords(pageContent);
+        page.setTotal(mergedOrders.size());
+        page.setPages((int) Math.ceil((double) mergedOrders.size() / size));
+        
+        return page;
+    }
+
+    /**
      * 填充订单信息
      * @param order 订单实体
      */
@@ -236,15 +283,45 @@ public class OrderService {
             throw new ServiceException("订单不存在");
         }
         
-        order.setStatus(status);
-        order.setUpdateTime(LocalDateTime.now());
+        // 获取订单号
+        String orderNo = order.getOrderNo();
+        Long userId = order.getUserId();
+        
+        return updateOrderStatusByOrderNo(orderNo, userId, status);
+    }
+    
+    /**
+     * 通过订单号更新所有相关订单的状态
+     * @param orderNo 订单号
+     * @param userId 用户ID
+     * @param status 新状态
+     * @return 是否成功
+     */
+    @Transactional
+    public boolean updateOrderStatusByOrderNo(String orderNo, Long userId, String status) {
+        // 先检查订单是否存在
+        LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Order::getOrderNo, orderNo);
+        queryWrapper.eq(Order::getUserId, userId);
+        
+        List<Order> orders = orderMapper.selectList(queryWrapper);
+        if (orders == null || orders.isEmpty()) {
+            throw new ServiceException("订单不存在");
+        }
+        
+        // 根据订单号更新所有相关订单的状态
+        LambdaUpdateWrapper<Order> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Order::getOrderNo, orderNo);
+        updateWrapper.eq(Order::getUserId, userId);
+        updateWrapper.set(Order::getStatus, status);
+        updateWrapper.set(Order::getUpdateTime, LocalDateTime.now());
         
         // 如果是支付成功，设置支付时间
         if (OrderStatusEnum.PENDING_DELIVERY.getValue().equals(status)) {
-            order.setPaymentTime(LocalDateTime.now());
+            updateWrapper.set(Order::getPaymentTime, LocalDateTime.now());
         }
         
-        return orderMapper.updateById(order) > 0;
+        return orderMapper.update(null, updateWrapper) > 0;
     }
     
     /**
@@ -270,15 +347,36 @@ public class OrderService {
             throw new ServiceException("订单状态不允许取消");
         }
         
-        // 更新订单状态
-        order.setStatus(OrderStatusEnum.CANCELLED.getValue());
-        order.setUpdateTime(LocalDateTime.now());
+        // 获取订单号
+        String orderNo = order.getOrderNo();
         
-        boolean success = orderMapper.updateById(order) > 0;
+        // 根据订单号查询所有相关订单
+        LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Order::getOrderNo, orderNo);
+        queryWrapper.eq(Order::getUserId, userId);
+        List<Order> orders = orderMapper.selectList(queryWrapper);
+        
+        // 检查所有订单是否都是待付款状态
+        for (Order o : orders) {
+            if (!OrderStatusEnum.PENDING_PAYMENT.getValue().equals(o.getStatus())) {
+                throw new ServiceException("订单状态不允许取消");
+            }
+        }
+        
+        // 更新所有相关订单的状态
+        LambdaUpdateWrapper<Order> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Order::getOrderNo, orderNo);
+        updateWrapper.eq(Order::getUserId, userId);
+        updateWrapper.set(Order::getStatus, OrderStatusEnum.CANCELLED.getValue());
+        updateWrapper.set(Order::getUpdateTime, LocalDateTime.now());
+        
+        boolean success = orderMapper.update(null, updateWrapper) > 0;
         
         // 恢复商品库存
         if (success) {
-            productService.updateStock(order.getProductId(), order.getQuantity());
+            for (Order o : orders) {
+                productService.updateStock(o.getProductId(), o.getQuantity());
+            }
         }
         
         return success;
@@ -306,24 +404,48 @@ public class OrderService {
         if (!OrderStatusEnum.PENDING_RECEIPT.getValue().equals(order.getStatus())) {
             throw new ServiceException("订单状态不允许确认收货");
         }
-        // 更新发货信息状态
-        List<Shipping> shippings = shippingMapper.selectList(new LambdaQueryWrapper<Shipping>().eq(Shipping::getOrderId, id));
-        if(!shippings.isEmpty()){
-            Shipping shipping = shippings.get(0);
-
-            shipping.setShippingStatus(ShippingStatusEnum.RECEIVED.getValue());
-            shipping.setReceiptTime(LocalDateTime.now());
-            shipping.setUpdateTime(LocalDateTime.now());
-            shippingMapper.updateById(shipping);
-        }
-
-
-        // 更新订单状态
-        order.setStatus(OrderStatusEnum.COMPLETED.getValue());
-
-        order.setUpdateTime(LocalDateTime.now());
         
-        return orderMapper.updateById(order) > 0;
+        // 获取订单号
+        String orderNo = order.getOrderNo();
+        
+        // 根据订单号查询所有相关订单
+        LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Order::getOrderNo, orderNo);
+        queryWrapper.eq(Order::getUserId, userId);
+        List<Order> orders = orderMapper.selectList(queryWrapper);
+        
+        // 检查所有订单是否都是待收货状态
+        for (Order o : orders) {
+            if (!OrderStatusEnum.PENDING_RECEIPT.getValue().equals(o.getStatus())) {
+                throw new ServiceException("订单状态不允许确认收货");
+            }
+        }
+        
+        // 更新所有相关订单的状态
+        LambdaUpdateWrapper<Order> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Order::getOrderNo, orderNo);
+        updateWrapper.eq(Order::getUserId, userId);
+        updateWrapper.set(Order::getStatus, OrderStatusEnum.COMPLETED.getValue());
+        updateWrapper.set(Order::getUpdateTime, LocalDateTime.now());
+        
+        boolean success = orderMapper.update(null, updateWrapper) > 0;
+        
+        // 更新所有相关订单的发货信息状态
+        if (success) {
+            for (Order o : orders) {
+                List<Shipping> shippings = shippingMapper.selectList(new LambdaQueryWrapper<Shipping>().eq(Shipping::getOrderId, o.getId()));
+                if(!shippings.isEmpty()){
+                    Shipping shipping = shippings.get(0);
+
+                    shipping.setShippingStatus(ShippingStatusEnum.RECEIVED.getValue());
+                    shipping.setReceiptTime(LocalDateTime.now());
+                    shipping.setUpdateTime(LocalDateTime.now());
+                    shippingMapper.updateById(shipping);
+                }
+            }
+        }
+        
+        return success;
     }
     
     /**
@@ -404,49 +526,81 @@ public class OrderService {
      * 每分钟执行一次
      */
     @Scheduled(fixedRate = 60000, initialDelay = 10000)
-    @Transactional
     public void autoCloseExpiredOrders() {
         LOGGER.info("开始检查超时未支付订单...");
         
-        try {
-            // 查询所有待付款状态的订单
-            LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(Order::getStatus, OrderStatusEnum.PENDING_PAYMENT.getValue());
-            queryWrapper.lt(Order::getPaymentDeadline, LocalDateTime.now()); // 支付截止时间早于当前时间
-            
-            List<Order> expiredOrders = orderMapper.selectList(queryWrapper);
-            
-            if (expiredOrders.isEmpty()) {
-                LOGGER.info("没有超时未支付订单");
-                return;
-            }
-            
-            LOGGER.info("发现 {} 个超时未支付订单，开始自动取消", expiredOrders.size());
-            
-            for (Order order : expiredOrders) {
-                try {
-                    // 更新订单状态为已取消
-                    order.setStatus(OrderStatusEnum.CANCELLED.getValue());
-                    order.setUpdateTime(LocalDateTime.now());
-                    order.setRemark((order.getRemark() != null ? order.getRemark() + " " : "") + "系统自动取消：超时未支付");
-                    
-                    boolean updated = orderMapper.updateById(order) > 0;
-                    
-                    if (updated) {
-                        // 恢复商品库存
-                        productService.updateStock(order.getProductId(), order.getQuantity());
-                        LOGGER.info("已自动取消订单：{}", order.getOrderNo());
-                    } else {
-                        LOGGER.error("自动取消订单失败：{}", order.getOrderNo());
+        // 重试次数
+        int maxRetries = 3;
+        int retryCount = 0;
+        boolean success = false;
+        
+        while (retryCount < maxRetries && !success) {
+            try {
+                processExpiredOrders();
+                success = true;
+            } catch (CannotCreateTransactionException e) {
+                retryCount++;
+                LOGGER.warn("创建事务失败，尝试重试 ({}/{}): {}", retryCount, maxRetries, e.getMessage());
+                
+                if (retryCount >= maxRetries) {
+                    LOGGER.error("多次重试后仍无法创建事务，取消本次任务执行", e);
+                } else {
+                    try {
+                        // 重试前等待一段时间
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        LOGGER.error("线程被中断，取消本次任务执行", ie);
+                        break;
                     }
-                } catch (Exception e) {
-                    LOGGER.error("自动取消订单异常：{}", order.getOrderNo(), e);
                 }
+            } catch (Exception e) {
+                LOGGER.error("自动取消订单任务执行异常，不再重试", e);
+                break;
             }
-            
-            LOGGER.info("超时未支付订单处理完成");
-        } catch (Exception e) {
-            LOGGER.error("自动取消订单任务执行异常", e);
         }
+    }
+    
+    /**
+     * 处理过期订单的核心逻辑（事务隔离）
+     */
+    @Transactional
+    public void processExpiredOrders() {
+        // 查询所有待付款状态的订单
+        LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Order::getStatus, OrderStatusEnum.PENDING_PAYMENT.getValue());
+        queryWrapper.lt(Order::getPaymentDeadline, LocalDateTime.now()); // 支付截止时间早于当前时间
+        
+        List<Order> expiredOrders = orderMapper.selectList(queryWrapper);
+        
+        if (expiredOrders.isEmpty()) {
+            LOGGER.info("没有超时未支付订单");
+            return;
+        }
+        
+        LOGGER.info("发现 {} 个超时未支付订单，开始自动取消", expiredOrders.size());
+        
+        for (Order order : expiredOrders) {
+            try {
+                // 更新订单状态为已取消
+                order.setStatus(OrderStatusEnum.CANCELLED.getValue());
+                order.setUpdateTime(LocalDateTime.now());
+                order.setRemark((order.getRemark() != null ? order.getRemark() + " " : "") + "系统自动取消：超时未支付");
+                
+                boolean updated = orderMapper.updateById(order) > 0;
+                
+                if (updated) {
+                    // 恢复商品库存
+                    productService.updateStock(order.getProductId(), order.getQuantity());
+                    LOGGER.info("已自动取消订单：{}", order.getOrderNo());
+                } else {
+                    LOGGER.error("自动取消订单失败：{}", order.getOrderNo());
+                }
+            } catch (Exception e) {
+                LOGGER.error("自动取消订单异常：{}", order.getOrderNo(), e);
+            }
+        }
+        
+        LOGGER.info("超时未支付订单处理完成");
     }
 } 

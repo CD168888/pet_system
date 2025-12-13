@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import org.example.springboot.DTO.MergedOrderDTO;
 import org.example.springboot.DTO.OrderCreateDTO;
 import org.example.springboot.common.Result;
 import org.example.springboot.entity.Order;
@@ -66,10 +67,22 @@ public class OrderController {
         return Result.success(page);
     }
     
+    @Operation(summary = "分页查询合并后的订单")
+    @GetMapping("/merged/page")
+    public Result<?> getMergedOrdersByPage(
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "1") Integer currentPage,
+            @RequestParam(defaultValue = "10") Integer size) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
+        Page<MergedOrderDTO> page = orderService.getMergedOrdersByPage(userId, status, currentPage, size);
+        return Result.success(page);
+    }
+    
     @Operation(summary = "更新订单状态")
-    @PutMapping("/{id}/status")
-    public Result<?> updateOrderStatus(@PathVariable Long id, @RequestParam String status) {
-        boolean success = orderService.updateOrderStatus(id, status);
+    @PutMapping("/{orderNo}/status")
+    public Result<?> updateOrderStatus(@PathVariable String orderNo, @RequestParam String status) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
+        boolean success = orderService.updateOrderStatusByOrderNo(orderNo, userId, status);
         if (success) {
             return Result.success("更新成功");
         } else {

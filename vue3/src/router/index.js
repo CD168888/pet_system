@@ -130,7 +130,7 @@ const frontendRoutes = [
         meta: { title: '我的订单', requiresAuth: true }
       },
       {
-        path: 'order/:id',
+        path: 'order/:orderNo',
         name: 'OrderDetail',
         component: () => import('@/views/frontend/product/OrderDetail.vue'),
         meta: { title: '订单详情', requiresAuth: true }
