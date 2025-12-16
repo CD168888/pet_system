@@ -854,11 +854,22 @@ const handleCascaderChange = (categoryId) => {
       font-weight: 500;
     }
     
-    .form-footer {
+    :deep(.el-form .el-form-item) {
+      margin-bottom: 60px;
+    }
+    
+    :deep(.el-form-item.form-footer) {
       margin-top: 30px;
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
       gap: 20px;
+      
+      & > div {
+        display: flex;
+        justify-content: flex-end;
+        gap: 20px;
+        width: 100%;
+      }
     }
   }
 }
