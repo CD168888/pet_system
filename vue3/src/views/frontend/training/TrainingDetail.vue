@@ -1,36 +1,30 @@
 <template>
   <div class="training-detail-page">
-    <!-- 页面装饰 -->
-    <div class="page-decoration">
-      <div class="decoration-bubble bubble-1"></div>
-      <div class="decoration-bubble bubble-2"></div>
-      <div class="decoration-bubble bubble-3"></div>
+  <!-- 添加Page Banner -->
+  <div class="page-banner">
+    <div class="container">
+      <div class="breadcrumb">
+        <el-breadcrumb separator="/">
+          <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+          <el-breadcrumb-item @click="$router.push('/training')">宠物训练</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ course?.name || '训练课程详情' }}</el-breadcrumb-item>
+        </el-breadcrumb>
+      </div>
+      <h1>{{ course?.name || '训练课程详情' }}</h1>
+      <p>{{ course?.category || '训练课程详情页' }}</p>
+    </div>
+    <div class="banner-decoration">
       <div class="decoration-paw paw-1">🐾</div>
       <div class="decoration-paw paw-2">🐾</div>
+      <div class="decoration-paw paw-3">🐾</div>
     </div>
-    
-    <div class="training-content" v-loading="loading">
-      <div class="breadcrumb-container">
-        <div class="back-button" @click="goBack">
-          <el-icon><ArrowLeft /></el-icon>
-          返回
-        </div>
-      </div>
+  </div>
+  
+  <div class="training-content" v-loading="loading">
       
       <div v-if="!loading && course" class="course-detail-container">
         <!-- 课程头部信息 -->
-        <div class="course-header-section">
-          <div class="course-header">
-            <h1 class="course-name">{{ course.name }}</h1>
-            <el-tag class="status-tag" :type="course.status === 1 ? 'success' : 'danger'">
-              {{ course.status === 1 ? '可预约' : '停用' }}
-            </el-tag>
-          </div>
-          
-          <div class="course-category-badge">
-            <span>{{ course.category }}</span>
-          </div>
-        </div>
+        <!-- <div class="course-header-section"></div> -->
           
         <!-- 主内容区域 -->
         <div class="course-content-wrapper">
@@ -110,13 +104,42 @@
                 <span>服务流程</span>
               </h3>
               <div class="process-steps">
-                <el-steps :active="5" finish-status="success" class="service-steps">
-                  <el-step title="在线预约" icon="Calendar" />
-                  <el-step title="确认预约" icon="Check" />
-                  <el-step title="宠物训练" icon="Connection" />
-                  <el-step title="训练反馈" icon="Comment" />
-                  <el-step title="训练完成" icon="Medal" />
-                </el-steps>
+                <div class="custom-steps">
+                  <div class="custom-step">
+                    <div class="custom-step-head success">
+                      <el-icon><Calendar /></el-icon>
+                    </div>
+                    <div class="custom-step-title success">在线预约</div>
+                  </div>
+                  <div class="custom-step-line success"></div>
+                  <div class="custom-step">
+                    <div class="custom-step-head success">
+                      <el-icon><Check /></el-icon>
+                    </div>
+                    <div class="custom-step-title success">确认预约</div>
+                  </div>
+                  <div class="custom-step-line success"></div>
+                  <div class="custom-step">
+                    <div class="custom-step-head success">
+                      <el-icon><Connection /></el-icon>
+                    </div>
+                    <div class="custom-step-title success">宠物训练</div>
+                  </div>
+                  <div class="custom-step-line success"></div>
+                  <div class="custom-step">
+                    <div class="custom-step-head success">
+                      <el-icon><Comment /></el-icon>
+                    </div>
+                    <div class="custom-step-title success">训练反馈</div>
+                  </div>
+                  <div class="custom-step-line success"></div>
+                  <div class="custom-step">
+                    <div class="custom-step-head success">
+                      <el-icon><Medal /></el-icon>
+                    </div>
+                    <div class="custom-step-title success">训练完成</div>
+                  </div>
+                </div>
               </div>
             </div>
             
@@ -206,10 +229,107 @@ onMounted(() => {
 <style lang="scss" scoped>
 .training-detail-page {
   min-height: 100vh;
-  background-color: #FFF9E6;
-  padding: 30px 20px 60px;
   position: relative;
   overflow: hidden;
+}
+
+// Page Banner样式
+.page-banner {
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  color: white;
+  padding: 60px 40px;
+  text-align: center;
+  position: relative;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .breadcrumb {
+    margin-bottom: 20px;
+    justify-content: center;
+    
+    :deep(.el-breadcrumb__item) {
+      
+      :deep(.el-breadcrumb__inner) {
+        color: rgba(255, 255, 255, 0.8);
+        
+        &.is-link {
+          cursor: pointer;
+          
+          &:hover {
+            color: white;
+            text-decoration: underline;
+          }
+        }
+      }
+      
+      :deep(.el-breadcrumb__separator) {
+        color: rgba(255, 255, 255, 0.6);
+        margin: 0 8px;
+      }
+    }
+  }
+  
+  h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    margin: 0 0 15px;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    animation: fadeInDown 0.8s ease;
+  }
+  
+  p {
+    font-size: 20px;
+    margin: 0;
+    opacity: 0.9;
+    animation: fadeInUp 0.8s ease;
+  }
+  
+  .banner-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    
+    .decoration-paw {
+      position: absolute;
+      font-size: 28px;
+      opacity: 0.2;
+      color: white;
+      
+      &.paw-1 {
+        top: 15%;
+        right: 20%;
+        animation: rotate 25s linear infinite, float 6s ease-in-out infinite;
+      }
+      
+      &.paw-2 {
+        bottom: 25%;
+        left: 15%;
+        animation: rotate 20s linear infinite reverse, float 8s ease-in-out infinite;
+        font-size: 22px;
+      }
+      
+      &.paw-3 {
+        top: 60%;
+        right: 30%;
+        animation: rotate 30s linear infinite, float 10s ease-in-out infinite;
+        font-size: 20px;
+      }
+    }
+  }
 }
 
 .page-decoration {
@@ -275,235 +395,312 @@ onMounted(() => {
   position: relative;
   z-index: 1;
   max-width: 1200px;
-  margin: 0 auto;
-}
-
-.breadcrumb-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  
-  .back-button {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 16px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    cursor: pointer;
-    font-weight: 500;
-    color: #683e35;
-    transition: all 0.3s ease;
-    
-    .el-icon {
-      margin-right: 8px;
-    }
-    
-    &:hover {
-      transform: translateX(-3px);
-      background-color: #FFF0F0;
-    }
-  }
+  margin: 0 auto 60px;
+  padding: 0 20px;
 }
 
 .course-detail-container {
   background-color: white;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
 }
 
 .course-header-section {
-  margin-bottom: 25px;
-  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #f5f5f5;
   padding-bottom: 20px;
 }
 
-.course-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  
-  .course-name {
-    margin: 0;
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 28px;
-    color: #683e35;
-  }
-  
-  .status-tag {
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 20px;
-    padding: 4px 15px;
-  }
-}
+
 
 .course-category-badge {
   display: inline-block;
-  margin-top: 12px;
-  padding: 4px 12px;
-  background-color: rgba(255, 182, 193, 0.2);
+  margin-top: 15px;
+  padding: 6px 16px;
+  background-color: rgba(255, 182, 193, 0.25);
   color: #ff6b88;
   border-radius: 20px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  border: 1px solid rgba(255, 107, 136, 0.2);
 }
 
 .course-content-wrapper {
   display: grid;
-  grid-template-columns: minmax(300px, 40%) 1fr;
-  gap: 30px;
+  grid-template-columns: minmax(350px, 45%) 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* 左侧面板 */
+.course-left-panel {
+  background-color: #fafafa;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .course-attributes {
-  margin-bottom: 30px;
+  margin-bottom: 35px;
+  
+  :deep(.el-descriptions__table) {
+    width: 100%;
+  }
   
   :deep(.el-descriptions__label) {
     width: 120px;
     color: #666;
+    font-weight: 600;
+    padding: 12px 15px;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-right: 1px solid #f0f0f0;
   }
   
   :deep(.el-descriptions__content) {
     color: #333;
+    padding: 12px 15px;
   }
   
   .attribute-value {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     
     .el-icon {
       color: #FFA726;
+      font-size: 20px;
     }
     
     &.price {
-      color: #f56c6c;
-      font-weight: bold;
-      font-size: 20px;
+      color: #ff5722;
+      font-weight: 700;
+      font-size: 24px;
+      text-shadow: 0 1px 2px rgba(255, 87, 34, 0.1);
     }
   }
 }
 
 .section-block {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   
   .section-title {
     font-family: 'Nunito Sans', sans-serif;
-    font-size: 20px;
+    font-size: 22px;
     color: #683e35;
-    margin: 0 0 20px;
+    margin: 0 0 25px;
     display: flex;
     align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
     
     .title-icon {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
-      background-color: rgba(255, 167, 38, 0.1);
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 167, 38, 0.15);
       border-radius: 50%;
-      margin-right: 12px;
+      margin-right: 15px;
       
       .el-icon {
         color: #FFA726;
-        font-size: 20px;
+        font-size: 22px;
       }
     }
   }
 }
 
+/* 右侧面板 */
+.course-right-panel {
+  background-color: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
 .description-content {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
+  background-color: #fefefe;
+  padding: 25px;
+  border-radius: 12px;
   line-height: 1.8;
-  color: #666;
+  color: #555;
+  font-size: 15px;
+  border: 1px solid #f5f5f5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 25px;
+  margin-top: 10px;
 }
 
 .feature-card {
-  background-color: #f8f9fa;
-  padding: 20px;
+  background-color: white;
+  padding: 25px;
   text-align: center;
-  border-radius: 12px;
+  border-radius: 16px;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f5f5f5;
   
   &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transform: translateY(-10px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    border-color: #FFE0B2;
+  }
+  
+  .el-icon {
+    margin-bottom: 15px;
   }
   
   h4 {
-    margin: 15px 0 10px;
-    font-size: 18px;
+    margin: 0 0 12px;
+    font-size: 20px;
     color: #683e35;
+    font-weight: 600;
   }
   
   p {
     color: #666;
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.7;
     margin: 0;
   }
 }
 
 .process-steps {
-  margin-top: 30px;
-  
-  :deep(.el-step__title) {
-    font-size: 14px;
-    color: #666;
+    margin-top: 35px;
+    padding: 20px 0;
     
-    &.is-success {
+    .custom-steps {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    .custom-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .custom-step + .custom-step-line + .custom-step {
+      margin-left: 0;
+    }
+    
+    .custom-step-head {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #e0e0e0;
+      border-radius: 50%;
+      background-color: white;
+      font-size: 24px;
+      color: #999;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .custom-step-head.success {
+      border-color: #FFA726;
       color: #FFA726;
+      box-shadow: 0 4px 15px rgba(255, 167, 38, 0.2);
+    }
+    
+    .custom-step-title {
+      margin-top: 10px;
+      font-size: 15px;
+      color: #666;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .custom-step-title.success {
+      color: #FFA726;
+      font-weight: 600;
+    }
+    
+    .custom-step-line {
+      flex: 1;
+      height: 4px;
+      background-color: #e0e0e0;
+      margin: 0;
+      position: relative;
+      align-self: center;
+    }
+    
+    .custom-step-line.success {
+      background-color: #FFA726;
+    }
+    
+    .custom-step-line::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translate(50%, -50%);
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 6px 0 6px 10px;
+      border-color: transparent transparent transparent #e0e0e0;
+    }
+    
+    .custom-step-line.success::after {
+      border-color: transparent transparent transparent #FFA726;
+    }
+    
+    /* 最后一个步骤的连接线不需要箭头 */
+    .custom-steps .custom-step-line:last-child {
+      display: none;
     }
   }
-  
-  :deep(.el-step__head.is-success) {
-    color: #FFA726;
-    border-color: #FFA726;
-  }
-  
-  :deep(.el-step__line) {
-    background-color: #dcdfe6;
-  }
-}
 
 .booking-action {
   display: flex;
   justify-content: center;
-  margin-top: 40px;
+  margin-top: 45px;
+  padding-top: 30px;
+  border-top: 2px solid #f5f5f5;
   
   .booking-btn {
-    min-width: 200px;
-    height: 50px;
-    background-color: #FFA726;
+    min-width: 240px;
+    height: 56px;
+    background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 6px 20px rgba(255, 167, 38, 0.25);
     
     &:hover:not(:disabled) {
-      transform: translateY(-5px);
-      background-color: darken(#FFA726, 5%);
-      box-shadow: 0 8px 25px rgba(255, 167, 38, 0.3);
+      transform: translateY(-6px);
+      background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+      box-shadow: 0 12px 35px rgba(255, 167, 38, 0.4);
     }
     
     &:disabled {
-      background-color: #f0f0f0;
+      background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
       color: #999;
+      box-shadow: none;
+      transform: none;
     }
     
     .el-icon {
-      margin-right: 8px;
+      margin-right: 10px;
+      font-size: 20px;
     }
   }
 }
@@ -518,28 +715,58 @@ onMounted(() => {
 }
 
 // 响应式调整
+@media (max-width: 1200px) {
+  .training-content {
+    padding: 0 15px;
+    margin: -30px auto 40px;
+  }
+}
+
 @media (max-width: 992px) {
   .course-content-wrapper {
     grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .page-banner {
+    padding: 50px 0 70px;
+  }
+  
+  .page-banner h1 {
+    font-size: 36px;
   }
 }
 
 @media (max-width: 768px) {
-  .training-detail-page {
-    padding: 20px 16px 40px;
+  .page-banner {
+    padding: 40px 0 60px;
+  }
+  
+  .page-banner h1 {
+    font-size: 28px;
+  }
+  
+  .page-banner p {
+    font-size: 16px;
+  }
+  
+  .training-content {
+    margin: -25px auto 30px;
+    padding: 0 15px;
   }
   
   .course-detail-container {
-    padding: 20px;
+    padding: 25px;
+    border-radius: 12px;
   }
   
   .course-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 12px;
     
     .course-name {
-      font-size: 22px;
+      font-size: 26px;
     }
     
     .status-tag {
@@ -547,14 +774,83 @@ onMounted(() => {
     }
   }
   
+  .course-left-panel,
+  .course-right-panel {
+    padding: 20px;
+  }
+  
+  .course-attributes :deep(.el-descriptions__label) {
+    width: 100px;
+    font-size: 14px;
+  }
+  
+  .attribute-value.price {
+    font-size: 20px !important;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
   .feature-card {
-    padding: 15px;
+    padding: 20px;
+  }
+  
+  .process-steps :deep(.el-step__title) {
+    font-size: 12px;
+  }
+  
+  .process-steps :deep(.el-step__head) {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 20px;
   }
   
   .booking-action {
+    margin-top: 35px;
+    padding-top: 25px;
+    
     .booking-btn {
       width: 100%;
+      min-width: unset;
+      height: 50px;
+      font-size: 16px;
     }
+  }
+}
+
+@media (max-width: 480px) {
+  .page-banner {
+    padding: 30px 0 50px;
+  }
+  
+  .page-banner h1 {
+    font-size: 24px;
+  }
+  
+  .page-banner .breadcrumb {
+    display: none;
+  }
+  
+  .course-detail-container {
+    padding: 20px;
+  }
+  
+  .course-header .course-name {
+    font-size: 22px;
+  }
+  
+  .course-attributes :deep(.el-descriptions__item) {
+    display: block;
+    width: 100%;
+  }
+  
+  .course-attributes :deep(.el-descriptions__label) {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #f0f0f0;
   }
 }
 </style> 
