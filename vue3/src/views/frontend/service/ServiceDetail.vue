@@ -8,27 +8,29 @@
       <div class="decoration-paw paw-2">🐾</div>
     </div>
     
-    <div class="service-detail-content" v-loading="loading">
-      <div class="breadcrumb-container">
-        <div class="back-button" @click="goBack">
-          <el-icon><arrow-left /></el-icon>
-          返回列表
+    <!-- 添加Page Banner -->
+    <div class="page-banner" v-if="service">
+      <div class="container">
+        <div class="breadcrumb">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item @click="$router.push('/services')">服务列表</el-breadcrumb-item>
+            <el-breadcrumb-item>{{ service.name }}</el-breadcrumb-item>
+          </el-breadcrumb>
         </div>
+        <h1>{{ service.name }}</h1>
+        <p>{{ categoryName }}</p>
+       
       </div>
-      
+      <div class="banner-decoration">
+        <div class="decoration-paw paw-1">🐾</div>
+        <div class="decoration-paw paw-2">🐾</div>
+        <div class="decoration-paw paw-3">🐾</div>
+      </div>
+    </div>
+    
+    <div class="service-detail-content" v-loading="loading">
       <div v-if="service" class="service-content">
-        <div class="service-header">
-          <div class="service-title-section">
-            <h1 class="service-title">{{ service.name }}</h1>
-            <el-tag 
-              :type="service.status === 1 ? 'success' : 'info'"
-              class="status-tag"
-            >
-              {{ service.status === 1 ? '可预约' : '暂停服务' }}
-            </el-tag>
-          </div>
-        </div>
-        
         <div class="service-main-info">
           <div class="service-card info-card">
             <h2 class="section-title">基本信息</h2>
@@ -215,8 +217,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .service-detail-page {
   min-height: 100vh;
-  background-color: #FFF9E6;
-  padding: 30px 20px 60px;
+  padding: 0 20px 60px;
   position: relative;
   overflow: hidden;
 }
@@ -284,42 +285,13 @@ onMounted(() => {
   z-index: 1;
 }
 
-.breadcrumb-container {
-  max-width: 1200px;
-  margin: 0 auto 20px;
-  position: relative;
-  z-index: 2;
-  
-  .back-button {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 16px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    cursor: pointer;
-    font-weight: 500;
-    color: #683e35;
-    transition: all 0.3s ease;
-    
-    i {
-      margin-right: 8px;
-    }
-    
-    &:hover {
-      transform: translateX(-3px);
-      background-color: #FFF0F0;
-    }
-  }
-}
-
 .service-content {
   margin-top: 20px;
 }
 
 .service-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 30px;
   
@@ -329,19 +301,107 @@ onMounted(() => {
     gap: 15px;
     
     .service-title {
-      margin: 0;
-      font-family: 'Nunito Sans', sans-serif;
-      font-size: 32px;
-      color: #683e35;
+      display: none;
     }
     
     .status-tag {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 500;
-      border-radius: 4px;
-      padding: 2px 10px;
+      border-radius: 20px;
+      padding: 5px 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
   }
+}
+
+/* Page Banner */
+.page-banner {
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  padding: 60px 40px;
+  text-align: center;
+  position: relative;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+    
+    .breadcrumb {
+      margin-bottom: 20px;
+      justify-content: center;
+      
+      :deep(.el-breadcrumb__item) {
+        .el-breadcrumb__inner {
+          color: rgba(255, 255, 255, 0.8);
+          text-decoration: none;
+          font-weight: normal;
+          
+          &.is-link:hover {
+            color: white;
+          }
+        }
+      }
+    }
+  }
+  
+  h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 42px;
+    color: white;
+    margin-bottom: 15px;
+    animation: fadeInDown 0.8s ease;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.9);
+    opacity: 0.9;
+    animation: fadeInUp 0.8s ease;
+  }
+  
+  .banner-decoration {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  
+  .decoration-paw {
+      position: absolute;
+      font-size: 28px;
+      opacity: 0.2;
+      color: white;
+      
+      &.paw-1 {
+        top: 15%;
+        right: 20%;
+        animation: rotate 25s linear infinite, float 6s ease-in-out infinite;
+      }
+      
+      &.paw-2 {
+        bottom: 25%;
+        left: 15%;
+        animation: rotate 20s linear infinite reverse, float 8s ease-in-out infinite;
+        font-size: 22px;
+      }
+      
+      &.paw-3 {
+        top: 60%;
+        right: 30%;
+        animation: rotate 30s linear infinite, float 10s ease-in-out infinite;
+        font-size: 20px;
+      }
+    }
 }
 
 .service-main-info {
@@ -355,14 +415,18 @@ onMounted(() => {
 }
 
 .service-card {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
   padding: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   
   &:hover {
     transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
   }
   
   .section-title {
@@ -518,6 +582,37 @@ onMounted(() => {
   }
   50% {
     transform: translateY(-20px);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
