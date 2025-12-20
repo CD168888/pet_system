@@ -1,26 +1,29 @@
 <template>
   <div class="service-booking-page">
-    <!-- 页面装饰 -->
-    <div class="page-decoration">
-      <div class="decoration-bubble bubble-1"></div>
-      <div class="decoration-bubble bubble-2"></div>
-      <div class="decoration-bubble bubble-3"></div>
-      <div class="decoration-paw paw-1">🐾</div>
-      <div class="decoration-paw paw-2">🐾</div>
+    <!-- 添加Page Banner -->
+    <div class="page-banner" v-if="service">
+      <div class="container">
+        <div class="breadcrumb">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item @click="$router.push('/services')">服务列表</el-breadcrumb-item>
+            <el-breadcrumb-item @click="goBack">{{ service.name }}</el-breadcrumb-item>
+            <el-breadcrumb-item>服务预约</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+        <h1>服务预约</h1>
+        <p>填写信息，预约您的宠物服务</p>
+      </div>
+      <div class="banner-decoration">
+        <div class="decoration-paw paw-1">🐾</div>
+        <div class="decoration-paw paw-2">🐾</div>
+        <div class="decoration-paw paw-3">🐾</div>
+      </div>
     </div>
     
     <div class="booking-content" v-loading="loading">
-      <div class="breadcrumb-container">
-        <div class="back-button" @click="goBack">
-          <el-icon><arrow-left /></el-icon>
-          返回详情
-        </div>
-      </div>
-      
-      <div class="page-header">
-        <h1 class="page-title">服务预约</h1>
-        <p class="page-subtitle">填写信息，预约您的宠物服务</p>
-      </div>
+      <!-- 面包屑已移至Page Banner中 -->
+      <!-- 页面标题已移至Page Banner中 -->
       
       <div v-if="service" class="booking-main">
         <div class="booking-grid">
@@ -322,10 +325,130 @@ onMounted(() => {
 <style lang="scss" scoped>
 .service-booking-page {
   min-height: 100vh;
-  background-color: #FFF9E6;
-  padding: 30px 20px 60px;
+  padding: 0 20px 60px;
   position: relative;
   overflow: hidden;
+}
+
+.page-banner {
+  position: relative;
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  padding: 60px 20px;
+  margin-bottom: 30px;
+  border-radius: 0 0 30px 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .breadcrumb {
+    margin-bottom: 20px;
+    
+    :deep(.el-breadcrumb__inner) {
+      color: rgba(104, 62, 53, 0.8);
+      font-size: 14px;
+      
+      &.is-link {
+        color: rgba(104, 62, 53, 0.8);
+        cursor: pointer;
+        
+        &:hover {
+          color: #683e35;
+          text-decoration: underline;
+        }
+      }
+    }
+    
+    :deep(.el-breadcrumb__separator) {
+      color: rgba(104, 62, 53, 0.6);
+    }
+  }
+  
+  h1 {
+    margin: 0 0 10px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 42px;
+    color: #683e35;
+    font-weight: bold;
+    animation: fadeInDown 0.8s ease-in-out;
+  }
+  
+  p {
+    margin: 0;
+    color: rgba(104, 62, 53, 0.8);
+    font-size: 18px;
+    animation: fadeInUp 0.8s ease-in-out 0.2s both;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 40px 20px;
+    
+    h1 {
+      font-size: 32px;
+    }
+    
+    p {
+      font-size: 16px;
+    }
+    
+    .breadcrumb {
+      margin-bottom: 15px;
+      
+      :deep(.el-breadcrumb__inner) {
+        font-size: 12px;
+      }
+    }
+  }
+  
+  @media (max-width: 480px) {
+    padding: 30px 15px;
+    
+    h1 {
+      font-size: 28px;
+    }
+    
+    p {
+      font-size: 14px;
+    }
+  }
+  
+  .banner-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    
+    .decoration-paw {
+      position: absolute;
+      font-size: 40px;
+      opacity: 0.1;
+      
+      &.paw-1 {
+        top: 20%;
+        left: 10%;
+        animation: float 15s infinite ease-in-out, rotate 20s infinite linear;
+      }
+      
+      &.paw-2 {
+        top: 60%;
+        right: 15%;
+        animation: float 18s infinite ease-in-out reverse, rotate 25s infinite linear reverse;
+      }
+      
+      &.paw-3 {
+        bottom: 10%;
+        left: 30%;
+        animation: float 20s infinite ease-in-out, rotate 30s infinite linear;
+      }
+    }
+  }
 }
 
 .page-decoration {
@@ -364,24 +487,11 @@ onMounted(() => {
       right: 10%;
     }
   }
-  
-  .decoration-paw {
-    position: absolute;
-    font-size: 30px;
-    opacity: 0.1;
-    
-    &.paw-1 {
-      top: 20%;
-      left: 5%;
-      animation: float 15s infinite ease-in-out;
-    }
-    
-    &.paw-2 {
-      bottom: 10%;
-      right: 10%;
-      animation: float 18s infinite ease-in-out reverse;
-    }
-  }
+}
+
+/* 移除原有的面包屑容器和返回按钮样式 */
+.breadcrumb-container, .page-header {
+  display: none;
 }
 
 .booking-content {
@@ -453,14 +563,18 @@ onMounted(() => {
   
   .service-info {
     flex: 1;
-    background: white;
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
     padding: 25px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     
     &:hover {
       transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     }
     
     .section-title {
@@ -470,6 +584,7 @@ onMounted(() => {
       margin: 0 0 20px;
       position: relative;
       padding-left: 15px;
+      animation: fadeInDown 0.6s ease-in-out;
       
       &::before {
         content: '';
@@ -503,6 +618,7 @@ onMounted(() => {
       font-size: 24px;
       color: #683e35;
       margin: 0 0 15px;
+      animation: fadeInDown 0.6s ease-in-out 0.2s both;
     }
     
     .service-meta {
@@ -510,6 +626,7 @@ onMounted(() => {
       flex-wrap: wrap;
       gap: 16px;
       margin-bottom: 15px;
+      animation: fadeInDown 0.6s ease-in-out 0.3s both;
       
       .meta-item {
         display: flex;
@@ -529,21 +646,27 @@ onMounted(() => {
       color: #666;
       font-size: 15px;
       margin-bottom: 20px;
+      animation: fadeInDown 0.6s ease-in-out 0.4s both;
     }
     
     .service-price {
       color: #f56c6c;
       font-size: 22px;
       font-weight: bold;
+      animation: fadeInDown 0.6s ease-in-out 0.5s both;
     }
   }
   
   .booking-form {
     flex: 1;
-    background: white;
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
     padding: 25px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    animation: fadeInUp 0.8s ease-in-out 0.3s both;
     
     h2 {
       font-family: 'Nunito Sans', sans-serif;
@@ -552,6 +675,7 @@ onMounted(() => {
       margin: 0 0 25px;
       position: relative;
       padding-left: 15px;
+      animation: fadeInDown 0.6s ease-in-out 0.4s both;
       
       &::before {
         content: '';
@@ -580,13 +704,16 @@ onMounted(() => {
 }
 
 .notice-card {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
   padding: 25px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   margin-bottom: 30px;
   border-left: 4px solid #E6A23C;
-  background-color: rgba(255, 248, 225, 0.5);
+  animation: fadeInUp 0.8s ease-in-out 0.5s both;
   
   h3 {
     color: #F57C00;
@@ -665,6 +792,37 @@ onMounted(() => {
   }
   50% {
     transform: translateY(-20px);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
