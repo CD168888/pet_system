@@ -25,13 +25,39 @@
     <div class="pet-detail-content" v-if="pet">
       <div class="pet-main-info">
         <div class="pet-gallery">
-          <el-carousel :interval="5000" height="auto" arrow="always" 
-            indicator-position="none" class="pet-carousel">
-            <el-carousel-item v-for="(image, index) in getImageList(pet.images)" :key="index">
-              <img :src="image" alt="宠物图片" class="carousel-image">
-            </el-carousel-item>
-          </el-carousel>
-          <!-- 图片提示文字已移除 -->
+          <div class="gallery-main">
+            <el-carousel 
+              ref="carouselRef"
+              :interval="4000" 
+              height="450px"
+              indicator-position="outside"
+              arrow="always"
+              class="carousel-container"
+              :initial-index="activeIndex"
+              @change="handleCarouselChange">
+              <el-carousel-item v-for="(image, index) in getImageList(pet.images)" :key="index" class="carousel-item">
+                <el-image 
+                  :src="image" 
+                  fit="cover"
+                  class="carousel-image"
+                  :preview-src-list="getImageList(pet.images)"
+                  :preview-teleported="true"
+                  :initial-index="index">
+                </el-image>
+              </el-carousel-item>
+            </el-carousel>
+          </div>
+          
+          <div class="gallery-thumbnails" v-if="getImageList(pet.images).length > 1">
+            <div 
+              v-for="(image, index) in getImageList(pet.images)" 
+              :key="index" 
+              class="thumbnail-item" 
+              :class="{ active: index === activeIndex }"
+              @click="setActiveImage(index)">
+              <img :src="image" :alt="`${pet.name} - 图片 ${index + 1}`">
+            </div>
+          </div>
         </div>
         
         <div class="pet-info-card">
@@ -266,12 +292,16 @@ const userStore = useUserStore()
 const baseAPI = process.env.VUE_APP_BASE_API || '/api'
 
 const petId = computed(() => route.params.id)
+
+// 数据定义
 const pet = ref(null)
 const loading = ref(false)
 const dialogVisible = ref(false)
 const submitLoading = ref(false)
 const adoptFormRef = ref(null)
 const activeTab = ref('healthRecord')
+const activeIndex = ref(0)
+const carouselRef = ref(null)
 
 // 健康记录相关
 const healthRecordLoading = ref(false)
@@ -503,6 +533,21 @@ const getImageList = (images) => {
   })
 }
 
+// 设置当前激活的图片
+const setActiveImage = (index) => {
+  activeIndex.value = index
+  // 使用Element Plus的正确API切换轮播图
+  if (carouselRef.value) {
+    // 使用setActiveItem方法切换到指定索引
+    carouselRef.value.setActiveItem(index)
+  }
+}
+
+// 处理轮播图变化事件
+const handleCarouselChange = (index) => {
+  activeIndex.value = index
+}
+
 // 获取状态样式类
 const getStatusClass = (status) => {
   if (status === '可领养') return 'status-available'
@@ -719,53 +764,90 @@ onMounted(() => {
 }
 
 .pet-gallery {
-    flex: 1;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    max-height: 500px; /* 设置最大高度防止图片过高 */
-    
-    &:hover {
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-    }
+  flex: 1;
+  max-width: 600px;
   
-  .pet-carousel {
-    border-radius: 20px;
-    overflow: hidden;
-    height: 100%; /* 让轮播图充满容器高度 */
+  @media (max-width: 992px) {
+    max-width: 100%;
+  }
+  
+  .gallery-main {
+    margin-bottom: 20px;
     
-    :deep(.el-carousel__container) {
-      height: 100% !important; /* 强制容器高度为100% */
-    }
-    
-    :deep(.el-carousel__item) {
-      height: 100% !important; /* 强制轮播项高度为100% */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    :deep(.el-carousel__arrow) {
-      background-color: rgba(255, 182, 193, 0.8);
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      transition: all 0.3s ease;
-      
-      &:hover {
-        background-color: #FFB6C1;
-        transform: scale(1.1);
+    .carousel-container {
+      :deep(.el-carousel__arrow) {
+        background-color: rgba(255, 182, 193, 0.8);
+        border-radius: 50%;
+        
+        &:hover {
+          background-color: #FFB6C1;
+        }
       }
+      
+      :deep(.el-carousel__indicators) {
+        .el-carousel__button {
+          background-color: #FFEE93;
+        }
+      }
+    }
+    
+    .carousel-item {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .carousel-image {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
     }
   }
   
-  .carousel-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 20px;
-    min-height: 300px; /* 设置最小高度确保图片区域不会太小 */
+  .gallery-thumbnails {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background-color: #FFEE93;
+      border-radius: 2px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background-color: #f5f5f5;
+      border-radius: 2px;
+    }
+    
+    .thumbnail-item {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      &.active {
+        border-color: #FFB6C1;
+      }
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
   }
 }
 
