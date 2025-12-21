@@ -9,18 +9,28 @@
       <div class="decoration-paw paw-2">🐾</div>
     </div>
     
-    <div class="booking-content">
-      <div class="breadcrumb-container">
-        <div class="back-button" @click="goBack">
-          <el-icon><ArrowLeft /></el-icon>
-          返回
+    <!-- 添加Page Banner -->
+    <div class="page-banner">
+      <div class="container">
+        <div class="breadcrumb">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item @click="$router.push('/training')">宠物训练</el-breadcrumb-item>
+            <el-breadcrumb-item @click="goBack">课程详情</el-breadcrumb-item>
+            <el-breadcrumb-item>预约课程</el-breadcrumb-item>
+          </el-breadcrumb>
         </div>
+        <h1>预约训练课程</h1>
+        <p>填写信息，为您的爱宠预约专业训练课程</p>
       </div>
-      
-      <div class="page-header">
-        <h1 class="page-title">预约训练课程</h1>
-        <p class="page-subtitle">填写信息，为您的爱宠预约专业训练课程</p>
+      <div class="banner-decoration">
+        <div class="decoration-paw paw-1">🐾</div>
+        <div class="decoration-paw paw-2">🐾</div>
+        <div class="decoration-paw paw-3">🐾</div>
       </div>
+    </div>
+    
+    <div class="booking-content">
       
       <div class="booking-main" v-loading="loading">
         <div v-if="!loading && course" class="booking-grid">
@@ -64,7 +74,7 @@
               <el-form-item label="宠物名称" prop="petName">
                 <el-input v-model="form.petName" placeholder="请输入宠物名称">
                   <template #prefix>
-                    <el-icon><Pet /></el-icon>
+                    <el-icon><User /></el-icon>
                   </template>
                 </el-input>
               </el-form-item>
@@ -150,7 +160,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowLeft, Clock, User, Pet, Calendar, Phone, Check, Refresh, Warning } from '@element-plus/icons-vue'
+import { ArrowLeft, Clock, User, Calendar, Phone, Check, Refresh, Warning } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
 import request from '@/utils/request'
 
@@ -296,70 +306,237 @@ onMounted(() => {
 <style lang="scss" scoped>
 .training-booking-page {
   min-height: 100vh;
-  background-color: #FFF9E6;
   padding: 30px 20px 60px;
   position: relative;
   overflow: hidden;
 }
 
-.page-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
+// Page Banner样式
+.page-banner {
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  color: white;
+  padding: 60px 40px;
+  text-align: center;
+  position: relative;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
   
-  .decoration-bubble {
-    position: absolute;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
-    opacity: 0.05;
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .breadcrumb {
+    margin-bottom: 20px;
+    justify-content: center;
     
-    &.bubble-1 {
-      width: 300px;
-      height: 300px;
-      top: -150px;
-      left: -100px;
-      animation: float 15s infinite ease-in-out;
-    }
-    
-    &.bubble-2 {
-      width: 200px;
-      height: 200px;
-      bottom: 10%;
-      right: -50px;
-      animation: float 18s infinite ease-in-out;
-    }
-    
-    &.bubble-3 {
-      width: 150px;
-      height: 150px;
-      top: 40%;
-      right: 10%;
-      animation: float 12s infinite ease-in-out;
+    :deep(.el-breadcrumb__item) {
+      
+      :deep(.el-breadcrumb__inner) {
+        color: rgba(255, 255, 255, 0.8);
+        
+        &.is-link {
+          cursor: pointer;
+          
+          &:hover {
+            color: white;
+            text-decoration: underline;
+          }
+        }
+      }
+      
+      :deep(.el-breadcrumb__separator) {
+        color: rgba(255, 255, 255, 0.6);
+        margin: 0 8px;
+      }
     }
   }
   
-  .decoration-paw {
+  h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    margin: 0 0 15px;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    animation: fadeInDown 0.8s ease;
+  }
+  
+  p {
+    font-size: 20px;
+    margin: 0;
+    opacity: 0.9;
+    animation: fadeInUp 0.8s ease;
+  }
+  
+  .banner-decoration {
     position: absolute;
-    font-size: 40px;
-    opacity: 0.1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
     
-    &.paw-1 {
-      top: 20%;
-      left: 5%;
-      animation: float 15s infinite ease-in-out;
-    }
-    
-    &.paw-2 {
-      bottom: 10%;
-      right: 10%;
-      animation: float 18s infinite ease-in-out reverse;
+    .decoration-paw {
+      position: absolute;
+      font-size: 28px;
+      opacity: 0.2;
+      color: white;
+      
+      &.paw-1 {
+        top: 15%;
+        right: 20%;
+        animation: rotate 25s linear infinite, float 6s ease-in-out infinite;
+      }
+      
+      &.paw-2 {
+        bottom: 25%;
+        left: 15%;
+        animation: rotate 20s linear infinite reverse, float 8s ease-in-out infinite;
+        font-size: 22px;
+      }
+      
+      &.paw-3 {
+        top: 60%;
+        right: 30%;
+        animation: rotate 30s linear infinite, float 10s ease-in-out infinite;
+        font-size: 20px;
+      }
     }
   }
 }
+
+.page-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    
+    .decoration-bubble {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+      opacity: 0.05;
+      
+      &.bubble-1 {
+        width: 300px;
+        height: 300px;
+        top: -150px;
+        left: -100px;
+        animation: float 15s infinite ease-in-out;
+      }
+      
+      &.bubble-2 {
+        width: 200px;
+        height: 200px;
+        bottom: 10%;
+        right: -50px;
+        animation: float 18s infinite ease-in-out;
+      }
+      
+      &.bubble-3 {
+        width: 150px;
+        height: 150px;
+        top: 40%;
+        right: 10%;
+        animation: float 12s infinite ease-in-out;
+      }
+      
+      &.bubble-4 {
+        width: 100px;
+        height: 100px;
+        top: 60%;
+        left: 8%;
+        animation: float 14s infinite ease-in-out reverse;
+      }
+      
+      &.bubble-5 {
+        width: 80px;
+        height: 80px;
+        bottom: 30%;
+        left: 20%;
+        animation: float 16s infinite ease-in-out;
+      }
+      
+      &.bubble-6 {
+        width: 120px;
+        height: 120px;
+        top: 20%;
+        right: 30%;
+        animation: float 10s infinite ease-in-out;
+      }
+      
+      &.bubble-7 {
+        width: 60px;
+        height: 60px;
+        top: 80%;
+        right: 20%;
+        animation: float 13s infinite ease-in-out reverse;
+      }
+      
+      &.bubble-8 {
+        width: 140px;
+        height: 140px;
+        top: 10%;
+        left: 40%;
+        animation: float 17s infinite ease-in-out;
+        opacity: 0.03;
+      }
+    }
+    
+    .decoration-paw {
+      position: absolute;
+      font-size: 40px;
+      opacity: 0.1;
+      
+      &.paw-1 {
+        top: 20%;
+        left: 5%;
+        animation: float 15s infinite ease-in-out, rotate 25s linear infinite;
+      }
+      
+      &.paw-2 {
+        bottom: 10%;
+        right: 10%;
+        animation: float 18s infinite ease-in-out reverse, rotate 20s linear infinite reverse;
+      }
+      
+      &.paw-3 {
+        top: 70%;
+        left: 25%;
+        font-size: 30px;
+        animation: float 12s infinite ease-in-out, rotate 30s linear infinite;
+      }
+      
+      &.paw-4 {
+        bottom: 40%;
+        right: 30%;
+        font-size: 25px;
+        animation: float 16s infinite ease-in-out reverse, rotate 22s linear infinite;
+      }
+      
+      &.paw-5 {
+        top: 30%;
+        right: 5%;
+        font-size: 35px;
+        animation: float 14s infinite ease-in-out, rotate 28s linear infinite;
+      }
+      
+      &.paw-6 {
+        bottom: 20%;
+        left: 15%;
+        font-size: 20px;
+        animation: float 17s infinite ease-in-out reverse, rotate 24s linear infinite reverse;
+      }
+    }
+  }
 
 .booking-content {
   position: relative;
@@ -565,6 +742,152 @@ onMounted(() => {
       font-weight: 500;
     }
     
+    /* 美化输入框样式 */
+    :deep(.el-input) {
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      
+      &.is-focus {
+        .el-input__wrapper {
+          box-shadow: 0 0 0 2px rgba(255, 167, 38, 0.2);
+          border-color: #FFA726;
+        }
+      }
+      
+      .el-input__wrapper {
+        border-radius: 8px;
+        border: 2px solid transparent;
+        background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #FFB6C1 0%, #FFA726 100%) border-box;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        &:hover {
+          box-shadow: 0 2px 8px rgba(255, 167, 38, 0.1);
+        }
+        
+        &.is-focus {
+          box-shadow: 0 0 0 2px rgba(255, 167, 38, 0.3), 0 4px 12px rgba(255, 167, 38, 0.15);
+          transform: translateY(-1px);
+        }
+      }
+      
+      .el-input__inner {
+        border: none;
+        font-size: 14px;
+        padding: 10px 12px;
+        transition: all 0.3s ease;
+        
+        &::placeholder {
+          color: #999;
+          transition: all 0.3s ease;
+        }
+        
+        &:focus::placeholder {
+          color: #ccc;
+          transform: translateX(5px);
+        }
+      }
+      
+
+      
+      .el-icon {
+        color: #FFA726;
+        transition: all 0.3s ease;
+      }
+      
+      &:hover .el-icon {
+        color: #FF8F00;
+        transform: scale(1.1);
+      }
+    }
+    
+    /* 美化日期选择器 */
+    :deep(.el-date-editor) {
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      
+      .el-input__wrapper {
+        border-radius: 8px;
+        border: 2px solid transparent;
+        background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #FFB6C1 0%, #FFA726 100%) border-box;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        &:hover {
+          box-shadow: 0 2px 8px rgba(255, 167, 38, 0.1);
+        }
+        
+        &.is-focus {
+          box-shadow: 0 0 0 2px rgba(255, 167, 38, 0.3), 0 4px 12px rgba(255, 167, 38, 0.15);
+          transform: translateY(-1px);
+        }
+      }
+      
+      .el-input__inner {
+        border: none;
+        font-size: 14px;
+        padding: 10px 12px;
+        transition: all 0.3s ease;
+        
+        &::placeholder {
+          color: #999;
+          transition: all 0.3s ease;
+        }
+        
+        &:focus::placeholder {
+          color: #ccc;
+          transform: translateX(5px);
+        }
+      }
+      
+      .el-icon {
+        color: #FFA726;
+        transition: all 0.3s ease;
+      }
+      
+      &:hover .el-icon {
+        color: #FF8F00;
+        transform: scale(1.1);
+      }
+    }
+    
+    /* 美化文本域 */
+    :deep(.el-textarea) {
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      
+      .el-textarea__inner {
+        border-radius: 8px;
+        border: 2px solid transparent;
+        background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #FFB6C1 0%, #FFA726 100%) border-box;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        resize: vertical;
+        font-size: 14px;
+        padding: 10px 12px;
+        
+        &:hover {
+          box-shadow: 0 2px 8px rgba(255, 167, 38, 0.1);
+        }
+        
+        &:focus {
+          box-shadow: 0 0 0 2px rgba(255, 167, 38, 0.3), 0 4px 12px rgba(255, 167, 38, 0.15);
+          transform: translateY(-1px);
+          border-color: transparent;
+        }
+        
+        &::placeholder {
+          color: #999;
+          transition: all 0.3s ease;
+        }
+        
+        &:focus::placeholder {
+          color: #ccc;
+          transform: translateX(5px);
+        }
+      }
+    }
+    
     .form-footer {
       margin-top: 30px;
       display: flex;
@@ -659,6 +982,28 @@ onMounted(() => {
   }
 }
 
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 // 表单样式覆盖
 :deep(.el-input__wrapper), :deep(.el-textarea__wrapper) {
   box-shadow: 0 0 0 1px #dcdfe6 inset;
@@ -673,20 +1018,159 @@ onMounted(() => {
 }
 
 // 响应式调整
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .training-booking-page {
     padding: 20px 16px;
   }
   
-  .page-header {
-    .page-title {
-      font-size: 24px;
+  .page-banner {
+    padding: 40px 20px;
+    
+    h1 {
+      font-size: 32px;
+    }
+    
+    p {
+      font-size: 16px;
+    }
+    
+    .breadcrumb {
+      justify-content: center;
+      margin-bottom: 15px;
+      
+      :deep(.el-breadcrumb__item) {
+        :deep(.el-breadcrumb__inner) {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+  
+  .booking-grid {
+    flex-direction: column;
+    gap: 20px;
+    
+    .service-info, .booking-form {
+      padding: 20px;
+    }
+  }
+  
+  .booking-form {
+    :deep(.el-form) {
+      label-width: 100px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .training-booking-page {
+    padding: 15px 12px;
+  }
+  
+  .page-banner {
+    padding: 30px 15px;
+    border-radius: 16px;
+    
+    h1 {
+      font-size: 26px;
+    }
+    
+    p {
+      font-size: 14px;
+    }
+    
+    .breadcrumb {
+      :deep(.el-breadcrumb__item) {
+        :deep(.el-breadcrumb__inner) {
+          font-size: 12px;
+        }
+        
+        :deep(.el-breadcrumb__separator) {
+          margin: 0 4px;
+        }
+      }
     }
   }
   
   .booking-grid {
     .service-info, .booking-form {
-      padding: 20px;
+      padding: 15px;
+    }
+    
+    .service-info {
+      h2 {
+        font-size: 20px;
+      }
+      
+      .service-description {
+        font-size: 14px;
+      }
+    }
+  }
+  
+  .booking-form {
+    h2 {
+      font-size: 18px;
+    }
+    
+    :deep(.el-form) {
+      label-width: 90px;
+    }
+    
+    .form-footer {
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      
+      .submit-btn, .reset-btn {
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+  }
+  
+  .notice-card {
+    padding: 20px;
+    
+    h3 {
+      font-size: 16px;
+    }
+    
+    ul {
+      padding-left: 16px;
+      
+      li {
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .page-banner {
+    padding: 25px 10px;
+    
+    h1 {
+      font-size: 22px;
+    }
+    
+    p {
+      font-size: 13px;
+    }
+    
+    .breadcrumb {
+      display: none;
+    }
+  }
+  
+  .booking-form {
+    :deep(.el-form) {
+      label-width: 80px;
+      
+      :deep(.el-form-item__label) {
+        font-size: 13px;
+      }
     }
   }
 }
