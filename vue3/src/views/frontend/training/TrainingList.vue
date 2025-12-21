@@ -669,6 +669,7 @@ onMounted(() => {
     font-size: 32px;
     color: #6E4C1E;
     margin-bottom: 30px;
+    animation: fadeInDown 0.8s ease;
     
     .title-icon {
       margin-right: 15px;
