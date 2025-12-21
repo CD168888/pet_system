@@ -363,14 +363,14 @@ onMounted(() => {
     margin: 0 0 15px;
     line-height: 1.2;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    animation: fadeInDown 0.8s ease;
+    animation: fadeInDown 0.8s ease both 0.2s;
   }
   
   p {
     font-size: 20px;
     margin: 0;
     opacity: 0.9;
-    animation: fadeInUp 0.8s ease;
+    animation: fadeInUp 0.8s ease both 0.4s;
   }
   
   .banner-decoration {
