@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -39,6 +40,18 @@ public class GlobalExceptionHandler {
     public Result<?> handleConstraintViolationException(ConstraintViolationException e) {
         log.error(e.getMessage(), e);
         return Result.error(ResultCode.VALIDATE_FAILED.getCode(), e.getMessage());
+    }
+
+    /**
+     * 处理静态资源未找到异常
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public Result<?> handleNoResourceFoundException(NoResourceFoundException e) {
+        // 只记录debug级别日志，避免生产环境日志泛滥
+        if (log.isDebugEnabled()) {
+            log.debug("静态资源未找到: {}", e.getMessage());
+        }
+        return Result.error(ResultCode.VALIDATE_FAILED.getCode(), "资源未找到");
     }
 
     /**
