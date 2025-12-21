@@ -494,6 +494,7 @@ onMounted(() => {
     align-items: center;
     padding-bottom: 12px;
     border-bottom: 2px solid #f0f0f0;
+    animation: fadeInDown 0.8s ease;
     
     .title-icon {
       display: flex;
@@ -711,6 +712,28 @@ onMounted(() => {
   }
   50% {
     transform: translateY(-15px);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
