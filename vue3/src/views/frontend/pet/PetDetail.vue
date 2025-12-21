@@ -757,6 +757,7 @@ onMounted(() => {
   grid-template-columns: 1fr 1fr;
   gap: 30px;
   margin-bottom: 40px;
+  animation: fadeInUp 0.8s ease both 0.2s;
   
   @media (max-width: 992px) {
     grid-template-columns: 1fr;
@@ -1017,6 +1018,7 @@ onMounted(() => {
       position: relative;
       padding-left: 25px;
       font-weight: 600;
+      animation: fadeInDown 0.8s ease both;
       
       &::before {
         content: '';
@@ -1199,6 +1201,7 @@ onMounted(() => {
 .tab-content {
   padding: 40px 30px;
   min-height: 200px;
+  animation: fadeInUp 0.8s ease both;
 }
 
 .health-timeline {
@@ -1526,6 +1529,28 @@ onMounted(() => {
   }
   50% {
     transform: translateY(-20px);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
