@@ -305,7 +305,6 @@ onMounted(() => {
   margin-bottom: 40px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 24px;
-  margin: 20px;
   
   .container {
     max-width: 1200px;
@@ -316,14 +315,14 @@ onMounted(() => {
     
     .breadcrumb {
       margin-bottom: 20px;
-      justify-content: center;
+      justify-content: left;
       
       .el-breadcrumb__item a {
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(0, 0, 0, 0.5);
         text-decoration: none;
         
         &:hover {
-          color: white;
+          color: rgba(0, 0, 0, 0.8);
         }
       }
     }
@@ -442,12 +441,12 @@ onMounted(() => {
 }
 
 .pet-list-content {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
   display: flex;
-  gap: 30px;
+  gap: 25px;
   padding: 0 20px;
 }
 

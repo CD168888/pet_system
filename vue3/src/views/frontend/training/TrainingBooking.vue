@@ -306,7 +306,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .training-booking-page {
   min-height: 100vh;
-  padding: 30px 20px 60px;
   position: relative;
   overflow: hidden;
 }

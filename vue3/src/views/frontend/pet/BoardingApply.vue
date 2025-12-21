@@ -1,14 +1,13 @@
 <template>
   <div class="boarding-apply-page">
-    <div class="boarding-content">
-      <div class="page-banner">
-        <div class="container">
-          <div class="breadcrumb">
-            <el-breadcrumb separator="/">
-              <el-breadcrumb-item><a href="/">首页</a></el-breadcrumb-item>
-              <el-breadcrumb-item>申请寄养</el-breadcrumb-item>
-            </el-breadcrumb>
-          </div>
+    <div class="page-banner">
+      <div class="container">
+        <div class="breadcrumb">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>申请寄养</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
         <h1>宠物寄养申请</h1>
         <p>为您的爱宠提供专业舒适的寄养服务</p>
       </div>
@@ -18,7 +17,8 @@
         <div class="decoration-paw paw-3">🐾</div>
       </div>
     </div>
-      
+    
+    <div class="boarding-content">
       <div class="boarding-main">
         <div class="booking-grid">
           <div class="service-info">
@@ -564,43 +564,17 @@ const handleCascaderChange = (categoryId) => {
   margin: 0 auto;
   position: relative;
   z-index: 1;
-  padding: 0;
-
-.breadcrumb-container {
-  max-width: 1400px;
-  margin: 0 auto 20px;
-  position: relative;
-  z-index: 2;
-  
-  .back-button {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 16px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    cursor: pointer;
-    font-weight: 500;
-    color: #683e35;
-    transition: all 0.3s ease;
-    
-    i {
-      margin-right: 8px;
-    }
-    
-    &:hover {
-      transform: translateX(-3px);
-      background-color: #FFF0F0;
-    }
-  }
+  padding: 0 20px;
 }
+
+
 
 .page-banner {
   background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
   padding: 60px 40px;
   text-align: center;
   position: relative;
-  margin: 0 0 40px;
+  margin-bottom: 40px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 24px;
   
@@ -615,12 +589,14 @@ const handleCascaderChange = (categoryId) => {
       margin-bottom: 20px;
       justify-content: center;
       
-      .el-breadcrumb__item a {
-        color: rgba(255, 255, 255, 0.8);
-        text-decoration: none;
-        
-        &:hover {
-          color: white;
+      .el-breadcrumb__item {
+        a {
+          color: rgba(255, 255, 255, 0.8);
+          text-decoration: none;
+          
+          &:hover {
+            color: white;
+          }
         }
       }
     }
@@ -631,6 +607,7 @@ const handleCascaderChange = (categoryId) => {
     font-size: 42px;
     color: white;
     margin-bottom: 15px;
+    animation: fadeInDown 0.8s ease;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
@@ -639,6 +616,7 @@ const handleCascaderChange = (categoryId) => {
     font-size: 20px;
     color: rgba(255, 255, 255, 0.9);
     opacity: 0.9;
+    animation: fadeInUp 0.8s ease;
   }
   
   .banner-decoration {
@@ -739,12 +717,16 @@ const handleCascaderChange = (categoryId) => {
       
       .service-category {
         display: inline-block;
-        padding: 4px 12px;
+        padding: 8px 16px;
         background-color: rgba(255, 182, 193, 0.2);
         color: #ff6b88;
         border-radius: 20px;
-        font-size: 14px;
-        font-weight: 500;
+        font-size: 12px;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
       }
     }
     
@@ -1027,6 +1009,52 @@ const handleCascaderChange = (categoryId) => {
   }
 }
 
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(255, 182, 193, 0.4);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
 // 表单样式覆盖
 :deep(.el-input__wrapper), :deep(.el-textarea__wrapper) {
   box-shadow: 0 0 0 1px #dcdfe6 inset;
@@ -1061,6 +1089,7 @@ const handleCascaderChange = (categoryId) => {
     p {
       font-size: 16px;
     }
+    border-radius: 24px;
   }
   
   .booking-grid {
@@ -1083,6 +1112,7 @@ const handleCascaderChange = (categoryId) => {
   .page-banner {
     padding: 50px 20px;
     margin: 0 10px 25px;
+    border-radius: 24px;
     
     h1 {
       font-size: 28px;
@@ -1111,6 +1141,7 @@ const handleCascaderChange = (categoryId) => {
   .page-banner {
     padding: 40px 16px;
     margin: 0 10px 20px;
+    border-radius: 24px;
     
     h1 {
       font-size: 24px;
@@ -1133,6 +1164,5 @@ const handleCascaderChange = (categoryId) => {
     margin: 0 10px 20px;
     padding: 16px;
   }
-}
 }
 </style> 

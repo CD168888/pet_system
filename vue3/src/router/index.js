@@ -158,7 +158,7 @@ const frontendRoutes = [
         path: 'service/my-appointments',
         name: 'MyAppointments',
         component: () => import('@/views/frontend/service/MyAppointments.vue'),
-        meta: { title: '我的预约', requiresAuth: true }
+        meta: { title: '我的服务', requiresAuth: true }
       },
       // 添加宠物训练相关路由
       {

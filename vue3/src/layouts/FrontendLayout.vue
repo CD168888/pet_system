@@ -113,7 +113,7 @@
                 </el-menu-item>
                 <el-menu-item index="/service/my-appointments">
                   <el-icon><Calendar /></el-icon>
-                  <span>我的预约</span>
+                  <span>我的服务</span>
                 </el-menu-item>
                 <el-menu-item index="/training/my-appointments">
                   <el-icon><Trophy /></el-icon>
@@ -224,7 +224,7 @@
           
           <el-menu-item index="/service/my-appointments" v-if="isLoggedIn">
             <el-icon><Calendar /></el-icon>
-            <span>我的预约</span>
+            <span>我的服务</span>
           </el-menu-item>
           
           <el-menu-item index="/training/my-appointments" v-if="isLoggedIn">
