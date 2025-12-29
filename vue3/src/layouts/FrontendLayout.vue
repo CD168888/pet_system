@@ -400,16 +400,21 @@
       z-index: 0;
     }
   }  
-  /* 顶部导航栏 */
+  /* 顶部导航栏 - 灵动岛效果 */
   .header {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     position: sticky;
     top: 0;
     z-index: 1000;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    border-bottom: none;
   }
   
   .header-container {
@@ -418,8 +423,14 @@
     max-width: 1400px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 20px;
-    height: 64px;
+    padding: 0 30px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 30px;
   }
   
   .logo {
