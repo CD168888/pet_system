@@ -575,7 +575,7 @@ onMounted(() => {
 
 /* Page Banner */
 .page-banner {
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 100%);
   padding: 60px 40px;
   text-align: center;
   position: relative;
@@ -672,7 +672,7 @@ onMounted(() => {
   .decoration-bubble {
     position: absolute;
     border-radius: 50%;
-    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+    background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
     opacity: 0.05;
     
     &.bubble-1 {
@@ -731,7 +731,7 @@ onMounted(() => {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     cursor: pointer;
     font-weight: 500;
-    color: #683e35;
+    color: #43a047;
     transition: all 0.3s ease;
     
     i {
@@ -740,7 +740,7 @@ onMounted(() => {
     
     &:hover {
       transform: translateX(-3px);
-      background-color: #FFF0F0;
+      background-color: #f0fff4;
     }
   }
 }
@@ -879,7 +879,7 @@ onMounted(() => {
     .pet-name {
       font-family: 'Nunito Sans', sans-serif;
       font-size: 32px;
-      color: #683e35;
+      color: #1a202c;
       margin: 0;
       font-weight: 700;
       line-height: 1.3;
@@ -927,21 +927,21 @@ onMounted(() => {
       }
       
       &.tag-category {
-        background: rgba(255, 167, 38, 0.1);
-        color: #ff8f00;
-        border: 1px solid rgba(255, 167, 38, 0.3);
+        background: rgba(102, 187, 106, 0.1);
+        color: #43a047;
+        border: 1px solid rgba(102, 187, 106, 0.3);
       }
       
       &.tag-type {
-        background: rgba(255, 182, 193, 0.1);
-        color: #d85a77;
-        border: 1px solid rgba(255, 182, 193, 0.3);
+        background: rgba(102, 187, 106, 0.1);
+        color: #43a047;
+        border: 1px solid rgba(102, 187, 106, 0.3);
       }
       
       &.tag-breed {
-        background: rgba(144, 202, 249, 0.1);
-        color: #2196f3;
-        border: 1px solid rgba(144, 202, 249, 0.3);
+        background: rgba(102, 187, 106, 0.1);
+        color: #43a047;
+        border: 1px solid rgba(102, 187, 106, 0.3);
       }
     }
   }
@@ -961,19 +961,19 @@ onMounted(() => {
       padding: 16px 20px;
       display: flex;
       align-items: center;
-      border: 1px solid rgba(255, 182, 193, 0.2);
+      border: 1px solid rgba(102, 187, 106, 0.2);
       transition: all 0.3s ease;
       
       &:hover {
         transform: translateY(-3px);
-        box-shadow: 0 4px 15px rgba(255, 182, 193, 0.15);
+        box-shadow: 0 4px 15px rgba(102, 187, 106, 0.15);
       }
       
       .attribute-icon {
         width: 45px;
         height: 45px;
         border-radius: 50%;
-        background: rgba(255, 238, 147, 0.2);
+        background: rgba(102, 187, 106, 0.2);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -982,7 +982,7 @@ onMounted(() => {
         .el-icon {
           width: 24px;
           height: 24px;
-          color: #683e35;
+          color: #43a047;
         }
       }
       
@@ -1000,7 +1000,7 @@ onMounted(() => {
         .attribute-value {
           font-size: 16px;
           font-weight: 600;
-          color: #683e35;
+          color: #1a202c;
         }
       }
     }
@@ -1013,7 +1013,7 @@ onMounted(() => {
     .section-title {
       font-family: 'Nunito Sans', sans-serif;
       font-size: 22px;
-      color: #683e35;
+      color: #1a202c;
       margin: 0 0 15px;
       position: relative;
       padding-left: 25px;
@@ -1028,7 +1028,7 @@ onMounted(() => {
         transform: translateY(-50%);
         width: 4px;
         height: 22px;
-        background: linear-gradient(135deg, #FFB6C1 0%, #FF92B2 100%);
+        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
         border-radius: 2px;
       }
     }
@@ -1041,7 +1041,7 @@ onMounted(() => {
       background: rgba(255, 255, 255, 0.6);
       padding: 20px;
       border-radius: 12px;
-      border: 1px solid rgba(255, 182, 193, 0.1);
+      border: 1px solid rgba(102, 187, 106, 0.1);
     }
   }
   
@@ -1076,14 +1076,14 @@ onMounted(() => {
     }
     
     .adopt-button {
-      background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
       color: white;
       border: none;
-      box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
+      box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
       
       &:hover {
-        background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-        box-shadow: 0 8px 25px rgba(255, 167, 38, 0.4);
+        background: linear-gradient(135deg, #43a047 0%, #388e3c 100%);
+        box-shadow: 0 8px 25px rgba(102, 187, 106, 0.4);
       }
     }
     

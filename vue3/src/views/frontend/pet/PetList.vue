@@ -337,7 +337,7 @@ onMounted(() => {
 }
 
 .page-banner {
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 100%);
   padding: 60px 40px;
   text-align: center;
   position: relative;
@@ -442,7 +442,7 @@ onMounted(() => {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
-  border: 1px solid rgba(255, 182, 193, 0.3);
+  border: 1px solid rgba(102, 187, 106, 0.3);
   padding: 25px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -452,7 +452,7 @@ onMounted(() => {
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-    border-color: rgba(255, 182, 193, 0.5);
+    border-color: rgba(102, 187, 106, 0.5);
   }
   
   .filter-header {
@@ -472,19 +472,19 @@ onMounted(() => {
       font-size: 22px;
       width: 40px;
       height: 40px;
-      background: #FFEE93;
+      background: #e8f5e9;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       animation: pulse 2s infinite, float 4s ease-in-out infinite;
-      box-shadow: 0 4px 12px rgba(255, 238, 147, 0.3);
+      box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
     }
   }
   
   .search-form {
     :deep(.el-form-item__label) {
-      color: #6E4C1E;
+      color: #1a202c;
       font-weight: 500;
     }
     
@@ -493,23 +493,23 @@ onMounted(() => {
         border-radius: 12px;
         transition: all 0.3s ease;
         background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(255, 182, 193, 0.3);
+        border: 1px solid rgba(102, 187, 106, 0.3);
         
         &.is-focus {
-          box-shadow: 0 0 0 2px rgba(255, 182, 193, 0.5);
-          border-color: rgba(255, 182, 193, 0.5);
+          box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.5);
+          border-color: rgba(102, 187, 106, 0.5);
         }
         
         :deep(.el-input__inner) {
-          color: #6E4C1E;
+          color: #1a202c;
           
           &::placeholder {
-            color: rgba(110, 76, 30, 0.5);
+            color: rgba(26, 32, 44, 0.5);
           }
         }
         
         :deep(.el-input__suffix-inner) {
-          color: #FFB6C1;
+          color: #66bb6a;
         }
       }
     }
@@ -521,24 +521,24 @@ onMounted(() => {
         border-radius: 12px;
         transition: all 0.3s ease;
         background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(255, 182, 193, 0.3);
+        border: 1px solid rgba(102, 187, 106, 0.3);
         
         &.is-focus {
-          box-shadow: 0 0 0 2px rgba(255, 182, 193, 0.5);
-          border-color: rgba(255, 182, 193, 0.5);
+          box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.5);
+          border-color: rgba(102, 187, 106, 0.5);
         }
       }
       
       :deep(.el-select__input) {
-        color: #6E4C1E;
+        color: #1a202c;
       }
       
       :deep(.el-select__placeholder) {
-        color: rgba(110, 76, 30, 0.5);
+        color: rgba(26, 32, 44, 0.5);
       }
       
       :deep(.el-select__suffix-inner) {
-        color: #FFB6C1;
+        color: #66bb6a;
       }
     }
     
@@ -566,10 +566,10 @@ onMounted(() => {
           }
           
           .search-btn {
-            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
             border: none;
             color: white;
-            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
             
             &::before {
               content: '';
@@ -585,7 +585,7 @@ onMounted(() => {
             
             &:hover {
               transform: translateY(-3px);
-              box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+              box-shadow: 0 8px 25px rgba(102, 187, 106, 0.4);
             }
             
             &:hover::before {
@@ -599,8 +599,8 @@ onMounted(() => {
           
           .reset-btn {
             background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(255, 182, 193, 0.3);
-            color: #6E4C1E;
+            border: 1px solid rgba(102, 187, 106, 0.3);
+            color: #1a202c;
             
             &::before {
               content: '';
@@ -615,8 +615,8 @@ onMounted(() => {
             }
             
             &:hover {
-              background: rgba(255, 182, 193, 0.1);
-              border-color: rgba(255, 182, 193, 0.5);
+              background: rgba(102, 187, 106, 0.1);
+              border-color: rgba(102, 187, 106, 0.5);
               transform: translateY(-3px);
               box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
             }
@@ -643,7 +643,7 @@ onMounted(() => {
     .decoration-bubble {
       position: absolute;
       border-radius: 50%;
-      background: #FFB6C1;
+      background: #66bb6a;
       opacity: 0.1;
       
       &.bubble-1 {
@@ -668,7 +668,7 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-left: 3px solid #FFB6C1;
+  border-left: 3px solid #66bb6a;
   padding: 15px;
   border-radius: 12px;
   display: flex;
@@ -678,12 +678,12 @@ onMounted(() => {
   .tip-icon {
     font-size: 20px;
     margin-right: 12px;
-    color: #FFB6C1;
+    color: #66bb6a;
   }
   
   .tip-text {
     font-size: 14px;
-    color: #6E4C1E;
+    color: #1a202c;
     line-height: 1.5;
   }
 }
@@ -697,20 +697,20 @@ onMounted(() => {
   align-items: center;
   font-family: 'Nunito Sans', sans-serif;
   font-size: 32px;
-  color: #6E4C1E;
+  color: #1a202c;
   margin-bottom: 30px;
   
   .title-icon {
     margin-right: 15px;
     font-size: 36px;
-    color: #FFB6C1;
+    color: #66bb6a;
   }
   
   .title-count {
     margin-left: 15px;
     font-size: 18px;
     opacity: 0.8;
-    color: #8D6E63;
+    color: #718096;
   }
 }
 
@@ -765,13 +765,13 @@ onMounted(() => {
     }
     
     .pet-button {
-      background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
       color: white;
       border-radius: 12px;
       padding: 8px 16px;
       font-weight: 600;
       transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
       position: relative;
       overflow: hidden;
       z-index: 1;
@@ -791,7 +791,7 @@ onMounted(() => {
       
       &:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+        box-shadow: 0 8px 25px rgba(102, 187, 106, 0.4);
       }
       
       &:hover::before {
@@ -896,7 +896,7 @@ onMounted(() => {
       font-size: 22px;
       font-weight: 600;
       margin: 0 0 12px;
-      color: #6E4C1E;
+      color: #1a202c;
     }
     
     .pet-tags {
@@ -907,21 +907,21 @@ onMounted(() => {
     }
     
     .pet-tag {
-      background: rgba(255, 182, 193, 0.2);
+      background: rgba(102, 187, 106, 0.2);
       padding: 6px 12px;
       border-radius: 16px;
       font-size: 12px;
       font-weight: 500;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      color: #6E4C1E;
+      color: #1a202c;
       
       &.tag-type {
-        background: rgba(255, 182, 193, 0.3);
+        background: rgba(102, 187, 106, 0.3);
       }
       
       &.tag-breed {
-        background: rgba(255, 238, 147, 0.3);
+        background: rgba(100, 181, 246, 0.3);
       }
     }
     
@@ -935,12 +935,12 @@ onMounted(() => {
         display: flex;
         align-items: center;
         font-size: 14px;
-        color: #8D6E63;
+        color: #718096;
         
         .meta-icon {
           margin-right: 6px;
           font-size: 18px;
-          color: #FFB6C1;
+          color: #66bb6a;
         }
       }
     }
@@ -950,11 +950,11 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 12px;
-  background: rgba(255, 182, 193, 0.1);
+  background: rgba(102, 187, 106, 0.1);
   border-radius: 12px;
   font-size: 14px;
   font-weight: 600;
-  color: #6E4C1E;
+  color: #1a202c;
   transition: all 0.3s ease;
   margin-top: auto;
   backdrop-filter: blur(10px);
@@ -973,34 +973,34 @@ onMounted(() => {
   
   :deep(.el-pagination) {
     --el-pagination-button-bg-color: rgba(255, 255, 255, 0.9);
-    --el-pagination-hover-color: #FF9800;
-    --el-pagination-border-color: rgba(255, 182, 193, 0.3);
+    --el-pagination-hover-color: #66bb6a;
+    --el-pagination-border-color: rgba(102, 187, 106, 0.3);
     
     .el-pagination__jump {
-      color: #6E4C1E;
+      color: #1a202c;
     }
     
     .el-pagination__total {
-      color: #6E4C1E;
+      color: #1a202c;
     }
     
     button:not(:disabled):hover {
-      color: #FF9800;
-      background: rgba(255, 182, 193, 0.1);
+      color: #66bb6a;
+      background: rgba(102, 187, 106, 0.1);
     }
     
     .is-active {
-      background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%) !important;
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%) !important;
       color: white !important;
       border-color: transparent;
     }
     
     :deep(.el-input__wrapper) {
       background: rgba(255, 255, 255, 0.9);
-      border-color: rgba(255, 182, 193, 0.3);
+      border-color: rgba(102, 187, 106, 0.3);
       
       .el-input__inner {
-        color: #6E4C1E;
+        color: #1a202c;
       }
     }
   }
@@ -1031,15 +1031,15 @@ onMounted(() => {
 @keyframes pulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
   }
   50% {
     transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(255, 182, 193, 0.4);
+    box-shadow: 0 6px 16px rgba(102, 187, 106, 0.4);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
   }
 }
 
@@ -1199,12 +1199,12 @@ onMounted(() => {
   border-radius: 24px;
   padding: 20px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 182, 193, 0.3);
+  border: 1px solid rgba(102, 187, 106, 0.3);
   
   .tags-title {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 18px;
-    color: #6E4C1E;
+    color: #1a202c;
     margin: 0 0 15px;
     font-weight: 600;
   }
