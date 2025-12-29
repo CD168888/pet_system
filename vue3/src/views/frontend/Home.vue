@@ -430,10 +430,10 @@ onMounted(() => {
 <style lang="scss" scoped>
 // 全局变量
 :root {
-  --gradient-primary: linear-gradient(135deg, #67b6f5 0%, #5aa9e6 100%);
-  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  --gradient-warm: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --gradient-primary: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+  --gradient-secondary: linear-gradient(135deg, #42a5f5 0%, #2196f3 100%);
+  --gradient-success: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+  --gradient-warm: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
 }
 
 .home-container {
@@ -572,7 +572,7 @@ onMounted(() => {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -586,7 +586,7 @@ onMounted(() => {
     left: 0;
     width: 60px;
     height: 4px;
-    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
     border-radius: 2px;
   }
 }
@@ -594,12 +594,12 @@ onMounted(() => {
 .title-icon {
   width: 32px;
   height: 32px;
-  color: #FF9800;
+  color: #43a047;
   flex-shrink: 0;
 }
 
 .view-more-btn, .more-link {
-  color: #FF9800;
+  color: #43a047;
   font-size: 15px;
   display: flex;
   align-items: center;
@@ -614,7 +614,7 @@ onMounted(() => {
   }
 
   &:hover {
-    color: #F57C00;
+    color: #388e3c;
     .el-icon {
       transform: translateX(4px);
     }
@@ -627,13 +627,13 @@ onMounted(() => {
   -webkit-backdrop-filter: blur(10px);
   padding: 10px 20px;
   border-radius: 20px;
-  border: 1px solid rgba(255, 152, 0, 0.2);
+  border: 1px solid rgba(102, 187, 106, 0.2);
   transition: all 0.3s ease;
 
   &:hover {
     background: rgba(255, 255, 255, 0.95);
     transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(255, 152, 0, 0.2);
+    box-shadow: 0 8px 16px rgba(102, 187, 106, 0.2);
   }
 }
 
@@ -693,8 +693,8 @@ onMounted(() => {
   justify-content: center;
   margin: 0 auto 20px;
   transition: all 0.4s ease;
-  color: #FF9800;
-  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
+  color: #43a047;
+  box-shadow: 0 4px 15px rgba(102, 187, 106, 0.2);
 }
 
 .category-name {
@@ -746,7 +746,7 @@ onMounted(() => {
 
   &:hover {
     transform: translateY(-12px);
-    box-shadow: 0 20px 50px rgba(255, 152, 0, 0.2);
+    box-shadow: 0 20px 50px rgba(102, 187, 106, 0.2);
 
     .card-image-wrapper img {
       transform: scale(1.15);
@@ -885,7 +885,7 @@ onMounted(() => {
 .product-price {
   font-size: 24px;
   font-weight: 800;
-  color: #ff6b6b;
+  color: #43a047;
 }
 
 .product-orig-price {
