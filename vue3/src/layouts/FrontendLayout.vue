@@ -16,9 +16,9 @@
             mode="horizontal"
             :ellipsis="false"
             :router="true"
-            background-color="#FFFAF0"
-            text-color="#6E4C1E"
-            active-text-color="#FF9800"
+            background-color="transparent"
+            text-color="#5d6d7e"
+            active-text-color="#43a047"
           >
             <el-menu-item index="/">
               <el-icon><HomeFilled /></el-icon>
@@ -240,14 +240,20 @@
         
         <div class="mobile-user-actions">
           <template v-if="isLoggedIn">
-            <el-button @click="goToProfile" type="info" plain icon="User" block>个人中心</el-button>
+            <el-button @click="goToProfile" type="primary" plain icon="User" block>
+              个人中心
+            </el-button>
             <el-button @click="handleLogoutMobile" type="warning" plain icon="SwitchButton" block class="logout-btn">
               退出登录
             </el-button>
           </template>
           <template v-else>
-            <el-button @click="goToLogin" type="primary" plain block>登录</el-button>
-            <el-button @click="goToRegister" type="warning" block>注册</el-button>
+            <el-button @click="goToLogin" type="primary" plain block>
+              登录
+            </el-button>
+            <el-button @click="goToRegister" type="primary" block>
+              注册
+            </el-button>
           </template>
         </div>
       </el-drawer>
@@ -374,8 +380,8 @@
     min-height: 100vh;
     font-family: 'Open Sans', 'Nunito Sans', Arial, sans-serif;
     background:
-      linear-gradient(to bottom, transparent 0%, transparent 1%, #fff 5%, #fff 100%),
-      linear-gradient(135deg, #fff3e0 0%, #ffe0b2 8%, #ffecb3 15%, #ffebee 20%, #fff 30%, #fff 100%);
+      linear-gradient(to bottom, transparent 0%, transparent 5%, #fff 20%),
+      linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
     background-attachment: fixed;
     position: relative;
 
@@ -387,23 +393,23 @@
       right: 0;
       bottom: 0;
       background-image:
-        radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(244, 67, 54, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(255, 235, 59, 0.1) 0%, transparent 50%);
+        radial-gradient(circle at 20% 30%, rgba(129, 199, 132, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(100, 181, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 238, 88, 0.1) 0%, transparent 50%);
       pointer-events: none;
       z-index: 0;
     }
   }  
-  /* 顶部导航栏 - 灵动岛效果 */
+  /* 顶部导航栏 */
   .header {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     position: sticky;
     top: 0;
     z-index: 1000;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 20px;
   }
   
   .header-container {
@@ -412,14 +418,8 @@
     max-width: 1400px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 30px;
-    height: 56px;
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 30px;
+    padding: 0 20px;
+    height: 64px;
   }
   
   .logo {
@@ -446,7 +446,7 @@
     font-family: 'Nunito Sans', sans-serif;
     font-size: 20px;
     font-weight: 600;
-    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    background: linear-gradient(135deg, #66bb6a 0%, #42a5f5 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -472,7 +472,8 @@
   
   .main-menu :deep(.el-menu-item:hover,
                    .el-menu-item.is-active) {
-    color: #ff9800;
+    color: #43a047;
+    background: rgba(129, 199, 132, 0.1);
     border-radius: 8px;
   }
   
@@ -491,7 +492,8 @@
   
   .main-menu :deep(.el-sub-menu__title:hover,
                    .el-sub-menu.is-active > .el-sub-menu__title) {
-    color: #ff9800;
+    color: #43a047;
+    background: rgba(129, 199, 132, 0.1);
     border-radius: 8px;
   }
   
@@ -519,7 +521,7 @@
                    .el-menu-item.is-active .el-icon,
                    .el-sub-menu__title:hover .el-icon,
                    .el-sub-menu.is-active > .el-sub-menu__title .el-icon) {
-    color: #ff9800;
+    color: #43a047;
   }
   
   /* 为菜单添加图标和文字之间的间距 */
@@ -540,7 +542,7 @@
   
   .user-avatar :deep(.el-avatar) {
     margin-right: 0;
-    border: 2px solid #FFEED6;
+    border: 2px solid #e8f5e9;
     transition: all 0.3s;
     width: 28px; /* 减小头像大小 */
     height: 28px; /* 减小头像大小 */
@@ -548,12 +550,12 @@
   
   .user-avatar:hover :deep(.el-avatar) {
     transform: scale(1.1);
-    border-color: #FFCD70;
+    border-color: #a5d6a7;
   }
   
   /* 购物车徽章 */
   .cart-badge :deep(.el-badge__content) {
-    background-color: #FF9800;
+    background-color: #43a047;
     border: none;
   }
   
@@ -585,12 +587,12 @@
   
   .rounded-search :deep(.el-input__wrapper:hover) {
     background-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 0 1px rgba(255, 152, 0, 0.3);
+    box-shadow: 0 0 0 1px rgba(129, 199, 132, 0.3);
   }
   
   .rounded-search :deep(.el-input__wrapper.is-focus) {
     background-color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 0 1px rgba(255, 152, 0, 0.4);
+    box-shadow: 0 0 0 1px rgba(129, 199, 132, 0.4);
   }
   
   /* 用户头像 */
@@ -608,9 +610,9 @@
   }
   
   .user-avatar:hover {
-    background: rgba(255, 152, 0, 0.15);
-    border-color: rgba(255, 152, 0, 0.3);
-    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+    background: rgba(129, 199, 132, 0.15);
+    border-color: rgba(129, 199, 132, 0.3);
+    box-shadow: 0 4px 12px rgba(129, 199, 132, 0.2);
   }
   
   .user-avatar :deep(.el-avatar) {
@@ -630,26 +632,26 @@
   }
   
   .login-item :deep(.el-button:hover) {
-    background: rgba(255, 152, 0, 0.15);
-    border-color: rgba(255, 152, 0, 0.3);
-    color: #ff9800;
-    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+    background: rgba(129, 199, 132, 0.15);
+    border-color: rgba(129, 199, 132, 0.3);
+    color: #43a047;
+    box-shadow: 0 4px 12px rgba(129, 199, 132, 0.2);
   }
   
   .register-item :deep(.el-button) {
     border-radius: 20px;
-    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
     border: none;
     color: #fff;
     padding: 8px 20px;
     font-weight: 500;
-    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
     transition: all 0.3s ease;
   }
   
   .register-item :deep(.el-button:hover) {
-    background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
-    box-shadow: 0 6px 16px rgba(255, 152, 0, 0.4);
+    background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+    box-shadow: 0 6px 16px rgba(102, 187, 106, 0.4);
     transform: translateY(-2px);
   }
   
@@ -658,7 +660,7 @@
     display: none;
     font-size: 24px;
     cursor: pointer;
-    color: #6E4C1E;
+    color: #5d6d7e;
   }
   
   /* 移动端搜索框 */
@@ -707,18 +709,18 @@
   
   /* 页脚样式 */
   .footer {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-    color: #5d6d7e;
+    background: #f8fafc;
+    color: #606266;
+    border-top: 1px solid #eaecef;
     margin-top: auto;
     position: relative;
     z-index: 1;
+    padding: 20px 0;
   }
   
   .footer-bottom {
-    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
     text-align: center;
     color: #909399;
   }
