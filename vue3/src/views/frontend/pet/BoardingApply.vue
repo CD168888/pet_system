@@ -515,7 +515,7 @@ const handleCascaderChange = (categoryId) => {
   .decoration-bubble {
     position: absolute;
     border-radius: 50%;
-    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+    background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
     opacity: 0.05;
     
     &.bubble-1 {
@@ -691,7 +691,7 @@ const handleCascaderChange = (categoryId) => {
     .section-title {
       font-family: 'Nunito Sans', sans-serif;
       font-size: 22px;
-      color: #683e35;
+      color: #2e7d32;
       margin: 0 0 20px;
       position: relative;
       padding-left: 25px;
@@ -705,7 +705,7 @@ const handleCascaderChange = (categoryId) => {
         transform: translateY(-50%);
         width: 4px;
         height: 22px;
-        background: linear-gradient(135deg, #FFB6C1 0%, #FF92B2 100%);
+        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
         border-radius: 2px;
       }
     }
@@ -718,8 +718,8 @@ const handleCascaderChange = (categoryId) => {
       .service-category {
         display: inline-block;
         padding: 8px 16px;
-        background-color: rgba(255, 182, 193, 0.2);
-        color: #ff6b88;
+        background-color: rgba(102, 187, 106, 0.2);
+        color: #43a047;
         border-radius: 20px;
         font-size: 12px;
         font-weight: 600;
@@ -732,7 +732,7 @@ const handleCascaderChange = (categoryId) => {
     
     h2 {
       font-size: 24px;
-      color: #683e35;
+      color: #2e7d32;
       margin: 0 0 15px;
     }
     
@@ -750,7 +750,7 @@ const handleCascaderChange = (categoryId) => {
         
         .icon {
           margin-right: 6px;
-          color: #683e35;
+          color: #43a047;
         }
       }
     }
@@ -763,14 +763,14 @@ const handleCascaderChange = (categoryId) => {
     }
     
     .price-info-content {
-      background-color: rgba(255, 248, 225, 0.5);
+      background-color: rgba(232, 245, 233, 0.5);
       padding: 20px;
       border-radius: 10px;
-      border-left: 4px solid #E6A23C;
+      border-left: 4px solid #66bb6a;
       margin-top: 20px;
       
       h3 {
-        color: #F57C00;
+        color: #43a047;
         margin: 0 0 15px;
         font-size: 16px;
         display: flex;
@@ -778,7 +778,7 @@ const handleCascaderChange = (categoryId) => {
         
         .icon {
           margin-right: 8px;
-          color: #F57C00;
+          color: #43a047;
         }
       }
       
@@ -812,7 +812,7 @@ const handleCascaderChange = (categoryId) => {
     h2 {
       font-family: 'Nunito Sans', sans-serif;
       font-size: 22px;
-      color: #683e35;
+      color: #2e7d32;
       margin: 0 0 25px;
       position: relative;
       padding-left: 25px;
@@ -826,7 +826,7 @@ const handleCascaderChange = (categoryId) => {
         transform: translateY(-50%);
         width: 4px;
         height: 22px;
-        background: linear-gradient(135deg, #FFB6C1 0%, #FF92B2 100%);
+        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
         border-radius: 2px;
       }
     }
@@ -857,19 +857,19 @@ const handleCascaderChange = (categoryId) => {
 }
 
 .notice-card {
-  background: rgba(255, 248, 225, 0.8);
+  background: rgba(232, 245, 233, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 182, 193, 0.2);
+  border: 1px solid rgba(102, 187, 106, 0.2);
   border-radius: 24px;
   padding: 25px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   margin: 0 auto 30px;
   max-width: 1200px;
-  border-left: 4px solid #E6A23C;
+  border-left: 4px solid #66bb6a;
   
   h3 {
-    color: #F57C00;
+    color: #43a047;
     margin: 0 0 15px;
     font-size: 18px;
     display: flex;
@@ -877,6 +877,7 @@ const handleCascaderChange = (categoryId) => {
     
     .icon {
       margin-right: 8px;
+      color: #43a047;
     }
   }
   
@@ -909,13 +910,13 @@ const handleCascaderChange = (categoryId) => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+  background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
+  box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
   
   &:hover:not(:disabled) {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 167, 38, 0.4);
+    box-shadow: 0 8px 25px rgba(102, 187, 106, 0.4);
   }
   
   &:disabled {
@@ -944,12 +945,12 @@ const handleCascaderChange = (categoryId) => {
   justify-content: center;
   gap: 8px;
   background: white;
-  color: #683e35;
-  border: 2px solid #683e35;
+  color: #43a047;
+  border: 2px solid #43a047;
   
   &:hover, &:focus {
     color: white;
-    background-color: #683e35;
+    background-color: #43a047;
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   }
@@ -971,14 +972,14 @@ const handleCascaderChange = (categoryId) => {
   gap: 10px;
   
   .login-btn {
-    background-color: #FFA726;
-    border-color: #FFA726;
-    
-    &:hover {
-      background-color: darken(#FFA726, 5%);
-      border-color: darken(#FFA726, 5%);
+      background-color: #66bb6a;
+      border-color: #66bb6a;
+      
+      &:hover {
+        background-color: #43a047;
+        border-color: #43a047;
+      }
     }
-  }
   
   .register-btn {
     background-color: #67C23A;
@@ -1060,11 +1061,11 @@ const handleCascaderChange = (categoryId) => {
   box-shadow: 0 0 0 1px #dcdfe6 inset;
   
   &:hover {
-    box-shadow: 0 0 0 1px #FFA726 inset;
+    box-shadow: 0 0 0 1px #66bb6a inset;
   }
   
   &.is-focus {
-    box-shadow: 0 0 0 1px #FFA726 inset;
+    box-shadow: 0 0 0 1px #66bb6a inset;
   }
 }
 

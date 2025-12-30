@@ -337,7 +337,7 @@ onMounted(() => {
 }
 
 .page-banner {
-  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
   padding: 60px 40px;
   text-align: center;
   position: relative;
