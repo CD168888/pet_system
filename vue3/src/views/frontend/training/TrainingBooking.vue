@@ -312,7 +312,7 @@ onMounted(() => {
 
 // Page Banner样式
 .page-banner {
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
   color: white;
   padding: 60px 40px;
   text-align: center;
@@ -421,7 +421,7 @@ onMounted(() => {
     .decoration-bubble {
       position: absolute;
       border-radius: 50%;
-      background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
       opacity: 0.05;
       
       &.bubble-1 {
@@ -568,7 +568,7 @@ onMounted(() => {
     
     &:hover {
       transform: translateX(-3px);
-      background-color: #FFF0F0;
+      background-color: #E8F5E9;
     }
   }
 }
@@ -606,32 +606,39 @@ onMounted(() => {
   
   .service-info {
     flex: 1;
-    background: white;
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
     padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(102, 187, 106, 0.3);
     
     &:hover {
       transform: translateY(-5px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+      border-color: rgba(102, 187, 106, 0.5);
     }
     
     .section-title {
       font-family: 'Nunito Sans', sans-serif;
-      font-size: 20px;
-      color: #683e35;
+      font-size: 22px;
+      color: #1a202c;
       margin: 0 0 20px;
       position: relative;
-      padding-left: 15px;
+      padding-left: 25px;
+      font-weight: 600;
       
       &::before {
         content: '';
         position: absolute;
         left: 0;
-        top: 0;
-        bottom: 0;
+        top: 50%;
+        transform: translateY(-50%);
         width: 4px;
-        background: #FFB6C1;
+        height: 22px;
+        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
         border-radius: 2px;
       }
     }
@@ -644,8 +651,8 @@ onMounted(() => {
       .service-category {
         display: inline-block;
         padding: 4px 12px;
-        background-color: rgba(255, 182, 193, 0.2);
-        color: #ff6b88;
+        background-color: rgba(102, 187, 106, 0.2);
+        color: #66bb6a;
         border-radius: 20px;
         font-size: 14px;
         font-weight: 500;
@@ -654,8 +661,9 @@ onMounted(() => {
     
     h2 {
       font-size: 24px;
-      color: #683e35;
+      color: #1a202c;
       margin: 0 0 15px;
+      font-weight: 700;
     }
     
     .service-meta {
@@ -672,7 +680,7 @@ onMounted(() => {
         
         .icon {
           margin-right: 6px;
-          color: #683e35;
+          color: #66bb6a;
         }
       }
     }
@@ -690,12 +698,12 @@ onMounted(() => {
       .price-tag {
         display: inline-flex;
         align-items: baseline;
-        background-color: rgba(255, 167, 38, 0.1);
+        background-color: rgba(139, 195, 74, 0.1);
         padding: 8px 16px;
         border-radius: 8px;
         
         .price {
-          color: #f56c6c;
+          color: #66bb6a;
           font-weight: bold;
           font-size: 24px;
         }
@@ -711,27 +719,32 @@ onMounted(() => {
   
   .booking-form {
     flex: 1;
-    background: white;
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
     padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(102, 187, 106, 0.3);
     
     h2 {
       font-family: 'Nunito Sans', sans-serif;
-      font-size: 20px;
-      color: #683e35;
+      font-size: 22px;
+      color: #1a202c;
       margin: 0 0 25px;
       position: relative;
-      padding-left: 15px;
+      padding-left: 25px;
+      font-weight: 600;
       
       &::before {
         content: '';
         position: absolute;
         left: 0;
-        top: 0;
-        bottom: 0;
+        top: 50%;
+        transform: translateY(-50%);
         width: 4px;
-        background: #FFB6C1;
+        height: 22px;
+        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
         border-radius: 2px;
       }
     }
@@ -749,23 +762,23 @@ onMounted(() => {
       
       &.is-focus {
         .el-input__wrapper {
-          box-shadow: 0 0 0 2px rgba(255, 167, 38, 0.2);
-          border-color: #FFA726;
+          box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.2);
+          border-color: #8BC34A;
         }
       }
       
       .el-input__wrapper {
         border-radius: 8px;
         border: 2px solid transparent;
-        background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #FFB6C1 0%, #FFA726 100%) border-box;
+        background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%) border-box;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         
         &:hover {
-          box-shadow: 0 2px 8px rgba(255, 167, 38, 0.1);
+          box-shadow: 0 2px 8px rgba(139, 195, 74, 0.1);
         }
         
         &.is-focus {
-          box-shadow: 0 0 0 2px rgba(255, 167, 38, 0.3), 0 4px 12px rgba(255, 167, 38, 0.15);
+          box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.3), 0 4px 12px rgba(139, 195, 74, 0.15);
           transform: translateY(-1px);
         }
       }
@@ -790,12 +803,12 @@ onMounted(() => {
 
       
       .el-icon {
-        color: #FFA726;
+        color: #8BC34A;
         transition: all 0.3s ease;
       }
       
       &:hover .el-icon {
-        color: #FF8F00;
+        color: #4CAF50;
         transform: scale(1.1);
       }
     }
@@ -809,15 +822,15 @@ onMounted(() => {
       .el-input__wrapper {
         border-radius: 8px;
         border: 2px solid transparent;
-        background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #FFB6C1 0%, #FFA726 100%) border-box;
+        background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%) border-box;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         
         &:hover {
-          box-shadow: 0 2px 8px rgba(255, 167, 38, 0.1);
+          box-shadow: 0 2px 8px rgba(139, 195, 74, 0.1);
         }
         
         &.is-focus {
-          box-shadow: 0 0 0 2px rgba(255, 167, 38, 0.3), 0 4px 12px rgba(255, 167, 38, 0.15);
+          box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.3), 0 4px 12px rgba(139, 195, 74, 0.15);
           transform: translateY(-1px);
         }
       }
@@ -840,12 +853,12 @@ onMounted(() => {
       }
       
       .el-icon {
-        color: #FFA726;
+        color: #8BC34A;
         transition: all 0.3s ease;
       }
       
       &:hover .el-icon {
-        color: #FF8F00;
+        color: #4CAF50;
         transform: scale(1.1);
       }
     }
@@ -859,18 +872,18 @@ onMounted(() => {
       .el-textarea__inner {
         border-radius: 8px;
         border: 2px solid transparent;
-        background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #FFB6C1 0%, #FFA726 100%) border-box;
+        background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%) border-box;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         resize: vertical;
         font-size: 14px;
         padding: 10px 12px;
         
         &:hover {
-          box-shadow: 0 2px 8px rgba(255, 167, 38, 0.1);
+          box-shadow: 0 2px 8px rgba(139, 195, 74, 0.1);
         }
         
         &:focus {
-          box-shadow: 0 0 0 2px rgba(255, 167, 38, 0.3), 0 4px 12px rgba(255, 167, 38, 0.15);
+          box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.3), 0 4px 12px rgba(139, 195, 74, 0.15);
           transform: translateY(-1px);
           border-color: transparent;
         }
@@ -897,16 +910,19 @@ onMounted(() => {
 }
 
 .notice-card {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
   padding: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
-  border-left: 4px solid #E6A23C;
-  background-color: rgba(255, 248, 225, 0.5);
+  border-left: 4px solid #66bb6a;
+  background-color: rgba(232, 245, 233, 0.5);
+  border: 1px solid rgba(102, 187, 106, 0.3);
   
   h3 {
-    color: #F57C00;
+    color: #66bb6a;
     margin: 0 0 15px;
     font-size: 18px;
     display: flex;
@@ -935,17 +951,19 @@ onMounted(() => {
 
 .submit-btn {
   min-width: 120px;
-  height: 40px;
-  background-color: #FFA726;
+  height: 44px;
+  background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
   color: white;
   border: none;
-  border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   
   &:hover:not(:disabled) {
     transform: translateY(-3px);
-    background-color: darken(#FFA726, 5%);
-    box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
+    box-shadow: 0 8px 25px rgba(102, 187, 106, 0.4);
   }
   
   &:disabled {
@@ -960,15 +978,21 @@ onMounted(() => {
 
 .reset-btn {
   min-width: 120px;
-  height: 40px;
-  color: #666;
-  border-color: #dcdfe6;
-  border-radius: 8px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(102, 187, 106, 0.3);
+  color: #1a202c;
+  border-radius: 12px;
   transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 14px;
   
   &:hover, &:focus {
-    color: #683e35;
-    border-color: #683e35;
+    color: #66bb6a;
+    border-color: rgba(102, 187, 106, 0.5);
+    background: rgba(102, 187, 106, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 187, 106, 0.2);
   }
 }
 
@@ -1005,14 +1029,14 @@ onMounted(() => {
 
 // 表单样式覆盖
 :deep(.el-input__wrapper), :deep(.el-textarea__wrapper) {
-  box-shadow: 0 0 0 1px #dcdfe6 inset;
+  box-shadow: 0 0 0 1px rgba(102, 187, 106, 0.3) inset;
   
   &:hover {
-    box-shadow: 0 0 0 1px #FFA726 inset;
+    box-shadow: 0 0 0 1px rgba(102, 187, 106, 0.5) inset;
   }
   
   &.is-focus {
-    box-shadow: 0 0 0 1px #FFA726 inset;
+    box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.5) inset;
   }
 }
 

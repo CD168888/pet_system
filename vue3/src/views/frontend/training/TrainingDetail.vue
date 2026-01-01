@@ -235,7 +235,7 @@ onMounted(() => {
 
 // Page Banner样式
 .page-banner {
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
   color: white;
   padding: 60px 40px;
   text-align: center;
@@ -342,10 +342,10 @@ onMounted(() => {
   z-index: 0;
   
   .decoration-bubble {
-    position: absolute;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
-    opacity: 0.05;
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%);
+      opacity: 0.05;
     
     &.bubble-1 {
       width: 300px;
@@ -419,12 +419,12 @@ onMounted(() => {
   display: inline-block;
   margin-top: 15px;
   padding: 6px 16px;
-  background-color: rgba(255, 182, 193, 0.25);
-  color: #ff6b88;
+  background-color: rgba(139, 195, 74, 0.25);
+  color: #4CAF50;
   border-radius: 20px;
   font-size: 14px;
   font-weight: 600;
-  border: 1px solid rgba(255, 107, 136, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.2);
 }
 
 .course-content-wrapper {
@@ -469,15 +469,15 @@ onMounted(() => {
     gap: 10px;
     
     .el-icon {
-      color: #FFA726;
+      color: #8BC34A;
       font-size: 20px;
     }
     
     &.price {
-      color: #ff5722;
+      color: #4CAF50;
       font-weight: 700;
       font-size: 24px;
-      text-shadow: 0 1px 2px rgba(255, 87, 34, 0.1);
+      text-shadow: 0 1px 2px rgba(76, 175, 80, 0.1);
     }
   }
 }
@@ -488,7 +488,7 @@ onMounted(() => {
   .section-title {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 22px;
-    color: #683e35;
+    color: #2E7D32;
     margin: 0 0 25px;
     display: flex;
     align-items: center;
@@ -502,12 +502,12 @@ onMounted(() => {
       justify-content: center;
       width: 40px;
       height: 40px;
-      background-color: rgba(255, 167, 38, 0.15);
+      background-color: rgba(139, 195, 74, 0.15);
       border-radius: 50%;
       margin-right: 15px;
       
       .el-icon {
-        color: #FFA726;
+        color: #8BC34A;
         font-size: 22px;
       }
     }
@@ -552,7 +552,7 @@ onMounted(() => {
   &:hover {
     transform: translateY(-10px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-    border-color: #FFE0B2;
+    border-color: #C8E6C9;
   }
   
   .el-icon {
@@ -562,7 +562,7 @@ onMounted(() => {
   h4 {
     margin: 0 0 12px;
     font-size: 20px;
-    color: #683e35;
+    color: #2E7D32;
     font-weight: 600;
   }
   
@@ -613,9 +613,9 @@ onMounted(() => {
     }
     
     .custom-step-head.success {
-      border-color: #FFA726;
-      color: #FFA726;
-      box-shadow: 0 4px 15px rgba(255, 167, 38, 0.2);
+      border-color: #8BC34A;
+      color: #8BC34A;
+      box-shadow: 0 4px 15px rgba(139, 195, 74, 0.2);
     }
     
     .custom-step-title {
@@ -627,7 +627,7 @@ onMounted(() => {
     }
     
     .custom-step-title.success {
-      color: #FFA726;
+      color: #8BC34A;
       font-weight: 600;
     }
     
@@ -641,7 +641,7 @@ onMounted(() => {
     }
     
     .custom-step-line.success {
-      background-color: #FFA726;
+      background-color: #8BC34A;
     }
     
     .custom-step-line::after {
@@ -658,7 +658,7 @@ onMounted(() => {
     }
     
     .custom-step-line.success::after {
-      border-color: transparent transparent transparent #FFA726;
+      border-color: transparent transparent transparent #8BC34A;
     }
     
     /* 最后一个步骤的连接线不需要箭头 */
@@ -677,19 +677,19 @@ onMounted(() => {
   .booking-btn {
     min-width: 240px;
     height: 56px;
-    background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+    background: linear-gradient(135deg, #8BC34A 0%, #4CAF50 100%);
     color: white;
     border: none;
     border-radius: 12px;
     font-size: 18px;
     font-weight: 600;
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 6px 20px rgba(255, 167, 38, 0.25);
+    box-shadow: 0 6px 20px rgba(139, 195, 74, 0.25);
     
     &:hover:not(:disabled) {
       transform: translateY(-6px);
-      background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-      box-shadow: 0 12px 35px rgba(255, 167, 38, 0.4);
+      background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+      box-shadow: 0 12px 35px rgba(139, 195, 74, 0.4);
     }
     
     &:disabled {
