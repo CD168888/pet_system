@@ -1,5 +1,13 @@
 <template>
   <div class="boarding-apply-page">
+    <div class="page-decoration">
+      <div class="decoration-bubble bubble-1"></div>
+      <div class="decoration-bubble bubble-2"></div>
+      <div class="decoration-bubble bubble-3"></div>
+      <div class="decoration-paw paw-1">🐾</div>
+      <div class="decoration-paw paw-2">🐾</div>
+      <div class="decoration-paw paw-3">🐾</div>
+    </div>
     <div class="page-banner">
       <div class="container">
         <div class="breadcrumb">
@@ -570,7 +578,7 @@ const handleCascaderChange = (categoryId) => {
 
 
 .page-banner {
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
   padding: 60px 40px;
   text-align: center;
   position: relative;
