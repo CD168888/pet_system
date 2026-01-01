@@ -16,6 +16,7 @@
         <div class="breadcrumb">
           <el-breadcrumb separator="/">
             <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item @click="$router.push('/product')">宠物物资</el-breadcrumb-item>
             <el-breadcrumb-item @click="$router.push('/order')">我的订单</el-breadcrumb-item>
             <el-breadcrumb-item>订单详情</el-breadcrumb-item>
           </el-breadcrumb>
@@ -152,35 +153,46 @@
               <div v-for="item in orders" :key="item.id" class="product-card">
                 <div class="product-info">
                   <el-image
-                  :src="getImageUrl(item.productImage)"
-                  fit="cover"
-                  class="product-image"
-                  @click="viewProduct(item.productId)">
-                </el-image>
-                <div class="product-details">
-                  <div class="product-name" @click="viewProduct(item.productId)">{{ item.productName }}</div>
-                    <div class="product-price">单价：¥{{ item.price }}</div>
-                    <div class="product-quantity">数量：{{ item.quantity }}</div>
+                    :src="getImageUrl(item.productImage)"
+                    fit="cover"
+                    class="product-image"
+                    @click="viewProduct(item.productId)"
+                    lazy>
+                  </el-image>
+                  <div class="product-details">
+                    <div class="product-name" @click="viewProduct(item.productId)">{{ item.productName }}</div>
+                    <div class="product-spec">{{ item.spec || '默认规格' }}</div>
+                    <div class="product-price">¥{{ item.price }}</div>
                   </div>
-                </div>
-                <div class="product-total">
-                  <div class="product-total-item">
-                    <span>商品金额：</span>
-                    <span>¥{{ (item.price * item.quantity).toFixed(2) }}</span>
+                  <div class="product-actions">
+                    <div class="product-quantity">x{{ item.quantity }}</div>
+                    <div class="product-subtotal">¥{{ (item.price * item.quantity).toFixed(2) }}</div>
                   </div>
                 </div>
               </div>
               
               <!-- 订单总金额 -->
-              <div class="order-total">
-                <div class="order-total-item">
-                  <span>商品总金额：</span>
-                  <span>¥{{ getTotalAmount() }}</span>
-                </div>
-                
-                <div class="order-total-item order-amount">
-                  <span>实付款：</span>
-                  <span>¥{{ getTotalAmount() }}</span>
+              <div class="order-total-section">
+                <div class="order-total">
+                  <div class="total-item">
+                    <span class="total-label">商品总金额</span>
+                    <span class="total-value">¥{{ getTotalAmount() }}</span>
+                  </div>
+                  
+                  <div class="total-item shipping">
+                    <span class="total-label">运费</span>
+                    <span class="total-value">¥{{ getShippingFee() }}</span>
+                  </div>
+                  
+                  <div class="total-item discount">
+                    <span class="total-label">优惠</span>
+                    <span class="total-value">-¥{{ getDiscount() }}</span>
+                  </div>
+                  
+                  <div class="total-item final-amount">
+                    <span class="total-label">实付款</span>
+                    <span class="total-value highlight">¥{{ getFinalAmount() }}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -608,6 +620,29 @@ const getTotalAmount = () => {
   return orders.value.reduce((total, item) => total + (item.totalAmount || 0), 0)
 }
 
+// 计算运费
+const getShippingFee = () => {
+  // 这里可以根据实际业务逻辑计算运费
+  // 目前暂时返回0
+  return 0
+}
+
+// 计算优惠金额
+const getDiscount = () => {
+  // 这里可以根据实际业务逻辑计算优惠金额
+  // 目前暂时返回0
+  return 0
+}
+
+// 计算最终金额
+const getFinalAmount = () => {
+  // 最终金额 = 商品总金额 + 运费 - 优惠
+  const totalAmount = getTotalAmount()
+  const shippingFee = getShippingFee()
+  const discount = getDiscount()
+  return Math.max(0, totalAmount + shippingFee - discount)
+}
+
 // 返回上一页
 const goBack = () => {
   router.go(-1)
@@ -806,17 +841,45 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   
   h1 {
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
     font-size: 36px;
-    font-weight: 600;
-    color: #2e7d32;
+    color: white;
     margin-bottom: 10px;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
   p {
-    font-size: 16px;
-    color: #2e7d32;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 18px;
     opacity: 0.9;
+  }
+  
+  .breadcrumb {
     margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+    
+    :deep(.el-breadcrumb__item) {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      
+      &:last-child {
+        color: white;
+        font-weight: 600;
+      }
+      
+      a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        
+        &:hover {
+          color: white;
+        }
+      }
+    }
   }
 }
 
@@ -1181,85 +1244,193 @@ onMounted(() => {
 }
 
 .product-card {
-  background-color: #fff;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 253, 240, 0.98) 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 20px;
   transition: all 0.3s ease;
   border: 1px solid rgba(102, 187, 106, 0.2);
+  margin-bottom: 15px;
+  width: 100%;
+  box-sizing: border-box;
   
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(102, 187, 106, 0.15);
-    border-color: rgba(102, 187, 106, 0.5);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(102, 187, 106, 0.15);
+    border-color: rgba(102, 187, 106, 0.4);
   }
   
   .product-info {
     display: flex;
-    margin-bottom: 20px;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
     
     .product-image {
-      width: 100px;
-      height: 100px;
-      border-radius: 8px;
+      width: 90px;
+      height: 90px;
+      border-radius: 12px;
       object-fit: cover;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      transition: transform 0.3s ease;
+      box-shadow: 0 4px 12px rgba(102, 187, 106, 0.15);
+      transition: all 0.3s ease;
       cursor: pointer;
+      flex-shrink: 0;
+      border: 2px solid rgba(102, 187, 106, 0.2);
       
       &:hover {
-        transform: scale(1.05);
+        transform: scale(1.08);
+        box-shadow: 0 6px 16px rgba(102, 187, 106, 0.2);
+        border-color: rgba(102, 187, 106, 0.5);
       }
     }
     
     .product-details {
-      margin-left: 15px;
       flex: 1;
+      min-width: 0;
+      padding: 5px 0;
       
       .product-name {
-        font-weight: 600;
-        margin-bottom: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 8px;
         color: #2e7d32;
         cursor: pointer;
         transition: color 0.3s ease;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         
         &:hover {
           color: #66bb6a;
+          text-decoration: underline;
         }
       }
       
-      .product-price {
-        font-weight: 600;
-        color: #66bb6a;
-        font-size: 14px;
+      .product-spec {
+        font-size: 13px;
+        color: #8D6E63;
         margin-bottom: 5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
+      
+      .product-price {
+        font-size: 15px;
+        font-weight: 700;
+        color: #66bb6a;
+      }
+    }
+    
+    .product-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      flex-shrink: 0;
       
       .product-quantity {
-        color: #666;
         font-size: 14px;
-        margin-bottom: 5px;
+        color: #8D6E63;
+        font-weight: 600;
+        padding: 6px 15px;
+        background-color: rgba(102, 187, 106, 0.1);
+        border-radius: 20px;
+        border: 1px solid rgba(102, 187, 106, 0.3);
       }
-    }
-  }
-  
-  .product-total {
-    border-top: 1px solid rgba(102, 187, 106, 0.3);
-    padding-top: 15px;
-    text-align: right;
-    
-    .product-total-item {
-      margin-bottom: 5px;
-      color: #666;
       
-      &.order-amount {
-        font-weight: bold;
-        font-size: 16px;
+      .product-subtotal {
+        font-size: 18px;
+        font-weight: 800;
         color: #66bb6a;
-        margin-top: 10px;
+        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
     }
   }
+}
+
+/* 订单总金额区域 */
+.order-total-section {
+  margin-top: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(102, 187, 106, 0.05) 0%, rgba(184, 233, 134, 0.05) 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(102, 187, 106, 0.2);
+  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.08);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.order-total {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  
+  .total-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: rgba(102, 187, 106, 0.05);
+      padding: 8px 15px;
+      border-radius: 8px;
+    }
+    
+    .total-label {
+      font-size: 14px;
+      color: #666;
+      font-weight: 600;
+    }
+    
+    .total-value {
+      font-size: 14px;
+      color: #333;
+      font-weight: 700;
+    }
+    
+    &.shipping {
+      border-top: 1px dashed rgba(102, 187, 106, 0.2);
+      padding-top: 15px;
+    }
+    
+    &.final-amount {
+      border-top: 1px solid rgba(102, 187, 106, 0.3);
+      padding-top: 18px;
+      margin-top: 5px;
+      
+      .total-label {
+        font-size: 16px;
+        color: #2e7d32;
+        font-weight: 800;
+      }
+      
+      .total-value {
+        font-size: 18px;
+        color: #66bb6a;
+        font-weight: 900;
+      }
+    }
+    
+    .total-value.highlight {
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+}
+
+/* 商品列表容器 */
+.product-list {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .pay-dialog {
