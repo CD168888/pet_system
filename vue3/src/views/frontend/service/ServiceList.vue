@@ -298,7 +298,7 @@ onMounted(() => {
 }
 
 .page-banner {
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
   padding: 60px 40px;
   text-align: center;
   position: relative;
@@ -462,7 +462,7 @@ onMounted(() => {
     border-radius: 20px;
     padding: 25px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(255, 182, 193, 0.2);
+    border: 1px solid rgba(102, 187, 106, 0.2);
   }
   
   .filter-header {
@@ -558,24 +558,24 @@ onMounted(() => {
   }
   
   .search-button {
-    background: linear-gradient(135deg, #FF6B6B 0%, #FFA500 100%);
+    background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
     
     &:hover:not(:disabled) {
-      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+      box-shadow: 0 8px 25px rgba(102, 187, 106, 0.4);
     }
   }
   
   .reset-button {
-    background: rgba(255, 182, 193, 0.15);
-    color: #683e35;
-    border: 2px solid rgba(255, 182, 193, 0.3);
+    background: rgba(102, 187, 106, 0.15);
+    color: #2e7d32;
+    border: 2px solid rgba(102, 187, 106, 0.3);
     
     &:hover {
-      background: rgba(255, 182, 193, 0.25);
-      border-color: #FFB6C1;
-      color: #683e35;
+      background: rgba(102, 187, 106, 0.25);
+      border-color: #66bb6a;
+      color: #2e7d32;
     }
   }
 }
@@ -628,9 +628,9 @@ onMounted(() => {
   }
   
   :deep(.el-tabs__item.is-active) {
-    background: linear-gradient(135deg, #FF6B6B 0%, #FFA500 100%);
+    background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
     color: white;
-    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
     padding: 10px 22px;
     text-align: center;
     display: flex;
@@ -726,7 +726,7 @@ onMounted(() => {
   border-radius: 20px;
   padding: 25px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 182, 193, 0.2);
+  border: 1px solid rgba(102, 187, 106, 0.2);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -738,14 +738,14 @@ onMounted(() => {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 182, 193, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(102, 187, 106, 0.1), transparent);
     transition: left 0.5s ease;
   }
   
   &:hover {
     transform: translateY(-12px);
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-    border-color: rgba(255, 182, 193, 0.4);
+    border-color: rgba(102, 187, 106, 0.4);
     
     &::before {
       left: 100%;
@@ -780,13 +780,13 @@ onMounted(() => {
   }
   
   .service-status {
-    background: linear-gradient(135deg, #FF6B6B 0%, #C70039 100%);
+    background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
     color: white;
     padding: 3px 10px;
     border-radius: 15px;
     font-size: 12px;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(245, 108, 108, 0.3);
+    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
     transition: all 0.3s ease;
   }
 }
@@ -802,7 +802,7 @@ onMounted(() => {
   .service-price {
     font-size: 24px;
     font-weight: 800;
-    background: linear-gradient(135deg, #FF6B6B 0%, #FFA500 100%);
+    background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -812,17 +812,17 @@ onMounted(() => {
   .service-duration {
     display: flex;
     align-items: center;
-    color: #6E4C1E;
+    color: #2e7d32;
     font-size: 15px;
     font-weight: 500;
-    background: rgba(255, 182, 193, 0.15);
+    background: rgba(102, 187, 106, 0.15);
     padding: 6px 12px;
     border-radius: 15px;
     transition: all 0.3s ease;
     
     .el-icon {
       margin-right: 6px;
-      color: #FFB6C1;
+      color: #66bb6a;
       font-size: 16px;
     }
   }
@@ -881,24 +881,24 @@ onMounted(() => {
   }
   
   .booking-button {
-    background: linear-gradient(135deg, #FF6B6B 0%, #FFA500 100%);
+    background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
     
     &:hover:not(:disabled) {
-      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+      box-shadow: 0 8px 25px rgba(102, 187, 106, 0.4);
     }
   }
   
   .detail-button {
-    background: rgba(255, 182, 193, 0.15);
-    color: #6E4C1E;
-    border: 2px solid rgba(255, 182, 193, 0.3);
+    background: rgba(102, 187, 106, 0.15);
+    color: #2e7d32;
+    border: 2px solid rgba(102, 187, 106, 0.3);
     
     &:hover {
-      background: rgba(255, 182, 193, 0.25);
-      border-color: #FFB6C1;
-      color: #FFB6C1;
+      background: rgba(102, 187, 106, 0.25);
+      border-color: #66bb6a;
+      color: #66bb6a;
     }
   }
 }
@@ -914,19 +914,22 @@ onMounted(() => {
   
   :deep(.el-pagination) {
     --el-pagination-button-bg-color: white;
-    --el-pagination-hover-color: #FFB6C1;
+    --el-pagination-hover-color: #66bb6a;
     
     .el-pagination__jump {
-      color: #683e35;
+      color: #2e7d32;
     }
     
     button:not(:disabled):hover {
-      color: #FFB6C1;
+      color: #66bb6a;
+      background: rgba(102, 187, 106, 0.3);
+      border-color: #66bb6a;
     }
     
     .is-active {
-      background-color: #FFB6C1 !important;
+      background-color: #66bb6a !important;
       color: white !important;
+      border-color: #66bb6a !important;
     }
   }
 }

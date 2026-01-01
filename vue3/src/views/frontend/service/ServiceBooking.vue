@@ -332,10 +332,10 @@ onMounted(() => {
 
 .page-banner {
   position: relative;
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
   padding: 60px 20px;
   margin-bottom: 30px;
-  border-radius: 0 0 30px 30px;
+  border-radius: 24px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   
@@ -562,64 +562,65 @@ onMounted(() => {
   }
   
   .service-info {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    }
-    
-    .section-title {
-      font-family: 'Nunito Sans', sans-serif;
-      font-size: 20px;
-      color: #683e35;
-      margin: 0 0 20px;
-      position: relative;
-      padding-left: 15px;
-      animation: fadeInDown 0.6s ease-in-out;
+      flex: 1;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(102, 187, 106, 0.2);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
       
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        background: #FFB6C1;
-        border-radius: 2px;
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: rgba(102, 187, 106, 0.4);
       }
-    }
+      
+      .section-title {
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 20px;
+        color: #2e7d32;
+        margin: 0 0 20px;
+        position: relative;
+        padding-left: 15px;
+        animation: fadeInDown 0.6s ease-in-out;
+        
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 4px;
+          background: #66bb6a;
+          border-radius: 2px;
+        }
+      }
     
     .service-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-      
-      .service-category {
-        display: inline-block;
-        padding: 4px 12px;
-        background-color: rgba(255, 182, 193, 0.2);
-        color: #ff6b88;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 500;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        
+        .service-category {
+          display: inline-block;
+          padding: 4px 12px;
+          background-color: rgba(102, 187, 106, 0.2);
+          color: #43a047;
+          border-radius: 20px;
+          font-size: 14px;
+          font-weight: 500;
+        }
       }
-    }
-    
-    h2 {
-      font-size: 24px;
-      color: #683e35;
-      margin: 0 0 15px;
-      animation: fadeInDown 0.6s ease-in-out 0.2s both;
-    }
+      
+      h2 {
+        font-size: 24px;
+        color: #2e7d32;
+        margin: 0 0 15px;
+        animation: fadeInDown 0.6s ease-in-out 0.2s both;
+      }
     
     .service-meta {
       display: flex;
@@ -650,44 +651,48 @@ onMounted(() => {
     }
     
     .service-price {
-      color: #f56c6c;
-      font-size: 22px;
-      font-weight: bold;
-      animation: fadeInDown 0.6s ease-in-out 0.5s both;
-    }
+        color: #66bb6a;
+        font-size: 22px;
+        font-weight: bold;
+        animation: fadeInDown 0.6s ease-in-out 0.5s both;
+      }
   }
   
   .booking-form {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    animation: fadeInUp 0.8s ease-in-out 0.3s both;
-    
-    h2 {
-      font-family: 'Nunito Sans', sans-serif;
-      font-size: 20px;
-      color: #683e35;
-      margin: 0 0 25px;
-      position: relative;
-      padding-left: 15px;
-      animation: fadeInDown 0.6s ease-in-out 0.4s both;
+      flex: 1;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(102, 187, 106, 0.2);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      animation: fadeInUp 0.8s ease-in-out 0.3s both;
       
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        background: #FFB6C1;
-        border-radius: 2px;
+      &:hover {
+        border-color: rgba(102, 187, 106, 0.4);
       }
-    }
+      
+      h2 {
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 20px;
+        color: #2e7d32;
+        margin: 0 0 25px;
+        position: relative;
+        padding-left: 15px;
+        animation: fadeInDown 0.6s ease-in-out 0.4s both;
+        
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 4px;
+          background: #66bb6a;
+          border-radius: 2px;
+        }
+      }
     
     :deep(.el-form-item__label) {
       color: #666;
@@ -704,19 +709,19 @@ onMounted(() => {
 }
 
 .notice-card {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(102, 187, 106, 0.2);
   border-radius: 20px;
   padding: 25px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   margin-bottom: 30px;
-  border-left: 4px solid #E6A23C;
+  border-left: 4px solid #66bb6a;
   animation: fadeInUp 0.8s ease-in-out 0.5s both;
   
   h3 {
-    color: #F57C00;
+    color: #2e7d32;
     margin: 0 0 15px;
     font-size: 18px;
     display: flex;
@@ -724,6 +729,7 @@ onMounted(() => {
     
     .icon {
       margin-right: 8px;
+      color: #66bb6a;
     }
   }
   
@@ -746,21 +752,22 @@ onMounted(() => {
 .submit-btn {
   min-width: 120px;
   height: 40px;
-  background-color: #FFA726;
+  background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
   color: white;
   border: none;
   border-radius: 8px;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
   
   &:hover:not(:disabled) {
     transform: translateY(-3px);
-    background-color: darken(#FFA726, 5%);
-    box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
+    box-shadow: 0 8px 25px rgba(102, 187, 106, 0.4);
   }
   
   &:disabled {
     background-color: #f0f0f0;
     color: #999;
+    box-shadow: none;
   }
   
   .el-icon {
@@ -771,14 +778,16 @@ onMounted(() => {
 .reset-btn {
   min-width: 120px;
   height: 40px;
-  color: #666;
-  border-color: #dcdfe6;
+  color: #2e7d32;
+  border-color: rgba(102, 187, 106, 0.3);
   border-radius: 8px;
   transition: all 0.3s ease;
+  background: rgba(102, 187, 106, 0.1);
   
   &:hover, &:focus {
-    color: #683e35;
-    border-color: #683e35;
+    color: #43a047;
+    border-color: #66bb6a;
+    background: rgba(102, 187, 106, 0.2);
   }
 }
 
@@ -828,14 +837,16 @@ onMounted(() => {
 
 // 表单样式覆盖
 :deep(.el-input__wrapper), :deep(.el-textarea__wrapper) {
-  box-shadow: 0 0 0 1px #dcdfe6 inset;
+  box-shadow: 0 0 0 1px rgba(102, 187, 106, 0.3) inset;
+  background-color: rgba(255, 255, 255, 0.9);
   
   &:hover {
-    box-shadow: 0 0 0 1px #FFA726 inset;
+    box-shadow: 0 0 0 1px #66bb6a inset;
   }
   
   &.is-focus {
-    box-shadow: 0 0 0 1px #FFA726 inset;
+    box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.2) inset;
+    border-color: #66bb6a;
   }
 }
 
