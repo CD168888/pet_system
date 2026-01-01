@@ -1,5 +1,12 @@
 <template>
   <div class="product-list-page">
+    <div class="page-decoration">
+      <div class="decoration-bubble bubble-1"></div>
+      <div class="decoration-bubble bubble-2"></div>
+      <div class="decoration-bubble bubble-3"></div>
+      <div class="decoration-paw paw-1">🐾</div>
+      <div class="decoration-paw paw-2">🐾</div>
+    </div>
     <div class="page-banner">
       <div class="container">
         <div class="breadcrumb">
@@ -271,16 +278,74 @@ onMounted(() => {
 .product-list-page {
   min-height: 100vh;
   padding-bottom: 50px;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  
+  .decoration-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+    opacity: 0.05;
+    
+    &.bubble-1 {
+      width: 300px;
+      height: 300px;
+      top: -150px;
+      left: -100px;
+    }
+    
+    &.bubble-2 {
+      width: 200px;
+      height: 200px;
+      bottom: 10%;
+      right: -50px;
+    }
+    
+    &.bubble-3 {
+      width: 150px;
+      height: 150px;
+      top: 40%;
+      right: 10%;
+    }
+  }
+  
+  .decoration-paw {
+    position: absolute;
+    font-size: 30px;
+    opacity: 0.1;
+    
+    &.paw-1 {
+      top: 20%;
+      left: 5%;
+      animation: float 15s infinite ease-in-out;
+    }
+    
+    &.paw-2 {
+      bottom: 10%;
+      right: 10%;
+      animation: float 18s infinite ease-in-out reverse;
+    }
+  }
 }
 
 .page-banner {
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
-  padding: 60px 40px;
-  text-align: center;
-  position: relative;
-  margin-bottom: 40px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 24px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
+    padding: 60px 40px;
+    text-align: center;
+    position: relative;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 24px;
   
   .container {
     max-width: 1200px;
@@ -367,6 +432,7 @@ onMounted(() => {
   padding: 0 20px;
   position: relative;
   z-index: 1;
+  z-index: 1;
 }
 
 .filter-section {
@@ -375,22 +441,22 @@ onMounted(() => {
 }
 
 .filter-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 182, 193, 0.3);
-  padding: 25px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-    border-color: rgba(255, 182, 193, 0.5);
-  }
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(102, 187, 106, 0.3);
+    padding: 25px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+      border-color: rgba(102, 187, 106, 0.5);
+    }
   
   .filter-header {
     display: flex;
@@ -401,7 +467,7 @@ onMounted(() => {
     h3 {
       font-family: 'Nunito Sans', sans-serif;
       font-size: 22px;
-      color: #6E4C1E;
+      color: #2e7d32;
       margin: 0;
     }
     
@@ -409,19 +475,19 @@ onMounted(() => {
       font-size: 22px;
       width: 40px;
       height: 40px;
-      background: #FFEE93;
+      background: #e8f5e9;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       animation: pulse 2s infinite, float 4s ease-in-out infinite;
-      box-shadow: 0 4px 12px rgba(255, 238, 147, 0.3);
+      box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
     }
   }
   
   .search-form {
     :deep(.el-form-item__label) {
-      color: #6E4C1E;
+      color: #2e7d32;
       font-weight: 500;
     }
     
@@ -430,23 +496,23 @@ onMounted(() => {
         border-radius: 12px;
         transition: all 0.3s ease;
         background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(255, 182, 193, 0.3);
+        border: 1px solid rgba(102, 187, 106, 0.3);
         
         &.is-focus {
-          box-shadow: 0 0 0 2px rgba(255, 182, 193, 0.5);
-          border-color: rgba(255, 182, 193, 0.5);
+          box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.5);
+          border-color: rgba(102, 187, 106, 0.5);
         }
         
         :deep(.el-input__inner) {
-          color: #6E4C1E;
+          color: #2e7d32;
           
           &::placeholder {
-            color: rgba(110, 76, 30, 0.5);
+            color: rgba(46, 125, 50, 0.5);
           }
         }
         
         :deep(.el-input__suffix-inner) {
-          color: #FFB6C1;
+          color: #66bb6a;
         }
       }
     }
@@ -458,24 +524,24 @@ onMounted(() => {
         border-radius: 12px;
         transition: all 0.3s ease;
         background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(255, 182, 193, 0.3);
+        border: 1px solid rgba(102, 187, 106, 0.3);
         
         &.is-focus {
-          box-shadow: 0 0 0 2px rgba(255, 182, 193, 0.5);
-          border-color: rgba(255, 182, 193, 0.5);
+          box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.5);
+          border-color: rgba(102, 187, 106, 0.5);
         }
       }
       
       :deep(.el-select__input) {
-        color: #6E4C1E;
+        color: #2e7d32;
       }
       
       :deep(.el-select__placeholder) {
-        color: rgba(110, 76, 30, 0.5);
+        color: rgba(46, 125, 50, 0.5);
       }
       
       :deep(.el-select__suffix-inner) {
-        color: #FFB6C1;
+        color: #66bb6a;
       }
     }
   }
@@ -499,10 +565,10 @@ onMounted(() => {
           }
           
           .search-btn {
-            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
             border: none;
             color: white;
-            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
             
             &::before {
               content: '';
@@ -521,20 +587,20 @@ onMounted(() => {
             
             &:hover {
               transform: translateY(-2px);
-              box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+              box-shadow: 0 6px 20px rgba(102, 187, 106, 0.4);
             }
           }
           
           .reset-btn {
             background: white;
-            border: 2px solid rgba(255, 182, 193, 0.3);
-            color: #6E4C1E;
+            border: 2px solid rgba(102, 187, 106, 0.3);
+            color: #2e7d32;
             
             &:hover {
-              background: rgba(255, 182, 193, 0.1);
-              border-color: #FFB6C1;
+              background: rgba(102, 187, 106, 0.1);
+              border-color: #66bb6a;
               transform: translateY(-2px);
-              box-shadow: 0 6px 15px rgba(255, 182, 193, 0.2);
+              box-shadow: 0 6px 15px rgba(102, 187, 106, 0.2);
             }
           }
         }
@@ -578,7 +644,7 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-left: 3px solid #FFB6C1;
+  border-left: 3px solid #66bb6a;
   padding: 15px;
   border-radius: 12px;
   display: flex;
@@ -588,12 +654,12 @@ onMounted(() => {
   .tip-icon {
     font-size: 20px;
     margin-right: 12px;
-    color: #FFB6C1;
+    color: #66bb6a;
   }
   
   .tip-text {
     font-size: 14px;
-    color: #6E4C1E;
+    color: #2e7d32;
     line-height: 1.5;
   }
 }
@@ -607,13 +673,13 @@ onMounted(() => {
   align-items: center;
   font-family: 'Nunito Sans', sans-serif;
   font-size: 32px;
-  color: #6E4C1E;
+  color: #2e7d32;
   margin-bottom: 30px;
   
   .title-icon {
     margin-right: 15px;
     font-size: 36px;
-    color: #FFB6C1;
+    color: #66bb6a;
   }
   
   .title-count {
@@ -672,7 +738,7 @@ onMounted(() => {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(102, 187, 106, 0.3);
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
@@ -683,6 +749,7 @@ onMounted(() => {
   &:hover {
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
     transform: translateY(-8px);
+    border-color: rgba(102, 187, 106, 0.5);
   }
   
   &.out-of-stock {
@@ -822,7 +889,7 @@ onMounted(() => {
     width: 100%;
     height: 42px;
     font-size: 14px;
-    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
     color: white;
     border: none;
     border-radius: 12px;
@@ -830,7 +897,7 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
     position: relative;
     overflow: hidden;
     z-index: 1;
@@ -854,7 +921,7 @@ onMounted(() => {
     
     &:hover:not(:disabled) {
       transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+      box-shadow: 0 8px 25px rgba(102, 187, 106, 0.4);
       
       &::before {
         left: 100%;
@@ -888,34 +955,34 @@ onMounted(() => {
   
   :deep(.el-pagination) {
     --el-pagination-button-bg-color: rgba(255, 255, 255, 0.9);
-    --el-pagination-hover-color: #FF9800;
-    --el-pagination-border-color: rgba(255, 182, 193, 0.3);
+    --el-pagination-hover-color: #66bb6a;
+    --el-pagination-border-color: rgba(102, 187, 106, 0.3);
     
     .el-pagination__jump {
-      color: #6E4C1E;
+      color: #2e7d32;
     }
     
     .el-pagination__total {
-      color: #6E4C1E;
+      color: #2e7d32;
     }
     
     button:not(:disabled):hover {
-      color: #FF9800;
-      background: rgba(255, 182, 193, 0.1);
+      color: #66bb6a;
+      background: rgba(102, 187, 106, 0.1);
     }
     
     .is-active {
-      background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%) !important;
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%) !important;
       color: white !important;
       border-color: transparent;
     }
     
     :deep(.el-input__wrapper) {
       background: rgba(255, 255, 255, 0.9);
-      border-color: rgba(255, 182, 193, 0.3);
+      border-color: rgba(102, 187, 106, 0.3);
       
       .el-input__inner {
-        color: #6E4C1E;
+        color: #2e7d32;
       }
     }
   }

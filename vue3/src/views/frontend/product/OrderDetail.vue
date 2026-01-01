@@ -2,6 +2,9 @@
   <div class="order-detail-page">
     <!-- 页面装饰 -->
     <div class="page-decoration">
+      <div class="decoration-bubble bubble-1"></div>
+      <div class="decoration-bubble bubble-2"></div>
+      <div class="decoration-bubble bubble-3"></div>
       <div class="decoration-paw paw-1">🐾</div>
       <div class="decoration-paw paw-2">🐾</div>
       <div class="decoration-paw paw-3">🐾</div>
@@ -790,27 +793,29 @@ onMounted(() => {
 }
 
 .page-banner {
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
   padding: 60px 40px;
   overflow: hidden;
   text-align: center;
   z-index: 1;
-  border-radius: 0 0 24px 24px;
+  border-radius: 24px;
   text-align: center;
   position: relative;
   overflow: hidden;
   margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   
   h1 {
     font-size: 36px;
     font-weight: 600;
-    color: #333;
+    color: #2e7d32;
     margin-bottom: 10px;
   }
   
   p {
     font-size: 16px;
-    color: #666;
+    color: #2e7d32;
+    opacity: 0.9;
     margin-bottom: 20px;
   }
 }
@@ -823,6 +828,34 @@ onMounted(() => {
   height: 100%;
   pointer-events: none;
   z-index: 0;
+  
+  .decoration-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+    opacity: 0.05;
+    
+    &.bubble-1 {
+      width: 300px;
+      height: 300px;
+      top: -150px;
+      left: -100px;
+    }
+    
+    &.bubble-2 {
+      width: 200px;
+      height: 200px;
+      bottom: 10%;
+      right: -50px;
+    }
+    
+    &.bubble-3 {
+      width: 150px;
+      height: 150px;
+      top: 40%;
+      right: 10%;
+    }
+  }
   
   .decoration-paw {
     position: absolute;
@@ -934,10 +967,14 @@ onMounted(() => {
 }
 
 .order-detail-card {
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
   margin-bottom: 30px;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(102, 187, 106, 0.3);
   
   :deep(.el-card__body) {
     padding: 25px;
@@ -958,24 +995,24 @@ onMounted(() => {
     }
     
     .el-step__icon {
-      color: #FFA726;
-      border-color: #FFA726;
+      color: #66bb6a;
+      border-color: #66bb6a;
     }
     
     .el-step.is-success {
       .el-step__title, .el-step__icon {
-        color: #67C23A;
+        color: #66bb6a;
       }
     }
     
     .el-step.is-process {
       .el-step__title {
-        color: #683e35;
+        color: #2e7d32;
         font-weight: 600;
       }
       
       .el-step__icon {
-        background-color: #FFA726;
+        background-color: #66bb6a;
         color: white;
       }
     }
@@ -1034,45 +1071,60 @@ onMounted(() => {
   }
   
   .action-buttons {
-    display: flex;
-    gap: 10px;
-    
-    .el-button {
-      transition: all 0.3s ease;
-      border-radius: 20px;
+      display: flex;
+      gap: 10px;
       
-      .el-icon {
-        margin-right: 5px;
+      .el-button {
+        transition: all 0.3s ease;
+        border-radius: 25px;
+        font-weight: 600;
+        
+        .el-icon {
+          margin-right: 5px;
+        }
+        
+        &:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
       }
       
-      &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      .el-button--primary {
+        background: linear-gradient(135deg, #66bb6a 0%, #b3e5fc 100%);
+        border: 1px solid rgba(102, 187, 106, 0.5);
+        color: #2e7d32;
+        
+        &:hover {
+          background: linear-gradient(135deg, #b3e5fc 0%, #66bb6a 100%);
+          border-color: #66bb6a;
+          box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
+        }
+      }
+      
+      .el-button--success {
+        background: linear-gradient(135deg, #66bb6a 0%, #b3e5fc 100%);
+        border: 1px solid rgba(102, 187, 106, 0.5);
+        color: #2e7d32;
+        
+        &:hover {
+          background: linear-gradient(135deg, #b3e5fc 0%, #66bb6a 100%);
+          border-color: #66bb6a;
+          box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
+        }
+      }
+      
+      .el-button--danger {
+        background: linear-gradient(135deg, #FFB6B9 0%, #FF8787 100%);
+        border: 1px solid rgba(255, 135, 135, 0.5);
+        color: #721C24;
+        
+        &:hover {
+          background: linear-gradient(135deg, #FF8787 0%, #FFB6B9 100%);
+          border-color: #FF8787;
+          box-shadow: 0 4px 12px rgba(255, 135, 135, 0.4);
+        }
       }
     }
-    
-    .el-button--primary {
-      background-color: #FFA726;
-      border-color: #FFA726;
-      
-      &:hover {
-        background-color: darken(#FFA726, 5%);
-        border-color: darken(#FFA726, 5%);
-        box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
-      }
-    }
-    
-    .el-button--success {
-      background-color: #67C23A;
-      border-color: #67C23A;
-      
-      &:hover {
-        background-color: darken(#67C23A, 5%);
-        border-color: darken(#67C23A, 5%);
-        box-shadow: 0 4px 12px rgba(103, 194, 58, 0.3);
-      }
-    }
-  }
 }
 
 .info-section {
@@ -1085,7 +1137,7 @@ onMounted(() => {
     margin-bottom: 15px;
     
     .el-icon {
-      color: #FFA726;
+      color: #66bb6a;
       font-size: 20px;
     }
     
@@ -1093,7 +1145,7 @@ onMounted(() => {
       margin: 0 0 0 10px;
       font-size: 18px;
       font-weight: 600;
-      color: #683e35;
+      color: #2e7d32;
     }
   }
   
@@ -1130,14 +1182,16 @@ onMounted(() => {
 
 .product-card {
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   padding: 20px;
   transition: all 0.3s ease;
+  border: 1px solid rgba(102, 187, 106, 0.2);
   
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 30px rgba(102, 187, 106, 0.15);
+    border-color: rgba(102, 187, 106, 0.5);
   }
   
   .product-info {
@@ -1149,7 +1203,7 @@ onMounted(() => {
       height: 100px;
       border-radius: 8px;
       object-fit: cover;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       transition: transform 0.3s ease;
       cursor: pointer;
       
@@ -1165,16 +1219,22 @@ onMounted(() => {
       .product-name {
         font-weight: 600;
         margin-bottom: 10px;
-        color: #333;
+        color: #2e7d32;
         cursor: pointer;
         transition: color 0.3s ease;
         
         &:hover {
-          color: #FFA726;
+          color: #66bb6a;
         }
       }
       
-      .product-price,
+      .product-price {
+        font-weight: 600;
+        color: #66bb6a;
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+      
       .product-quantity {
         color: #666;
         font-size: 14px;
@@ -1184,7 +1244,7 @@ onMounted(() => {
   }
   
   .product-total {
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid rgba(102, 187, 106, 0.3);
     padding-top: 15px;
     text-align: right;
     
@@ -1195,7 +1255,7 @@ onMounted(() => {
       &.order-amount {
         font-weight: bold;
         font-size: 16px;
-        color: #f56c6c;
+        color: #66bb6a;
         margin-top: 10px;
       }
     }
@@ -1230,12 +1290,12 @@ onMounted(() => {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #333;
+    color: #2e7d32;
     margin-top: 0;
     margin-bottom: 15px;
     
     .el-icon {
-      color: #FFA726;
+      color: #66bb6a;
     }
   }
   
@@ -1323,11 +1383,11 @@ onMounted(() => {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #333;
+    color: #2e7d32;
     margin-bottom: 15px;
     
     .el-icon {
-      color: #FFA726;
+      color: #66bb6a;
     }
   }
   
@@ -1398,12 +1458,18 @@ onMounted(() => {
 
 .confirm-btn {
   min-width: 120px;
-  background-color: #FFA726;
-  border-color: #FFA726;
+  background: linear-gradient(135deg, #66bb6a 0%, #b3e5fc 100%);
+  border: 1px solid rgba(102, 187, 106, 0.5);
+  color: #2e7d32;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
   
   &:hover {
-    background-color: darken(#FFA726, 5%);
-    border-color: darken(#FFA726, 5%);
+    background: linear-gradient(135deg, #b3e5fc 0%, #66bb6a 100%);
+    border-color: #66bb6a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
   }
   
   .el-icon {
@@ -1480,12 +1546,12 @@ onMounted(() => {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #333;
+    color: #2e7d32;
     margin-top: 0;
     margin-bottom: 15px;
     
     .el-icon {
-      color: #FFA726;
+      color: #66bb6a;
     }
   }
   

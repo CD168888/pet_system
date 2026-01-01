@@ -1,5 +1,12 @@
 <template>
   <div class="product-detail-page" v-loading="loading">
+    <div class="page-decoration">
+      <div class="decoration-bubble bubble-1"></div>
+      <div class="decoration-bubble bubble-2"></div>
+      <div class="decoration-bubble bubble-3"></div>
+      <div class="decoration-paw paw-1">🐾</div>
+      <div class="decoration-paw paw-2">🐾</div>
+    </div>
     <!-- 添加Page Banner -->
     <div class="page-banner" v-if="product">
       <div class="container">
@@ -458,9 +465,65 @@ onMounted(() => {
   overflow: hidden;
 }
 
+.page-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  
+  .decoration-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+    opacity: 0.05;
+    
+    &.bubble-1 {
+      width: 300px;
+      height: 300px;
+      top: -150px;
+      left: -100px;
+    }
+    
+    &.bubble-2 {
+      width: 200px;
+      height: 200px;
+      bottom: 10%;
+      right: -50px;
+    }
+    
+    &.bubble-3 {
+      width: 150px;
+      height: 150px;
+      top: 40%;
+      right: 10%;
+    }
+  }
+  
+  .decoration-paw {
+    position: absolute;
+    font-size: 30px;
+    opacity: 0.1;
+    
+    &.paw-1 {
+      top: 20%;
+      left: 5%;
+      animation: float 15s infinite ease-in-out;
+    }
+    
+    &.paw-2 {
+      bottom: 10%;
+      right: 10%;
+      animation: float 18s infinite ease-in-out reverse;
+    }
+  }
+}
+
 /* Page Banner */
 .page-banner {
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
   padding: 60px 40px;
   text-align: center;
   position: relative;
@@ -584,17 +647,17 @@ onMounted(() => {
   
   .carousel-container {
     :deep(.el-carousel__arrow) {
-      background-color: rgba(255, 182, 193, 0.8);
+      background-color: rgba(102, 187, 106, 0.8);
       border-radius: 50%;
       
       &:hover {
-        background-color: #FFB6C1;
+        background-color: #66bb6a;
       }
     }
     
     :deep(.el-carousel__indicators) {
       .el-carousel__button {
-        background-color: #FFEE93;
+        background-color: #e8f5e9;
       }
     }
   }
@@ -647,7 +710,7 @@ onMounted(() => {
     }
     
     &.active {
-      border-color: #FFB6C1;
+      border-color: #66bb6a;
     }
     
     img {
@@ -660,13 +723,13 @@ onMounted(() => {
 
 .product-details {
   flex: 1;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(102, 187, 106, 0.3);
+  border-radius: 24px;
   padding: 35px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   
   &:hover {
@@ -680,7 +743,7 @@ onMounted(() => {
   .product-name {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 32px;
-    color: #683e35;
+    color: #2e7d32;
     margin: 0 0 10px;
     font-weight: 700;
     line-height: 1.3;
@@ -689,9 +752,9 @@ onMounted(() => {
   .category-tag {
     padding: 8px 16px;
     border-radius: 25px;
-    background: rgba(255, 167, 38, 0.1);
-    color: #ff8f00;
-    border-color: rgba(255, 167, 38, 0.3);
+    background: rgba(102, 187, 106, 0.1);
+    color: #43a047;
+    border-color: rgba(102, 187, 106, 0.3);
     font-size: 13px;
     font-weight: 600;
     transition: all 0.3s ease;
@@ -815,13 +878,13 @@ onMounted(() => {
         color: #666;
         
         &:hover {
-          color: #FFB6C1;
+          color: #66bb6a;
         }
       }
       
       :deep(.el-input__wrapper) {
         &.is-focus {
-          box-shadow: 0 0 0 1px #FFB6C1;
+          box-shadow: 0 0 0 1px #66bb6a;
         }
       }
     }
@@ -853,28 +916,28 @@ onMounted(() => {
     }
     
     .cart-button {
-      background-color: #fff3e0;
-      color: #e6a23c;
-      border-color: #e6a23c;
+      background-color: rgba(102, 187, 106, 0.1);
+      color: #43a047;
+      border-color: #66bb6a;
       
       .button-icon {
         margin-right: 5px;
       }
       
       &:hover {
-        background-color: #ffefd5;
-        box-shadow: 0 4px 12px rgba(230, 162, 60, 0.2);
+        background-color: rgba(102, 187, 106, 0.2);
+        box-shadow: 0 4px 12px rgba(102, 187, 106, 0.2);
       }
     }
     
     .buy-button {
-      background-color: #FFA726;
+      background-color: #66bb6a;
       color: white;
       border: none;
       
       &:hover {
-        background-color: #ff9800;
-        box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+        background-color: #43a047;
+        box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
       }
     }
   }
@@ -888,7 +951,7 @@ onMounted(() => {
   .features-title {
     font-size: 16px;
     font-weight: 600;
-    color: #683e35;
+    color: #2e7d32;
     margin-bottom: 10px;
   }
   
@@ -904,7 +967,7 @@ onMounted(() => {
       margin-bottom: 8px;
       
       .feature-dot {
-        color: #FFB6C1;
+        color: #66bb6a;
         margin-right: 8px;
         font-size: 18px;
       }
@@ -959,16 +1022,16 @@ onMounted(() => {
     }
 
     :deep(.el-tabs__item:hover) {
-      color: #FF9800;
+      color: #66bb6a;
     }
 
     :deep(.el-tabs__item.is-active) {
-      color: #FF9800;
+      color: #66bb6a;
       font-weight: 600;
     }
 
     :deep(.el-tabs__active-bar) {
-      background-color: #FF9800;
+      background-color: #66bb6a;
       height: 2px;
       transition: all 0.3s ease;
     }
@@ -1005,7 +1068,7 @@ onMounted(() => {
     .notice-title {
       font-weight: 600;
       font-size: 16px;
-      color: #683e35;
+      color: #2e7d32;
       margin-bottom: 10px;
       display: flex;
       align-items: center;
@@ -1143,7 +1206,7 @@ onMounted(() => {
         color: #666;
         
         .el-icon {
-          color: #FFB6C1;
+          color: #66bb6a;
           margin-right: 5px;
         }
       }
@@ -1170,18 +1233,18 @@ onMounted(() => {
   
   :deep(.el-pagination) {
     --el-pagination-button-bg-color: #fff;
-    --el-pagination-button-color: #683e35;
+    --el-pagination-button-color: #2e7d32;
     --el-pagination-button-disabled-bg-color: #f4f4f5;
     --el-pagination-button-disabled-color: #a8abb2;
-    --el-pagination-hover-color: #FFB6C1;
+    --el-pagination-hover-color: #66bb6a;
     
     .el-pager li.is-active {
-      background-color: #FFB6C1;
+      background-color: #66bb6a;
       color: white;
     }
     
     .el-pager li:hover {
-      color: #FFB6C1;
+      color: #66bb6a;
     }
   }
 }

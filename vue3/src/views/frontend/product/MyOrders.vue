@@ -2,6 +2,9 @@
   <div class="orders-page">
     <!-- 页面装饰 -->
     <div class="page-decoration">
+      <div class="decoration-bubble bubble-1"></div>
+      <div class="decoration-bubble bubble-2"></div>
+      <div class="decoration-bubble bubble-3"></div>
       <div class="decoration-paw paw-1">🐾</div>
       <div class="decoration-paw paw-2">🐾</div>
       <div class="decoration-paw paw-3">🐾</div>
@@ -1100,6 +1103,34 @@ onMounted(() => {
   pointer-events: none;
   z-index: 0;
   
+  .decoration-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+    opacity: 0.05;
+    
+    &.bubble-1 {
+      width: 300px;
+      height: 300px;
+      top: -150px;
+      left: -100px;
+    }
+    
+    &.bubble-2 {
+      width: 200px;
+      height: 200px;
+      bottom: 10%;
+      right: -50px;
+    }
+    
+    &.bubble-3 {
+      width: 150px;
+      height: 150px;
+      top: 40%;
+      right: 10%;
+    }
+  }
+  
   .decoration-paw {
     position: absolute;
     font-size: 60px;
@@ -1133,12 +1164,12 @@ onMounted(() => {
 
 .page-banner {
   position: relative;
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
   padding: 60px 40px;
   overflow: hidden;
   text-align: center;
   z-index: 1;
-  border-radius: 0 0 24px 24px;
+  border-radius: 24px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 40px;
   
@@ -1147,12 +1178,12 @@ onMounted(() => {
     
     :deep(.el-breadcrumb__item) {
       font-size: 14px;
-      color: #6E4C1E;
+      color: #2e7d32;
       opacity: 0.8;
     }
     
     :deep(.el-breadcrumb__separator) {
-      color: #6E4C1E;
+      color: #2e7d32;
       opacity: 0.5;
     }
   }
@@ -1161,13 +1192,13 @@ onMounted(() => {
     margin: 0;
     font-family: 'Nunito Sans', sans-serif;
     font-size: 36px;
-    color: #683e35;
+    color: #2e7d32;
     margin-bottom: 10px;
   }
   
   p.page-subtitle {
     margin: 0;
-    color: #6E4C1E;
+    color: #2e7d32;
     opacity: 0.9;
     font-size: 16px;
   }
@@ -1202,11 +1233,11 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 182, 193, 0.3);
+  border: 1px solid rgba(102, 187, 106, 0.3);
   
   :deep(.el-card__header) {
     padding: 25px;
-    border-bottom: 1px solid rgba(255, 182, 193, 0.3);
+    border-bottom: 1px solid rgba(102, 187, 106, 0.3);
     background: transparent;
   }
   
@@ -1224,7 +1255,7 @@ onMounted(() => {
     margin: 0;
     font-size: 18px;
     font-weight: 600;
-    color: #683e35;
+    color: #2e7d32;
     position: relative;
     padding-left: 15px;
     
@@ -1235,7 +1266,7 @@ onMounted(() => {
       top: 0;
       bottom: 0;
       width: 4px;
-      background: #FFB6C1;
+      background: #66bb6a;
       border-radius: 2px;
     }
   }
@@ -1276,12 +1307,12 @@ onMounted(() => {
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 182, 193, 0.2);
+  border: 1px solid rgba(102, 187, 106, 0.2);
   
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(255, 167, 38, 0.15);
-    border-color: rgba(255, 182, 193, 0.5);
+    box-shadow: 0 8px 30px rgba(102, 187, 106, 0.15);
+    border-color: rgba(102, 187, 106, 0.5);
   }
 }
 
@@ -1332,7 +1363,7 @@ onMounted(() => {
       align-items: center;
       width: 100%;
       padding: 15px 0;
-      border-bottom: 1px solid rgba(255, 182, 193, 0.3);
+      border-bottom: 1px solid rgba(102, 187, 106, 0.3);
       
       .product-image {
         width: 80px;
@@ -1357,21 +1388,21 @@ onMounted(() => {
         
         .product-name {
           font-size: 14px;
-          color: #683e35;
+          color: #2e7d32;
           margin-bottom: 5px;
           line-height: 1.4;
           font-weight: 500;
           cursor: pointer;
           
           &:hover {
-            color: #FFA726;
+            color: #66bb6a;
           }
         }
         
         .product-price {
           font-size: 16px;
           font-weight: 600;
-          color: #FFA726;
+          color: #66bb6a;
         }
       }
   }
@@ -1403,7 +1434,7 @@ onMounted(() => {
   justify-content: flex-end;
   gap: 10px;
   padding: 25px;
-  border-top: 1px solid rgba(255, 182, 193, 0.3);
+  border-top: 1px solid rgba(102, 187, 106, 0.3);
   background-color: rgba(255, 255, 255, 0.5);
   
   .detail-btn, .cancel-btn, .pay-btn, .receive-btn, .delete-btn, .apply-return-btn, .view-return-btn, .view-review-btn, .write-review-btn {
@@ -1424,63 +1455,100 @@ onMounted(() => {
   }
   
   .pay-btn, .receive-btn, .write-review-btn {
-    background-color: #FFA726;
-    border-color: #FFA726;
+    background: linear-gradient(135deg, #66bb6a 0%, #b3e5fc 100%);
+    border: 1px solid rgba(102, 187, 106, 0.5);
+    color: #2e7d32;
     
     &:hover {
-      background-color: #FB8C00;
-      border-color: #FB8C00;
-      box-shadow: 0 4px 12px rgba(255, 167, 38, 0.4);
+      background: linear-gradient(135deg, #b3e5fc 0%, #66bb6a 100%);
+      border-color: #66bb6a;
+      box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
     }
   }
   
   .cancel-btn, .delete-btn {
-    background-color: #FFB6C1;
-    border-color: #FFB6C1;
+    background: linear-gradient(135deg, #FFB6B9 0%, #FF8787 100%);
+    border: 1px solid rgba(255, 135, 135, 0.5);
+    color: #721C24;
     
     &:hover {
-      background-color: #FF8C94;
-      border-color: #FF8C94;
-      box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+      background: linear-gradient(135deg, #FF8787 0%, #FFB6B9 100%);
+      border-color: #FF8787;
+      box-shadow: 0 4px 12px rgba(255, 135, 135, 0.4);
     }
   }
   
   .detail-btn, .view-return-btn, .view-review-btn, .apply-return-btn {
-    background-color: #FFEE93;
-    border-color: #FFEE93;
+    background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 100%);
+    border: 1px solid rgba(102, 187, 106, 0.3);
+    color: #2e7d32;
     
     &:hover {
-      background-color: #FFE082;
-      border-color: #FFE082;
-      box-shadow: 0 4px 12px rgba(255, 238, 147, 0.4);
+      background: linear-gradient(135deg, #b3e5fc 0%, #e8f5e9 100%);
+      border-color: #66bb6a;
+      box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
     }
   }
 }
 
 .pagination-container {
-  margin-top: 30px;
+  margin-top: 40px;
+  padding: 25px 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 25px;
+  box-shadow: 0 4px 20px rgba(102, 187, 106, 0.2);
+  margin-bottom: 60px;
   display: flex;
   justify-content: center;
   
   :deep(.el-pagination) {
-    --el-pagination-button-bg-color: #fff;
-    --el-pagination-button-color: #683e35;
-    --el-pagination-button-disabled-bg-color: #f4f4f5;
-    --el-pagination-button-disabled-color: #a8abb2;
-    --el-pagination-hover-color: #FFA726;
+    .el-pagination__sizes {
+      margin-right: 20px;
+    }
     
-    .el-pagination__jump,
     .el-pagination__total {
-      color: #666;
+      margin-right: 20px;
+      color: #434343;
+      font-weight: 600;
+    }
+    
+    .el-pagination__jump {
+      margin-left: 20px;
+      color: #434343;
+    }
+    
+    .el-pagination__prev, .el-pagination__next, .el-pager li {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      margin: 0 5px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(102, 187, 106, 0.3);
+      color: #2e7d32;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      
+      &:hover {
+        background: rgba(102, 187, 106, 0.3);
+        border-color: #66bb6a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
+      }
     }
     
     .el-pager li.is-active {
-      background-color: #FFA726;
-      color: white;
-    }
-    
-    .el-pager li:hover {
-      color: #FFA726;
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+      border-color: #66bb6a;
+      color: #fff;
+      
+      &:hover {
+        background: linear-gradient(135deg, #43a047 0%, #388e3c 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 187, 106, 0.4);
+      }
     }
   }
 }
@@ -1677,17 +1745,18 @@ onMounted(() => {
 
 .action-btn {
   min-width: 150px;
-  background-color: #FFA726;
-  border-color: #FFA726;
+  background: linear-gradient(135deg, #66bb6a 0%, #b3e5fc 100%);
+  border: 1px solid rgba(102, 187, 106, 0.5);
+  color: #2e7d32;
   border-radius: 25px;
   transition: all 0.3s ease;
   font-weight: 600;
   
   &:hover {
-    background-color: #FB8C00;
-    border-color: #FB8C00;
+    background: linear-gradient(135deg, #b3e5fc 0%, #66bb6a 100%);
+    border-color: #66bb6a;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 167, 38, 0.4);
+    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
   }
   
   .el-icon {

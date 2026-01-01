@@ -698,6 +698,34 @@ onUnmounted(() => {
   pointer-events: none;
   z-index: 0;
   
+  .decoration-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+    opacity: 0.05;
+    
+    &.bubble-1 {
+      width: 300px;
+      height: 300px;
+      top: -150px;
+      left: -100px;
+    }
+    
+    &.bubble-2 {
+      width: 200px;
+      height: 200px;
+      bottom: 10%;
+      right: -50px;
+    }
+    
+    &.bubble-3 {
+      width: 150px;
+      height: 150px;
+      top: 40%;
+      right: 10%;
+    }
+  }
+  
   .decoration-paw {
     position: absolute;
     opacity: 0.1;
@@ -737,7 +765,7 @@ onUnmounted(() => {
 
 .page-banner {
   position: relative;
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
   padding: 60px 40px;
   overflow: hidden;
   text-align: center;
@@ -849,19 +877,19 @@ onUnmounted(() => {
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
-  border: 1px solid rgba(255, 182, 193, 0.3);
+  border: 1px solid rgba(102, 187, 106, 0.3);
   margin-bottom: 30px;
   transition: all 0.3s ease;
   
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15) !important;
-    border-color: rgba(255, 182, 193, 0.5);
+    border-color: rgba(102, 187, 106, 0.5);
   }
   
   :deep(.el-card__header) {
     padding: 25px 30px;
-    border-bottom: 1px solid rgba(255, 182, 193, 0.3);
+    border-bottom: 1px solid rgba(102, 187, 106, 0.3);
   }
 }
 
@@ -874,7 +902,7 @@ onUnmounted(() => {
     margin: 0;
     font-size: 24px;
     font-weight: 700;
-    color: #6E4C1E;
+    color: #2e7d32;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -895,9 +923,9 @@ onUnmounted(() => {
     }
     
     :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
-      background-color: #FFA726;
-      border-color: #FFA726;
-      box-shadow: -1px 0 0 0 #FFA726;
+      background-color: #66bb6a;
+      border-color: #66bb6a;
+      box-shadow: -1px 0 0 0 #66bb6a;
     }
   }
 }
@@ -914,18 +942,18 @@ onUnmounted(() => {
   
   :deep(.el-table__header) {
     th {
-      background-color: rgba(255, 182, 193, 0.1);
-      color: #6E4C1E;
+      background-color: rgba(102, 187, 106, 0.1);
+      color: #2e7d32;
       font-weight: 700;
       padding: 15px;
-      border-bottom: 2px solid rgba(255, 182, 193, 0.3);
+      border-bottom: 2px solid rgba(102, 187, 106, 0.3);
     }
   }
   
   :deep(.el-table__body) {
     td {
       padding: 15px;
-      border-bottom: 1px solid rgba(255, 182, 193, 0.1);
+      border-bottom: 1px solid rgba(102, 187, 106, 0.1);
     }
   }
   
@@ -933,9 +961,9 @@ onUnmounted(() => {
     transition: all 0.3s ease;
     
     &:hover {
-      background-color: rgba(255, 182, 193, 0.1);
+      background-color: rgba(102, 187, 106, 0.1);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(255, 182, 193, 0.2);
+      box-shadow: 0 4px 12px rgba(102, 187, 106, 0.2);
     }
     
     &:last-child td {
@@ -969,12 +997,12 @@ onUnmounted(() => {
   }
   
   .product-name {
-    color: #6E4C1E;
+    color: #2e7d32;
     font-weight: 600;
     font-size: 16px;
     
     &:hover {
-      color: #FFA726;
+      color: #66bb6a;
     }
   }
   
@@ -984,7 +1012,7 @@ onUnmounted(() => {
   }
   
   .total-price {
-    color: #FFA726;
+    color: #66bb6a;
     font-weight: bold;
     font-size: 18px;
   }
@@ -1024,20 +1052,20 @@ onUnmounted(() => {
     
     :deep(.el-input-number__decrease), 
     :deep(.el-input-number__increase) {
-      background-color: rgba(255, 182, 193, 0.1);
-      color: #6E4C1E;
-      border-color: rgba(255, 182, 193, 0.3);
+      background-color: rgba(102, 187, 106, 0.1);
+      color: #2e7d32;
+      border-color: rgba(102, 187, 106, 0.3);
       
       &:hover {
-        background-color: rgba(255, 182, 193, 0.2);
+        background-color: rgba(102, 187, 106, 0.2);
       }
     }
     
     :deep(.el-input__wrapper) {
-      box-shadow: 0 0 0 1px rgba(255, 182, 193, 0.3) inset;
+      box-shadow: 0 0 0 1px rgba(102, 187, 106, 0.3) inset;
       
       &:hover, &.is-focus {
-        box-shadow: 0 0 0 1px #FFB6C1 inset;
+        box-shadow: 0 0 0 1px #66bb6a inset;
       }
     }
   }
@@ -1069,14 +1097,14 @@ onUnmounted(() => {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 25px;
-  box-shadow: 0 4px 20px rgba(255, 182, 193, 0.2);
+  box-shadow: 0 4px 20px rgba(102, 187, 106, 0.2);
 }
   
   .cart-total {
     font-size: 16px;
     
     .total-price {
-      color: #6E4C1E;
+      color: #2e7d32;
       font-weight: bold;
       font-size: 24px;
       margin: 0 5px;
@@ -1110,18 +1138,18 @@ onUnmounted(() => {
     
     .checkout-btn {
       min-width: 120px;
-      background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
-      border: 1px solid rgba(255, 182, 193, 0.5);
-      color: #6E4C1E;
+      background: linear-gradient(135deg, #66bb6a 0%, #b3e5fc 100%);
+      border: 1px solid rgba(102, 187, 106, 0.5);
+      color: #2e7d32;
       border-radius: 25px;
       transition: all 0.3s ease;
       font-weight: 600;
       
       &:hover {
-        background: linear-gradient(135deg, #FFEE93 0%, #FFB6C1 100%);
-        border-color: #FFB6C1;
+        background: linear-gradient(135deg, #b3e5fc 0%, #66bb6a 100%);
+        border-color: #66bb6a;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+        box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
       }
       
       .el-icon {
@@ -1142,8 +1170,8 @@ onUnmounted(() => {
     font-weight: 700;
     padding: 30px;
     margin: 0;
-    border-bottom: 1px solid rgba(255, 182, 193, 0.3);
-    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+    border-bottom: 1px solid rgba(102, 187, 106, 0.3);
+    background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
     color: white;
     font-size: 20px;
   }
@@ -1157,12 +1185,12 @@ onUnmounted(() => {
   :deep(.el-dialog__footer) {
     padding: 20px 30px;
     background: rgba(255, 255, 55, 0.95);
-    border-top: 1px solid rgba(255, 182, 193, 0.2);
+    border-top: 1px solid rgba(102, 187, 106, 0.2);
   }
   
   .order-form {
     :deep(.el-form-item__label) {
-      color: #6E4C1E;
+      color: #2e7d32;
       font-weight: 600;
       font-size: 15px;
     }
@@ -1172,39 +1200,39 @@ onUnmounted(() => {
     }
     
     :deep(.el-input__wrapper) {
-      box-shadow: 0 0 0 1px rgba(255, 182, 193, 0.3) inset;
+      box-shadow: 0 0 0 1px rgba(102, 187, 106, 0.3) inset;
       border-radius: 12px;
       background: rgba(255, 255, 255, 0.8);
       
       &:hover, &.is-focus {
-        box-shadow: 0 0 0 2px #FFB6C1 inset;
+        box-shadow: 0 0 0 2px #66bb6a inset;
       }
     }
     
     :deep(.el-textarea__inner) {
-      box-shadow: 0 0 0 1px rgba(255, 182, 193, 0.3) inset;
+      box-shadow: 0 0 0 1px rgba(102, 187, 106, 0.3) inset;
       border-radius: 12px;
       background: rgba(255, 255, 255, 0.8);
       
       &:hover, &:focus {
-        box-shadow: 0 0 0 2px #FFB6C1 inset;
+        box-shadow: 0 0 0 2px #66bb6a inset;
       }
     }
     
     :deep(.el-select__wrapper) {
-      box-shadow: 0 0 0 1px rgba(255, 182, 193, 0.3) inset;
+      box-shadow: 0 0 0 1px rgba(102, 187, 106, 0.3) inset;
       border-radius: 12px;
       background: rgba(255, 255, 255, 0.8);
       
       &:hover, &.is-focus {
-        box-shadow: 0 0 0 2px #FFB6C1 inset;
+        box-shadow: 0 0 0 2px #66bb6a inset;
       }
     }
     
     :deep(.el-input__inner),
     :deep(.el-select__inner),
     :deep(.el-textarea__inner) {
-      color: #6E4C1E;
+      color: #2e7d32;
       font-size: 14px;
     }
   }
@@ -1267,7 +1295,7 @@ onUnmounted(() => {
     
     &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(255, 167, 38, 0.4);
+      box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
     }
   }
 }
@@ -1306,7 +1334,7 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 182, 193, 0.3);
+  border: 1px solid rgba(102, 187, 106, 0.3);
   border-radius: 20px;
   padding: 25px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
@@ -1319,7 +1347,7 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
-    color: #6E4C1E;
+    color: #2e7d32;
     font-weight: 700;
     position: relative;
     padding-left: 20px;
@@ -1334,7 +1362,7 @@ onUnmounted(() => {
     
     .el-icon {
       margin-right: 10px;
-      color: #FFB6C1;
+      color: #66bb6a;
     }
   }
   
@@ -1345,24 +1373,24 @@ onUnmounted(() => {
     background: rgba(255, 255, 255, 0.7);
     border-radius: 12px;
     padding: 15px;
-    border: 1px solid rgba(255, 182, 193, 0.2);
+    border: 1px solid rgba(102, 187, 106, 0.2);
     
     &::-webkit-scrollbar {
       width: 6px;
     }
     
     &::-webkit-scrollbar-track {
-      background: rgba(255, 182, 193, 0.1);
+      background: rgba(102, 187, 106, 0.1);
       border-radius: 3px;
     }
     
     &::-webkit-scrollbar-thumb {
-      background: rgba(255, 182, 193, 0.4);
+      background: rgba(102, 187, 106, 0.4);
       border-radius: 3px;
     }
     
     &::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 182, 193, 0.6);
+      background: rgba(102, 187, 106, 0.6);
     }
   }
   
@@ -1372,7 +1400,7 @@ onUnmounted(() => {
     align-items: center;
     margin-bottom: 12px;
     padding-bottom: 12px;
-    border-bottom: 1px dashed rgba(255, 182, 193, 0.2);
+    border-bottom: 1px dashed rgba(102, 187, 106, 0.2);
     
     &:last-child {
       border-bottom: none;
@@ -1386,7 +1414,7 @@ onUnmounted(() => {
       border-radius: 6px;
       margin-right: 12px;
       object-fit: cover;
-      border: 1px solid rgba(255, 182, 193, 0.3);
+      border: 1px solid rgba(102, 187, 106, 0.3);
     }
     
     .item-name {
@@ -1406,7 +1434,7 @@ onUnmounted(() => {
     }
     
     .item-price {
-      color: #6E4C1E;
+      color: #2e7d32;
       font-weight: 600;
     }
   }
@@ -1416,11 +1444,11 @@ onUnmounted(() => {
   text-align: right;
   font-size: 18px;
   padding-top: 20px;
-  border-top: 1px solid rgba(255, 182, 193, 0.3);
+  border-top: 1px solid rgba(102, 187, 106, 0.3);
   font-weight: 600;
   
   .total-price {
-    color: #FFA726;
+    color: #66bb6a;
     font-weight: bold;
     font-size: 26px;
     margin-left: 10px;
@@ -1429,17 +1457,17 @@ onUnmounted(() => {
 
 .confirm-btn {
   min-width: 120px;
-  background-color: #FFA726;
-  border-color: #FFA726;
+  background-color: #66bb6a;
+  border-color: #66bb6a;
   border-radius: 25px;
   transition: all 0.3s ease;
   font-weight: 600;
   
   &:hover {
-    background-color: darken(#FFA726, 5%);
-    border-color: darken(#FFA726, 5%);
+    background-color: #43a047;
+    border-color: #43a047;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 167, 38, 0.4);
+    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
   }
   
   .el-icon {
@@ -1448,17 +1476,17 @@ onUnmounted(() => {
 }
 
 .action-btn {
-  background-color: #FFA726;
-  border-color: #FFA726;
+  background-color: #66bb6a;
+  border-color: #66bb6a;
   border-radius: 25px;
   transition: all 0.3s ease;
   font-weight: 600;
   
   &:hover {
-    background-color: darken(#FFA726, 5%);
-    border-color: darken(#FFA726, 5%);
+    background-color: #43a047;
+    border-color: #43a047;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 167, 38, 0.4);
+    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
   }
   
   .el-icon {
@@ -1474,7 +1502,7 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 182, 193, 0.3);
+  border: 1px solid rgba(102, 187, 106, 0.3);
   border-radius: 24px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
@@ -1484,7 +1512,7 @@ onUnmounted(() => {
 }
 
 .empty-icon {
-  color: rgba(255, 182, 193, 0.3);
+  color: rgba(102, 187, 106, 0.3);
   margin-bottom: 20px;
   animation: float 6s ease-in-out infinite;
 }
@@ -1492,7 +1520,7 @@ onUnmounted(() => {
 .empty-content h3 {
   font-size: 28px;
   margin-bottom: 15px;
-  color: #6E4C1E;
+  color: #2e7d32;
   font-weight: 700;
 }
 
@@ -1504,9 +1532,9 @@ onUnmounted(() => {
 }
 
 .go-shopping-btn {
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
-  border: 1px solid rgba(255, 182, 193, 0.5);
-  color: #6E4C1E;
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
+  border: 1px solid rgba(102, 187, 106, 0.5);
+  color: #2e7d32;
   border-radius: 25px;
   transition: all 0.3s ease;
   font-weight: 600;
@@ -1514,10 +1542,10 @@ onUnmounted(() => {
   font-size: 16px;
   
   &:hover {
-    background: linear-gradient(135deg, #FFEE93 0%, #FFB6C1 100%);
-    border-color: #FFB6C1;
+    background: linear-gradient(135deg, #b3e5fc 0%, #e8f5e9 100%);
+    border-color: #66bb6a;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 182, 193, 0.4);
+    box-shadow: 0 6px 20px rgba(102, 187, 106, 0.4);
   }
   
   .el-icon {
