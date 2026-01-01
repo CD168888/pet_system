@@ -98,12 +98,10 @@ public class TrainingAppointmentController {
     @Operation(summary = "取消预约（用户端）")
     @PutMapping("/{id}/cancel")
     public Result<?> cancelAppointment(@PathVariable Long id, @RequestBody TrainingAppointmentDTO dto) {
-        LOGGER.info("取消预约: id={}, userId={}", id, dto.getUserId());
-        if (dto.getUserId() == null) {
-            return Result.error("用户ID不能为空");
-        }
+        Long userId = JwtTokenUtils.getCurrentUserId();
+        LOGGER.info("取消预约: id={}, userId={}", id, userId);
         
-        boolean success = appointmentService.cancelAppointment(id, dto.getUserId());
+        boolean success = appointmentService.cancelAppointment(id, userId);
         return success ? Result.success() : Result.error("取消预约失败");
     }
 
@@ -129,15 +127,12 @@ public class TrainingAppointmentController {
     @Operation(summary = "提交训练反馈")
     @PostMapping("/feedback")
     public Result<?> submitFeedback(@RequestBody TrainingAppointmentDTO dto) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         LOGGER.info("提交训练反馈: appointmentId={}, userId={}, rating={}", 
-                dto.getId(), dto.getUserId(), dto.getRating());
+                dto.getId(), userId, dto.getRating());
         
         if (dto.getId() == null) {
             return Result.error("预约ID不能为空");
-        }
-        
-        if (dto.getUserId() == null) {
-            return Result.error("用户ID不能为空");
         }
         
         if (dto.getRating() == null) {
@@ -149,7 +144,7 @@ public class TrainingAppointmentController {
         }
         
         boolean success = appointmentService.submitFeedback(
-                dto.getId(), dto.getUserId(), dto.getRating(), dto.getFeedback());
+                dto.getId(), userId, dto.getRating(), dto.getFeedback());
         
         return success ? Result.success() : Result.error("提交反馈失败");
     }
