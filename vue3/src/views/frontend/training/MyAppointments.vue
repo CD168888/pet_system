@@ -1,165 +1,167 @@
 <template>
   <div class="appointments-page">
-    <!-- 页面装饰 -->
-    <div class="page-decoration">
-      <div class="decoration-bubble bubble-1"></div>
-      <div class="decoration-bubble bubble-2"></div>
-      <div class="decoration-bubble bubble-3"></div>
-      <div class="decoration-paw paw-1">🐾</div>
-      <div class="decoration-paw paw-2">🐾</div>
+    <div class="page-banner">
+      <div class="container">
+        <div class="breadcrumb">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item @click="$router.push('/')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item @click="$router.push('/training')">训练课程</el-breadcrumb-item>
+            <el-breadcrumb-item>我的训练预约</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+        <h1>我的训练预约</h1>
+        <p>查看和管理您的训练预约记录</p>
+      </div>
+      <div class="banner-decoration">
+        <div class="decoration-paw paw-1">🐾</div>
+        <div class="decoration-paw paw-2">🐾</div>
+        <div class="decoration-paw paw-3">🐾</div>
+      </div>
     </div>
     
     <div class="appointments-content">
-    <div class="page-banner">
-      <div class="breadcrumb">
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item><a href="/">首页</a></el-breadcrumb-item>
-          <el-breadcrumb-item><a href="/training">训练课程</a></el-breadcrumb-item>
-          <el-breadcrumb-item>我的训练预约</el-breadcrumb-item>
-        </el-breadcrumb>
-        <div class="back-button" @click="goToTrainingList">
-          <el-icon><ArrowLeft /></el-icon>
-          返回课程列表
-        </div>
-      </div>
-      <h1 class="page-title">我的训练预约</h1>
-      <p class="page-subtitle">查看和管理您的训练预约记录</p>
-      <div class="banner-decoration">
-        <div class="decoration-paw">🐾</div>
-        <div class="decoration-paw">🐾</div>
-        <div class="decoration-paw">🐾</div>
-      </div>
-    </div>
       
-      <el-card shadow="never" class="appointments-card" v-loading="loading">
+      <el-card shadow="never" class="appointments-card">
         <template #header>
           <div class="card-header">
-            <h2>预约列表</h2>
+            <h2>预约记录</h2>
+            <div class="card-actions">
+              <el-radio-group v-model="currentStatus" @change="handleStatusChange" size="small">
+                <el-radio-button label="">全部</el-radio-button>
+                <el-radio-button label="已预约">已预约</el-radio-button>
+                <el-radio-button label="已确认">已确认</el-radio-button>
+                <el-radio-button label="进行中">进行中</el-radio-button>
+                <el-radio-button label="已完成">已完成</el-radio-button>
+                <el-radio-button label="已取消">已取消</el-radio-button>
+              </el-radio-group>
+              <el-button type="primary" size="small" @click="handleRefresh" :icon="Refresh">刷新</el-button>
+            </div>
           </div>
         </template>
         
-        <div class="filter-section">
-          <el-row :gutter="20">
-            <el-col :xs="24" :sm="8" :md="6">
-              <el-select 
-                v-model="statusFilter" 
-                placeholder="预约状态" 
-                clearable 
-                class="status-filter"
-              >
-                <el-option
-                  v-for="item in statusOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-col>
-            <el-col :xs="24" :sm="8" :md="6" class="button-filter">
-              <el-button type="primary" @click="fetchAppointments" class="filter-btn">
-                <el-icon><Search /></el-icon>
-                查询
-              </el-button>
-              <el-button @click="resetFilters" class="filter-btn">
-                <el-icon><Refresh /></el-icon>
-                重置
-              </el-button>
-            </el-col>
-          </el-row>
+        <!-- 加载状态 -->
+        <div v-if="loading" class="loading-container">
+          <el-skeleton :rows="5" animated />
         </div>
         
-        <div class="appointments-list">
-          <el-empty 
-            v-if="!loading && appointments.length === 0" 
-            description="暂无预约记录" 
-            :image-size="200"
+        <!-- 错误状态 -->
+        <div v-else-if="loadError" class="error-container">
+          <el-result
+            icon="error"
+            title="数据加载失败"
+            sub-title="无法获取预约记录，请检查网络连接或稍后重试"
           >
+            <template #extra>
+              <el-button type="primary" @click="handleRefresh">重新加载</el-button>
+            </template>
+          </el-result>
+        </div>
+        
+        <!-- 空数据状态 -->
+        <div v-else-if="appointments.length === 0" class="empty-container">
+          <el-empty description="暂无预约记录" :image-size="200">
             <template #description>
               <p>您还没有任何训练预约记录</p>
-              <p>快去预约训练课程吧</p>
+              <p class="empty-hint">快去浏览训练课程，找到适合您的课程后预约吧</p>
             </template>
             <el-button type="primary" class="action-btn" @click="goToTrainingList">
               <el-icon><Plus /></el-icon>
-              预约新课程
+              预约训练课程
             </el-button>
           </el-empty>
-          
-          <el-collapse v-else accordion>
-            <el-collapse-item v-for="item in appointments" :key="item.id" class="appointment-item">
-              <template #title>
+        </div>
+        
+        <!-- 数据列表 -->
+        <div v-else class="appointments-list">
+          <el-timeline>
+            <el-timeline-item
+              v-for="item in appointments"
+              :key="item.id"
+              :timestamp="formatDateTime(item.createTime)"
+              :type="getStatusType(item.status)"
+            >
+              <el-card class="appointment-item">
                 <div class="appointment-header">
-                  <span class="course-name">{{ item.courseName }}</span>
-                  <el-tag 
-                    :type="getStatusType(item.status)" 
-                    size="small" 
-                    class="status-tag"
-                  >
-                    {{ item.status }}
-                  </el-tag>
+                  <div class="appointment-info">
+                    <h3>{{ item.courseName }}</h3>
+                    <el-tag :type="getStatusType(item.status)" effect="light">{{ item.status }}</el-tag>
+                  </div>
+                  <div class="appointment-actions">
+                    <el-button 
+                      v-if="item.status === '已预约' || item.status === '已确认'"
+                      type="danger" 
+                      plain
+                      size="small" 
+                      @click="cancelAppointment(item.id)"
+                    >
+                      <el-icon><Close /></el-icon>
+                      取消预约
+                    </el-button>
+                    <el-button type="primary" size="small" @click="viewCourse(item.courseId)">
+                      <el-icon><View /></el-icon>
+                      查看课程
+                    </el-button>
+                  </div>
                 </div>
-              </template>
-              
-              <div class="appointment-details">
-                <div class="appointment-info-card">
-                  <h3 class="info-title">
-                    <el-icon><Calendar /></el-icon>
-                    基本信息
-                  </h3>
-                  <el-descriptions :column="2" border size="medium" class="info-descriptions">
-                    <el-descriptions-item label="预约时间">
-                      {{ formatDateTime(item.appointmentTime) }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="宠物名称">{{ item.petName }}</el-descriptions-item>
-                    <el-descriptions-item label="联系电话">{{ item.contactPhone }}</el-descriptions-item>
-                    <el-descriptions-item label="训练进度">
+                
+                <div class="appointment-details">
+                  <div class="detail-item">
+                    <span class="detail-label"><el-icon><Calendar /></el-icon> 预约时间:</span>
+                    <span class="detail-value">{{ formatDateTime(item.appointmentTime) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label"><el-icon><User /></el-icon> 宠物名称:</span>
+                    <span class="detail-value">{{ item.petName || '无' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label"><el-icon><Phone /></el-icon> 联系电话:</span>
+                    <span class="detail-value">{{ item.contactPhone || '无' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label"><el-icon><PieChart /></el-icon> 训练进度:</span>
+                    <span class="detail-value">
                       <el-progress 
                         :percentage="item.progress || 0" 
                         :format="progressFormat"
-                        :stroke-width="16"
+                        :stroke-width="8"
                         :color="getProgressColor(item.progress || 0)"
                       />
-                    </el-descriptions-item>
-                    <el-descriptions-item v-if="item.requirements" label="特殊要求" :span="2">
-                      {{ item.requirements }}
-                    </el-descriptions-item>
-                    <el-descriptions-item v-if="item.remark" label="备注" :span="2">
-                      {{ item.remark }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="预约时间">{{ formatDateTime(item.createTime) }}</el-descriptions-item>
-                    <el-descriptions-item label="课程类别">{{ item.category }}</el-descriptions-item>
-                  </el-descriptions>
+                    </span>
+                  </div>
+                  <div class="detail-item" v-if="item.requirements">
+                    <span class="detail-label"><el-icon><Document /></el-icon> 特殊要求:</span>
+                    <span class="detail-value">{{ item.requirements }}</span>
+                  </div>
+                  <div class="detail-item" v-if="item.remark">
+                    <span class="detail-label"><el-icon><Note /></el-icon> 备注:</span>
+                    <span class="detail-value">{{ item.remark }}</span>
+                  </div>
                 </div>
                 
-                <div class="appointment-actions" v-if="item.status === '已预约' || item.status === '已确认'">
-                  <el-button type="danger" @click.stop="cancelAppointment(item.id)" class="cancel-btn">
-                    <el-icon><Close /></el-icon>
-                    取消预约
-                  </el-button>
-                </div>
-                
-                <div class="feedback-section" v-if="item.status === '已完成' && !item.hasFeedback">
-                  <h3 class="feedback-title">
+                <!-- 反馈表单 -->
+                <div v-if="item.status === '已完成' && !item.hasFeedback" class="feedback-section">
+                  <h4 class="feedback-title">
                     <el-icon><ChatDotRound /></el-icon>
                     训练反馈
-                  </h3>
-                  <el-form :model="feedbackForm" label-position="top" class="feedback-form">
-                    <el-form-item label="训练满意度">
+                  </h4>
+                  <el-form :model="feedbackForms[item.id]" label-position="top" class="feedback-form">
+                    <el-form-item label="训练满意度" prop="rating">
                       <el-rate 
-                        v-model="feedbackForm.rating" 
+                        v-model="feedbackForms[item.id].rating" 
                         show-score 
-                        :colors="['#FF9900', '#FF9900', '#FF9900']"
+                        :colors="['#66bb6a', '#66bb6a', '#66bb6a']"
                       />
                     </el-form-item>
-                    <el-form-item label="反馈内容">
+                    <el-form-item label="反馈内容" prop="content">
                       <el-input
-                        v-model="feedbackForm.content"
+                        v-model="feedbackForms[item.id].content"
                         type="textarea"
                         :rows="3"
                         placeholder="请分享您对本次训练的感受和建议"
                       />
                     </el-form-item>
                     <el-form-item>
-                      <el-button type="primary" @click.stop="submitFeedback(item.id)" class="submit-btn">
+                      <el-button type="primary" @click="submitFeedback(item.id)" class="submit-btn">
                         <el-icon><Check /></el-icon>
                         提交反馈
                       </el-button>
@@ -167,19 +169,19 @@
                   </el-form>
                 </div>
                 
+                <!-- 反馈展示 -->
                 <div v-if="item.hasFeedback && item.feedback" class="feedback-display">
-                  <h3 class="feedback-title">
+                  <h4 class="feedback-title">
                     <el-icon><Star /></el-icon>
                     我的反馈
-                  </h3>
+                  </h4>
                   <div class="feedback-content">
                     <div class="rating">
-                      <span>满意度: </span>
                       <el-rate 
                         v-model="item.rating" 
                         disabled 
                         show-score
-                        :colors="['#FF9900', '#FF9900', '#FF9900']"
+                        :colors="['#66bb6a', '#66bb6a', '#66bb6a']"
                       />
                     </div>
                     <div class="content">
@@ -190,24 +192,20 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </el-collapse-item>
-          </el-collapse>
-          
-          <div class="pagination-container" v-if="total > 0">
-            <el-pagination
-              :current-page="currentPage"
-              :page-size="pageSize"
-              :page-sizes="[5, 10, 20, 50]"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              @update:page-size="val => pageSize = val"
-              @update:current-page="val => currentPage = val"
-              background
-            />
-          </div>
+              </el-card>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+        
+        <div class="pagination-container" v-if="total > 0">
+          <el-pagination
+            background
+            layout="prev, pager, next, jumper"
+            :total="total"
+            :page-size="pageSize"
+            :current-page="currentPage"
+            @current-change="handlePageChange"
+          />
         </div>
       </el-card>
     </div>
@@ -221,15 +219,19 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/store/user'
 import request from '@/utils/request'
 import { 
-  ArrowLeft, 
-  Search, 
   Refresh, 
   Plus, 
   Calendar, 
   Close, 
   ChatDotRound, 
   Check, 
-  Star 
+  Star, 
+  View, 
+  User, 
+  Phone, 
+  PieChart, 
+  Document, 
+  Note 
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -237,39 +239,27 @@ const userStore = useUserStore()
 
 // 数据定义
 const loading = ref(false)
+const loadError = ref(false)
 const appointments = ref([])
 const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
-const statusFilter = ref('')
+const currentStatus = ref('')
 
-// 反馈表单
-const feedbackForm = ref({
-  rating: 5,
-  content: ''
-})
-
-// 预约状态选项
-const statusOptions = [
-  { value: '已预约', label: '已预约' },
-  { value: '已确认', label: '已确认' },
-  { value: '进行中', label: '进行中' },
-  { value: '已完成', label: '已完成' },
-  { value: '已取消', label: '已取消' }
-]
+// 反馈表单对象，为每个预约项单独维护一个表单
+const feedbackForms = ref({})
 
 // 获取预约列表
 const fetchAppointments = async () => {
+  // 确保初始化为空数组而不是undefined
+  appointments.value = []
+  
   if (!userStore.isLoggedIn) {
-    ElMessageBox.confirm(
-      '查看预约记录需要先登录，是否立即前往登录？',
-      '提示',
-      {
-        confirmButtonText: '去登录',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    ).then(() => {
+    ElMessageBox.confirm('查看预约记录需要先登录，是否立即前往登录？', '提示', {
+      confirmButtonText: '前往登录',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
       router.push({
         path: '/login',
         query: { redirect: router.currentRoute.value.fullPath }
@@ -281,26 +271,69 @@ const fetchAppointments = async () => {
   }
   
   loading.value = true
+  loadError.value = false
   try {
     // 构建查询参数
     const params = {
-      userId: userStore.userInfo.id,
       currentPage: currentPage.value,
-      size: pageSize.value,
-      status: statusFilter.value || undefined
+      size: pageSize.value
+    }
+    
+    // 只有当status有值时才添加到参数中，避免发送空字符串或null给后端
+    if (currentStatus.value) {
+      params.status = currentStatus.value
     }
     
     await request.get('/training/appointment/user', params, {
       onSuccess: (res) => {
-        appointments.value = res.records || []
-        total.value = res.total || 0
+        // 确保响应数据存在且包含记录
+        if (res && res.records) {
+          appointments.value = res.records
+          total.value = res.total || 0
+          
+          // 初始化每个预约项的反馈表单
+          res.records.forEach(item => {
+            if (item.status === '已完成' && !item.hasFeedback) {
+              feedbackForms.value[item.id] = {
+                rating: 5,
+                content: ''
+              }
+            }
+          })
+        } else {
+          // 如果没有数据，设置为空数组
+          appointments.value = []
+          total.value = 0
+        }
       }
     })
   } catch (error) {
     console.error('获取预约列表失败:', error)
+    // 确保在出错时也将列表设置为空数组
+    appointments.value = []
+    total.value = 0
+    loadError.value = true
+    ElMessage.error('获取预约记录失败，请稍后重试')
   } finally {
     loading.value = false
   }
+}
+
+// 刷新数据
+const handleRefresh = () => {
+  fetchAppointments()
+}
+
+// 状态筛选变更
+const handleStatusChange = () => {
+  currentPage.value = 1
+  fetchAppointments()
+}
+
+// 处理分页事件
+const handlePageChange = (page) => {
+  currentPage.value = page
+  fetchAppointments()
 }
 
 // 取消预约
@@ -315,7 +348,7 @@ const cancelAppointment = (id) => {
     }
   ).then(async () => {
     try {
-      await request.put(`/training/appointment/${id}/cancel`, null, {
+      await request.put(`/training/appointment/${id}/cancel`, {}, {
         successMsg: '预约已取消',
         onSuccess: () => {
           fetchAppointments()
@@ -329,7 +362,8 @@ const cancelAppointment = (id) => {
 
 // 提交反馈
 const submitFeedback = async (appointmentId) => {
-  if (!feedbackForm.value.content) {
+  const form = feedbackForms.value[appointmentId]
+  if (!form.content) {
     ElMessage.warning('请填写反馈内容')
     return
   }
@@ -337,19 +371,13 @@ const submitFeedback = async (appointmentId) => {
   try {
     const feedbackData = {
       id: appointmentId,
-      userId: userStore.userInfo.id,
-      rating: feedbackForm.value.rating,
-      feedback: feedbackForm.value.content
+      rating: form.rating,
+      feedback: form.content
     }
     
     await request.post('/training/appointment/feedback', feedbackData, {
       successMsg: '反馈已提交，感谢您的评价',
       onSuccess: () => {
-        // 重置表单
-        feedbackForm.value = {
-          rating: 5,
-          content: ''
-        }
         // 刷新列表
         fetchAppointments()
       }
@@ -359,27 +387,14 @@ const submitFeedback = async (appointmentId) => {
   }
 }
 
-// 重置筛选条件
-const resetFilters = () => {
-  statusFilter.value = ''
-  currentPage.value = 1
-  fetchAppointments()
-}
-
-// 分页处理
-const handleSizeChange = (val) => {
-  pageSize.value = val
-  fetchAppointments()
-}
-
-const handleCurrentChange = (val) => {
-  currentPage.value = val
-  fetchAppointments()
-}
-
 // 导航到训练课程列表
 const goToTrainingList = () => {
   router.push('/training')
+}
+
+// 查看课程详情
+const viewCourse = (courseId) => {
+  router.push(`/training/${courseId}`)
 }
 
 // 根据状态获取标签类型
@@ -398,7 +413,7 @@ const getStatusType = (status) => {
 const getProgressColor = (percentage) => {
   if (percentage < 30) return '#909399'
   if (percentage < 70) return '#E6A23C'
-  return '#67C23A'
+  return '#66bb6a'
 }
 
 // 格式化日期时间
@@ -450,66 +465,106 @@ onMounted(() => {
 .appointments-page {
   position: relative;
   min-height: 100vh;
-  background-color: #FFF9E6;
-  padding: 30px 20px 60px;
+  
   overflow: hidden;
 }
 
-.page-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
+.page-banner {
+  position: relative;
+  background: linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
+  padding: 60px 40px;
+  overflow: hidden;
+  text-align: center;
+  z-index: 1;
+  border-radius: 24px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   
-  .decoration-bubble {
-    position: absolute;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
-    opacity: 0.05;
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .breadcrumb {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
     
-    &.bubble-1 {
-      width: 300px;
-      height: 300px;
-      top: -150px;
-      left: -100px;
-      animation: float 15s infinite ease-in-out;
-    }
-    
-    &.bubble-2 {
-      width: 200px;
-      height: 200px;
-      bottom: 10%;
-      right: -50px;
-      animation: float 18s infinite ease-in-out;
-    }
-    
-    &.bubble-3 {
-      width: 150px;
-      height: 150px;
-      top: 40%;
-      right: 10%;
-      animation: float 12s infinite ease-in-out;
+    :deep(.el-breadcrumb__item) {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      
+      &:last-child {
+        color: white;
+        font-weight: 600;
+      }
+      
+      a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        
+        &:hover {
+          color: white;
+        }
+      }
     }
   }
   
-  .decoration-paw {
+  h1 {
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 36px;
+    color: white;
+    margin-bottom: 10px;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 18px;
+    opacity: 0.9;
+  }
+  
+  .banner-decoration {
     position: absolute;
-    font-size: 40px;
-    opacity: 0.1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
     
-    &.paw-1 {
-      top: 20%;
-      left: 5%;
+    .decoration-paw {
+      position: absolute;
+      opacity: 0.1;
       animation: float 15s infinite ease-in-out;
-    }
-    
-    &.paw-2 {
-      bottom: 10%;
-      right: 10%;
-      animation: float 18s infinite ease-in-out reverse;
+      
+      &.paw-1 {
+        top: 20%;
+        left: 10%;
+        font-size: 50px;
+        animation-delay: 0s;
+      }
+      
+      &.paw-2 {
+        top: 60%;
+        right: 15%;
+        font-size: 60px;
+        animation-delay: -5s;
+        animation-direction: reverse;
+      }
+      
+      &.paw-3 {
+        top: 30%;
+        right: 30%;
+        font-size: 40px;
+        animation-delay: -2s;
+      }
     }
   }
 }
@@ -519,475 +574,99 @@ onMounted(() => {
   z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.page-banner {
-  position: relative;
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
-  padding: 60px 40px;
-  overflow: hidden;
-  text-align: center;
-  z-index: 1;
-  border-radius: 0 0 24px 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 40px;
-  
-  .breadcrumb {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    
-    :deep(.el-breadcrumb__item) {
-      font-size: 14px;
-      color: #6E4C1E;
-      opacity: 0.8;
-      
-      a {
-        color: #6E4C1E;
-        text-decoration: none;
-        
-        &:hover {
-          color: #683e35;
-        }
-      }
-    }
-    
-    :deep(.el-breadcrumb__separator) {
-      color: #6E4C1E;
-      opacity: 0.5;
-    }
-    
-    .back-button {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 16px;
-      background-color: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 500;
-      color: #683e35;
-      transition: all 0.3s ease;
-      
-      .el-icon {
-        margin-right: 8px;
-      }
-      
-      &:hover {
-        transform: translateX(-3px);
-        background-color: rgba(255, 255, 255, 0.3);
-      }
-    }
-  }
-  
-  h1.page-title {
-    font-size: 36px;
-    color: #683e35;
-    margin-bottom: 10px;
-    margin: 0;
-  }
-  
-  .page-subtitle {
-    font-size: 16px;
-    color: #6E4C1E;
-    opacity: 0.8;
-    margin: 10px 0 0;
-  }
-  
-  .banner-decoration {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-around;
-    
-    .decoration-paw {
-      font-size: 40px;
-      opacity: 0.2;
-    }
-  }
+  padding: 20px;
 }
 
 .appointments-card {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 182, 193, 0.3);
   border-radius: 24px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(102, 187, 106, 0.3);
   margin-bottom: 30px;
   transition: all 0.3s ease;
-  overflow: hidden;
   
   &:hover {
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15) !important;
-    transform: translateY(-2px);
-    border-color: rgba(255, 182, 193, 0.5);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15) !important;
+    border-color: rgba(102, 187, 106, 0.5);
   }
   
   :deep(.el-card__header) {
-    padding: 20px 25px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  :deep(.el-card__body) {
-    padding: 25px;
+    padding: 25px 30px;
+    border-bottom: 1px solid rgba(102, 187, 106, 0.3);
   }
 }
 
 .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
   h2 {
     margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: #683e35;
-    position: relative;
-    padding-left: 15px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #2e7d32;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     
     &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: #FFB6C1;
-      border-radius: 2px;
+      content: '🐾';
+      font-size: 20px;
+    }
+  }
+  
+  .card-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    
+    :deep(.el-radio-button__inner) {
+      padding: 8px 15px;
+    }
+    
+    :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
+      background-color: #66bb6a;
+      border-color: #66bb6a;
+      box-shadow: -1px 0 0 0 #66bb6a;
     }
   }
 }
 
-.filter-section {
-  margin-bottom: 25px;
-  
-  .status-filter {
-    width: 100%;
-    
-    :deep(.el-input__wrapper) {
-      box-shadow: 0 0 0 1px #dcdfe6 inset;
-      
-      &:hover, &.is-focus {
-        box-shadow: 0 0 0 1px #FFA726 inset;
-      }
-    }
-  }
-  
-  .filter-btn {
-    border-radius: 20px;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    margin-right: 10px;
-    
-    &:first-child {
-      background-color: #FFA726;
-      border-color: #FFA726;
-      
-      &:hover {
-        background-color: darken(#FFA726, 5%);
-        border-color: darken(#FFA726, 5%);
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
-      }
-    }
-    
-    &:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .el-icon {
-      margin-right: 5px;
-    }
-  }
-  
-  .button-filter {
-    margin-top: 10px;
-    
-    @media (min-width: 768px) {
-      margin-top: 0;
-    }
-  }
+.loading-container,
+.empty-container,
+.error-container {
+  padding: 40px 0;
+  text-align: center;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin: 20px 0;
 }
 
-.appointments-list {
-  .appointment-item {
-    margin-bottom: 15px;
-    border-radius: 8px;
-    overflow: hidden;
-    
-    :deep(.el-collapse-item__header) {
-      background-color: #f8f9fa;
-      
-      &.is-active {
-        background-color: #f0f7ff;
-      }
-    }
-    
-    :deep(.el-collapse-item__wrap) {
-      border-color: #f0f0f0;
-    }
-  }
+.error-container {
+  background-color: #fff0f0;
 }
 
-.appointment-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  
-  .course-name {
-    font-weight: 600;
-    flex-grow: 1;
-    color: #333;
-  }
-  
-  .status-tag {
-    margin-left: 10px;
-  }
-}
-
-.appointment-details {
-  padding: 15px 0;
-}
-
-.appointment-info-card {
+.empty-hint {
+  color: #909399;
+  font-size: 14px;
+  margin-top: 10px;
   margin-bottom: 20px;
-  
-  .info-title {
-    display: flex;
-    align-items: center;
-    margin: 0 0 15px;
-    color: #333;
-    font-size: 18px;
-    position: relative;
-    padding-left: 15px;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: #FFB6C1;
-      border-radius: 2px;
-    }
-    
-    .el-icon {
-      margin-right: 8px;
-      color: #FFA726;
-    }
-  }
-  
-  .info-descriptions {
-    :deep(.el-descriptions__label) {
-      color: #666;
-      font-weight: 500;
-      background-color: #f9f9f9;
-    }
-    
-    :deep(.el-descriptions__content) {
-      padding: 12px 15px;
-    }
-  }
-}
-
-.appointment-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  
-  .cancel-btn {
-    color: #f56c6c;
-    border-color: #f56c6c;
-    border-radius: 20px;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    
-    &:hover {
-      color: white;
-      background-color: #f56c6c;
-      transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(245, 108, 108, 0.15);
-    }
-    
-    .el-icon {
-      margin-right: 5px;
-    }
-  }
-}
-
-.feedback-section {
-  margin-top: 25px;
-  border-top: 1px dashed #ebeef5;
-  padding-top: 20px;
-  
-  .feedback-title {
-    display: flex;
-    align-items: center;
-    margin: 0 0 15px;
-    color: #333;
-    font-size: 18px;
-    position: relative;
-    padding-left: 15px;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: #FFB6C1;
-      border-radius: 2px;
-    }
-    
-    .el-icon {
-      margin-right: 8px;
-      color: #FFA726;
-    }
-  }
-  
-  .feedback-form {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 20px;
-    
-    :deep(.el-form-item__label) {
-      color: #666;
-      font-weight: 500;
-    }
-    
-    :deep(.el-textarea__inner) {
-      box-shadow: 0 0 0 1px #dcdfe6 inset;
-      
-      &:hover, &:focus {
-        box-shadow: 0 0 0 1px #FFA726 inset;
-      }
-    }
-    
-    .submit-btn {
-      background-color: #FFA726;
-      border-color: #FFA726;
-      border-radius: 20px;
-      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      
-      &:hover {
-        background-color: darken(#FFA726, 5%);
-        border-color: darken(#FFA726, 5%);
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
-      }
-      
-      .el-icon {
-        margin-right: 5px;
-      }
-    }
-  }
-}
-
-.feedback-display {
-  margin-top: 25px;
-  border-top: 1px dashed #ebeef5;
-  padding-top: 20px;
-  
-  .feedback-title {
-    display: flex;
-    align-items: center;
-    margin: 0 0 15px;
-    color: #333;
-    font-size: 18px;
-    position: relative;
-    padding-left: 15px;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: #FFB6C1;
-      border-radius: 2px;
-    }
-    
-    .el-icon {
-      margin-right: 8px;
-      color: #FF9900;
-    }
-  }
-  
-  .feedback-content {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    
-    .rating {
-      margin-bottom: 10px;
-    }
-    
-    .content {
-      padding: 10px 0;
-      border-top: 1px solid #ebeef5;
-      border-bottom: 1px solid #ebeef5;
-      color: #666;
-      line-height: 1.6;
-      
-      p {
-        margin: 0;
-      }
-    }
-    
-    .time {
-      margin-top: 10px;
-      text-align: right;
-      color: #909399;
-    }
-  }
-}
-
-.pagination-container {
-  margin-top: 30px;
-  display: flex;
-  justify-content: center;
-  
-  :deep(.el-pagination) {
-    --el-pagination-button-bg-color: #fff;
-    --el-pagination-button-color: #683e35;
-    --el-pagination-button-disabled-bg-color: #f4f4f5;
-    --el-pagination-button-disabled-color: #a8abb2;
-    --el-pagination-hover-color: #FFA726;
-    
-    .el-pagination__jump,
-    .el-pagination__total {
-      color: #666;
-    }
-    
-    .el-pager li.is-active {
-      background-color: #FFA726;
-      color: white;
-    }
-    
-    .el-pager li:hover {
-      color: #FFA726;
-    }
-  }
 }
 
 .action-btn {
-  background-color: #FFA726;
-  border-color: #FFA726;
-  border-radius: 20px;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  background-color: #66bb6a;
+  border-color: #66bb6a;
+  transition: all 0.3s ease;
   
   &:hover {
-    background-color: darken(#FFA726, 5%);
-    border-color: darken(#FFA726, 5%);
+    background-color: #43a047;
+    border-color: #43a047;
     transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
   }
   
   .el-icon {
@@ -995,85 +674,406 @@ onMounted(() => {
   }
 }
 
-@media (max-width: 1024px) {
-  .page-banner {
-    padding: 40px 30px;
-    
-    h1.page-title {
-      font-size: 30px !important;
-    }
-    
-    .breadcrumb {
-      flex-direction: column;
-      gap: 15px;
-      
-      .back-button {
-        margin-top: 10px;
-      }
-    }
-  }
+.appointments-list {
+  margin: 20px 0;
   
-  .appointments-card {
-    margin: 0 10px 30px;
+  :deep(.el-timeline) {
+      padding: 20px 0;
+      position: relative;
+      
+      .el-timeline-item__node {
+        box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
+        transition: all 0.3s ease;
+      }
+      
+      .el-timeline-item__node--primary {
+        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+        border-color: #66bb6a;
+      }
+      
+      .el-timeline-item__node--success {
+        background: linear-gradient(135deg, #90EE90 0%, #81C784 100%);
+        border-color: #90EE90;
+      }
+      
+      .el-timeline-item__node--warning {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA000 100%);
+        border-color: #FFD700;
+      }
+      
+      .el-timeline-item__node--danger {
+        background: linear-gradient(135deg, #FF6B6B 0%, #EF5350 100%);
+        border-color: #FF6B6B;
+      }
+      
+      .el-timeline-item__tail {
+        background: linear-gradient(to bottom, #66bb6a 0%, #b3e5fc 100%);
+        box-shadow: 0 0 10px rgba(102, 187, 106, 0.3);
+      }
     
-    :deep(.el-card__body) {
-      padding: 20px;
+    .el-timeline-item__wrapper {
+      padding-bottom: 30px;
+    }
+    
+    .el-timeline-item__timestamp {
+      color: #8D6E63;
+      font-size: 14px;
+      margin-top: 8px;
+      margin-bottom: 10px;
+      font-weight: 600;
     }
   }
 }
 
-@media (max-width: 768px) {
-  .page-banner {
-    padding: 30px 20px;
+.appointment-item {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(102, 187, 106, 0.2);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    border-color: rgba(102, 187, 106, 0.4);
+  }
+  
+  :deep(.el-card__body) {
+    padding: 20px;
+  }
+}
+
+.appointment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(102, 187, 106, 0.3);
+  
+  .appointment-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
     
-    h1.page-title {
-      font-size: 26px !important;
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #2e7d32;
+    }
+  }
+  
+  .appointment-actions {
+    display: flex;
+    gap: 10px;
+    
+    .el-button {
+      border-radius: 25px;
+      padding: 8px 20px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      
+      &.el-button--primary {
+        background: linear-gradient(135deg, #66bb6a 0%, #b3e5fc 100%);
+        border: 1px solid rgba(102, 187, 106, 0.5);
+        color: #2e7d32;
+        
+        &:hover {
+          background: linear-gradient(135deg, #b3e5fc 0%, #66bb6a 100%);
+          border-color: #66bb6a;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
+        }
+      }
+      
+      &.el-button--danger {
+        background: linear-gradient(135deg, #FFB6B9 0%, #FF8787 100%);
+        border: 1px solid rgba(255, 135, 135, 0.5);
+        color: #721C24;
+        
+        &:hover {
+          background: linear-gradient(135deg, #FF8787 0%, #FFB6B9 100%);
+          border-color: #FF8787;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(255, 135, 135, 0.4);
+        }
+      }
+    }
+  }
+}
+
+.appointment-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+  
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    
+    .detail-label {
+      font-weight: 600;
+      color: #434343;
+      font-size: 14px;
+      
+      .el-icon {
+        margin-right: 8px;
+        color: #66bb6a;
+        font-size: 16px;
+      }
     }
     
-    .page-subtitle {
+    .detail-value {
+      color: #2e7d32;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+  }
+}
+
+.feedback-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(102, 187, 106, 0.3);
+  
+  .feedback-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2e7d32;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    .el-icon {
+      color: #66bb6a;
+    }
+  }
+  
+  .feedback-form {
+    background-color: rgba(249, 250, 251, 0.8);
+    border-radius: 12px;
+    padding: 20px;
+    
+    :deep(.el-form-item) {
+      margin-bottom: 20px;
+    }
+    
+    :deep(.el-form-item__label) {
+      color: #434343;
+      font-weight: 600;
+    }
+    
+    :deep(.el-input__wrapper),
+    :deep(.el-textarea__inner) {
+      border-radius: 8px;
+      border: 1px solid rgba(102, 187, 106, 0.3);
+      background-color: rgba(255, 255, 255, 0.9);
+      
+      &:hover,
+      &.is-focus {
+        border-color: #66bb6a;
+        box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.2);
+      }
+    }
+    
+    .submit-btn {
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+      border-color: transparent;
+      color: white;
+      border-radius: 25px;
+      padding: 10px 24px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: linear-gradient(135deg, #43a047 0%, #388e3c 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 187, 106, 0.4);
+      }
+    }
+  }
+}
+
+.feedback-display {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(102, 187, 106, 0.3);
+  
+  .feedback-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2e7d32;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    .el-icon {
+      color: #66bb6a;
+    }
+  }
+  
+  .feedback-content {
+    background-color: rgba(249, 250, 251, 0.8);
+    border-radius: 12px;
+    padding: 20px;
+    
+    .rating {
+      margin-bottom: 15px;
+    }
+    
+    .content {
+      margin-bottom: 15px;
+      padding: 15px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      border-left: 4px solid #66bb6a;
+      
+      p {
+        margin: 0;
+        color: #434343;
+        line-height: 1.6;
+      }
+    }
+    
+    .time {
+      text-align: right;
+      color: #909399;
       font-size: 14px;
     }
   }
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  padding: 25px 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 25px;
+  box-shadow: 0 4px 20px rgba(102, 187, 106, 0.2);
+  margin-bottom: 60px;
   
-  .appointments-content {
-    padding: 0;
-  }
-  
-  .appointments-card {
-    margin: 0 10px 20px;
-    border-radius: 16px;
-    
-    :deep(.el-card__header) {
-      padding: 15px 20px;
+  :deep(.el-pagination) {
+    .el-pagination__sizes {
+      margin-right: 20px;
     }
     
-    :deep(.el-card__body) {
-      padding: 15px;
+    .el-pagination__total {
+      margin-right: 20px;
+      color: #434343;
+      font-weight: 600;
+    }
+    
+    .el-pagination__jump {
+      margin-left: 20px;
+      color: #434343;
+    }
+    
+    .el-pagination__prev, .el-pagination__next, .el-pager li {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      margin: 0 5px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(102, 187, 106, 0.3);
+      color: #2e7d32;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      
+      &:hover {
+        background: rgba(102, 187, 106, 0.3);
+        border-color: #66bb6a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
+      }
+    }
+    
+    .el-pager li.is-active {
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+      border-color: #66bb6a;
+      color: #fff;
+      
+      &:hover {
+        background: linear-gradient(135deg, #43a047 0%, #388e3c 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 187, 106, 0.4);
+      }
     }
   }
-  
-  .card-header h2 {
-    font-size: 16px;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
   }
 }
 
 @media screen and (max-width: 768px) {
-  .appointment-info-card {
-    .info-descriptions {
-      :deep(.el-descriptions) {
-        .el-descriptions__body {
-          display: block;
-        }
-        
-        .el-descriptions__table {
-          display: block;
-        }
-        
-        .el-descriptions__cell {
-          display: block;
-          width: 100%;
-        }
-      }
+  .page-banner {
+    padding: 40px 20px;
+    
+    h1 {
+      font-size: 28px;
+    }
+    
+    p {
+      font-size: 16px;
+    }
+  }
+  
+  .card-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+    
+    .card-actions {
+      width: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  }
+  
+  .appointment-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+    
+    .appointment-actions {
+      width: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  }
+  
+  .appointment-details {
+    grid-template-columns: 1fr;
+  }
+  
+  .appointments-card {
+    margin: 0 10px 20px;
+    
+    :deep(.el-card__header) {
+      padding: 20px;
+    }
+    
+    :deep(.el-card__body) {
+      padding: 20px;
     }
   }
 }
