@@ -97,7 +97,7 @@ public class TrainingAppointmentController {
 
     @Operation(summary = "取消预约（用户端）")
     @PutMapping("/{id}/cancel")
-    public Result<?> cancelAppointment(@PathVariable Long id, @RequestBody TrainingAppointmentDTO dto) {
+    public Result<?> cancelAppointment(@PathVariable Long id) {
         Long userId = JwtTokenUtils.getCurrentUserId();
         LOGGER.info("取消预约: id={}, userId={}", id, userId);
         

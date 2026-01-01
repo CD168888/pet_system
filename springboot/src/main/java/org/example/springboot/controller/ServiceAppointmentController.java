@@ -48,10 +48,10 @@ public class ServiceAppointmentController {
     @Operation(summary = "根据用户ID查询预约列表")
     @GetMapping("/user")
     public Result<?> getAppointmentsByUserId(
-            @RequestParam Long userId,
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "1") Integer currentPage,
             @RequestParam(defaultValue = "10") Integer size) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
         LOGGER.info("查询用户预约列表: userId={}, status={}, currentPage={}, size={}", 
                 userId, status, currentPage, size);
         
@@ -98,13 +98,11 @@ public class ServiceAppointmentController {
 
     @Operation(summary = "取消预约（用户端）")
     @PutMapping("/{id}/cancel")
-    public Result<?> cancelAppointment(@PathVariable Long id, @RequestBody ServiceAppointmentDTO dto) {
-        LOGGER.info("取消预约: id={}, userId={}", id, dto.getUserId());
-        if (dto.getUserId() == null) {
-            return Result.error("用户ID不能为空");
-        }
+    public Result<?> cancelAppointment(@PathVariable Long id) {
+        Long userId = JwtTokenUtils.getCurrentUserId();
+        LOGGER.info("取消预约: id={}, userId={}", id, userId);
         
-        boolean success = appointmentService.cancelAppointment(id, dto.getUserId());
+        boolean success = appointmentService.cancelAppointment(id, userId);
         return success ? Result.success() : Result.error("取消预约失败");
     }
 
