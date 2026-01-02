@@ -120,7 +120,7 @@ const handleLogin = () => {
   text-align: center;
   font-family: 'Nunito Sans', sans-serif;
   font-size: 26px;
-  color: #683e35;
+  color: #2E7D32;
   margin-bottom: 10px;
   font-weight: 600;
 }
@@ -129,7 +129,7 @@ const handleLogin = () => {
   text-align: center;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
-  color: #683e35;
+  color: #388E3C;
   opacity: 0.7;
   margin-bottom: 30px;
 }
@@ -149,7 +149,7 @@ const handleLogin = () => {
     font-size: 14px;
     
     &.forget-link {
-      color: #683e35;
+      color: #388E3C;
       opacity: 0.8;
       
       &:hover {
@@ -158,11 +158,11 @@ const handleLogin = () => {
     }
     
     &.register-link {
-      color: #FFA726;
+      color: #66BB6A;
       font-weight: 500;
       
       &:hover {
-        color: #FFB6C1;
+        color: #43A047;
       }
     }
   }

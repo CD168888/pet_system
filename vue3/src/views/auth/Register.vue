@@ -168,7 +168,7 @@ const handleRegister = () => {
   text-align: center;
   font-family: 'Nunito Sans', sans-serif;
   font-size: 26px;
-  color: #683e35;
+  color: #2E7D32;
   margin-bottom: 10px;
   font-weight: 600;
 }
@@ -177,24 +177,24 @@ const handleRegister = () => {
   text-align: center;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
-  color: #683e35;
+  color: #388E3C;
   opacity: 0.7;
   margin-bottom: 30px;
 }
 
 .links-container {
   text-align: center;
-  color: #683e35;
+  color: #388E3C;
   font-size: 14px;
   font-family: 'Open Sans', sans-serif;
 
   .login-link {
-    color: #FFA726;
+    color: #66BB6A;
     font-weight: 500;
     margin-left: 4px;
     
     &:hover {
-      color: #FFB6C1;
+      color: #43A047;
     }
   }
 }

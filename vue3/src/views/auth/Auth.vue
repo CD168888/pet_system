@@ -133,7 +133,7 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 50%, #FFE4E1 100%);
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 50%, #A5D6A7 100%);
   padding: 20px;
   position: relative;
   overflow: hidden;
@@ -146,9 +146,9 @@ defineExpose({
     width: 100%;
     height: 100%;
     background: 
-      radial-gradient(circle at 20% 80%, rgba(255, 105, 180, 0.2) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(255, 182, 193, 0.3) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, rgba(255, 192, 203, 0.2) 0%, transparent 50%);
+      radial-gradient(circle at 20% 80%, rgba(102, 187, 106, 0.2) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(144, 238, 144, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(129, 199, 132, 0.2) 0%, transparent 50%);
     z-index: 1;
   }
 }
@@ -160,7 +160,7 @@ defineExpose({
   position: relative;
   z-index: 2;
   box-shadow: 
-    0 25px 50px rgba(255, 105, 180, 0.3),
+    0 25px 50px rgba(102, 187, 106, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   overflow: hidden;
@@ -169,7 +169,7 @@ defineExpose({
 
 .auth-left {
   width: 50%;
-  background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 30%, #FFCCCB 70%, #FFE4E1 100%);
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 30%, #A5D6A7 70%, #81C784 100%);
   padding: 50px 40px;
   display: flex;
   flex-direction: column;
@@ -199,7 +199,7 @@ defineExpose({
       max-width: 100%;
       max-height: 320px;
       object-fit: contain;
-      filter: drop-shadow(0 10px 20px rgba(255, 105, 180, 0.2));
+      filter: drop-shadow(0 10px 20px rgba(102, 187, 106, 0.2));
       transition: transform 0.3s ease;
       
       &:hover {
@@ -245,16 +245,16 @@ defineExpose({
     h2 {
       font-family: 'Nunito Sans', sans-serif;
       font-size: 32px;
-      color: #C2185B;
+      color: #2E7D32;
       margin-bottom: 15px;
       font-weight: 700;
-      text-shadow: 0 2px 4px rgba(194, 24, 91, 0.1);
+      text-shadow: 0 2px 4px rgba(46, 125, 50, 0.1);
     }
     
     p {
       font-family: 'Open Sans', sans-serif;
       font-size: 18px;
-      color: #E91E63;
+      color: #388E3C;
       opacity: 0.9;
       margin-bottom: 20px;
     }
@@ -267,20 +267,20 @@ defineExpose({
       
       .tag {
         background: rgba(255, 255, 255, 0.95);
-        color: #C2185B;
+        color: #2E7D32;
         padding: 6px 12px;
         border-radius: 20px;
         font-size: 12px;
         font-weight: 500;
-        box-shadow: 0 2px 8px rgba(255, 105, 180, 0.2);
+        box-shadow: 0 2px 8px rgba(102, 187, 106, 0.2);
         transition: all 0.3s ease;
-        border: 1px solid rgba(255, 105, 180, 0.2);
+        border: 1px solid rgba(102, 187, 106, 0.2);
         
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
-          background: rgba(255, 240, 245, 0.98);
-          border-color: rgba(255, 105, 180, 0.4);
+          box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
+          background: rgba(240, 255, 240, 0.98);
+          border-color: rgba(102, 187, 106, 0.4);
         }
       }
     }
@@ -304,7 +304,7 @@ defineExpose({
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(255, 192, 203, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(102, 187, 106, 0.1) 0%, rgba(144, 238, 144, 0.05) 100%);
     pointer-events: none;
   }
 }
@@ -320,7 +320,7 @@ defineExpose({
     
     .logo-inner {
       font-size: 48px;
-      background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+      background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
       width: 90px;
       height: 90px;
       border-radius: 50%;
@@ -329,7 +329,7 @@ defineExpose({
       justify-content: center;
       margin: 0 auto;
       box-shadow: 
-        0 8px 32px rgba(255, 105, 180, 0.5),
+        0 8px 32px rgba(102, 187, 106, 0.5),
         inset 0 2px 0 rgba(255, 255, 255, 0.3);
       animation: logoFloat 3s ease-in-out infinite;
       position: relative;
@@ -344,7 +344,7 @@ defineExpose({
       transform: translate(-50%, -50%);
       width: 100px;
       height: 100px;
-      background: radial-gradient(circle, rgba(255, 105, 180, 0.4) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(102, 187, 106, 0.4) 0%, transparent 70%);
       border-radius: 50%;
       animation: pulse 2s ease-in-out infinite;
       z-index: 1;
@@ -354,10 +354,10 @@ defineExpose({
   .title {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 32px;
-    color: #C2185B;
+    color: #2E7D32;
     margin: 0 0 8px;
     font-weight: 700;
-    background: linear-gradient(135deg, #FF69B4 0%, #C2185B 100%);
+    background: linear-gradient(135deg, #66BB6A 0%, #2E7D32 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -366,7 +366,7 @@ defineExpose({
   .subtitle {
     font-family: 'Open Sans', sans-serif;
     font-size: 14px;
-    color: #E91E63;
+    color: #43A047;
     letter-spacing: 3px;
     opacity: 0.8;
     font-weight: 300;
@@ -379,44 +379,44 @@ defineExpose({
   }
   
   :deep(.el-input) {
-    --el-input-hover-border-color: #FF69B4;
-    --el-input-focus-border-color: #FF69B4;
+    --el-input-hover-border-color: #66BB6A;
+    --el-input-focus-border-color: #66BB6A;
     
     .el-input__wrapper {
       border-radius: 12px;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       background: rgba(255, 255, 255, 0.9);
       border: 2px solid transparent;
-      box-shadow: 0 2px 8px rgba(255, 105, 180, 0.1);
+      box-shadow: 0 2px 8px rgba(102, 187, 106, 0.1);
       height: 50px;
       
       &.is-focus {
-        border-color: #FF69B4;
+        border-color: #66BB6A;
         background: #fff;
         box-shadow: 
-          0 0 0 3px rgba(255, 105, 180, 0.15),
-          0 4px 12px rgba(255, 105, 180, 0.2);
+          0 0 0 3px rgba(102, 187, 106, 0.15),
+          0 4px 12px rgba(102, 187, 106, 0.2);
         transform: translateY(-1px);
       }
 
       &:hover {
         background: #fff;
-        box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15);
+        box-shadow: 0 4px 12px rgba(102, 187, 106, 0.15);
         transform: translateY(-1px);
-        border-color: rgba(255, 105, 180, 0.3);
+        border-color: rgba(102, 187, 106, 0.3);
       }
       
       .el-input__inner {
         font-size: 16px;
-        color: #C2185B;
+        color: #2E7D32;
         
         &::placeholder {
-          color: #F8BBD9;
+          color: #A5D6A7;
         }
       }
       
       .el-input__prefix-inner {
-        color: #E91E63;
+        color: #43A047;
         font-size: 18px;
       }
     }
@@ -426,14 +426,14 @@ defineExpose({
     width: 100%;
     height: 56px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+    background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
     border: none;
     font-size: 18px;
     font-weight: 600;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.5);
+    box-shadow: 0 4px 15px rgba(102, 187, 106, 0.5);
     
     .button-text {
       position: relative;
@@ -456,8 +456,8 @@ defineExpose({
     
     &:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(255, 105, 180, 0.6);
-      background: linear-gradient(135deg, #FF1493 0%, #DC143C 100%);
+      box-shadow: 0 8px 25px rgba(102, 187, 106, 0.6);
+      background: linear-gradient(135deg, #43A047 0%, #388E3C 100%);
       
       .button-ripple {
         opacity: 1;
@@ -482,7 +482,7 @@ defineExpose({
   font-family: 'Open Sans', sans-serif;
   
   a {
-    color: #FF69B4;
+    color: #66BB6A;
     text-decoration: none;
     margin: 0 8px;
     transition: all 0.3s ease;
@@ -496,12 +496,12 @@ defineExpose({
       left: 0;
       width: 0;
       height: 2px;
-      background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+      background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
       transition: width 0.3s ease;
     }
     
     &:hover {
-      color: #FF1493;
+      color: #43A047;
       
       &::after {
         width: 100%;
@@ -525,7 +525,7 @@ defineExpose({
   position: absolute;
   border-radius: 50%;
   opacity: 0.2;
-  background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 50%, #FF1493 100%);
+  background: linear-gradient(135deg, #E8F5E9 0%, #66BB6A 50%, #43A047 100%);
   
   &.bubble-1 {
     width: 180px;
@@ -615,7 +615,7 @@ defineExpose({
   
   .particle {
     position: absolute;
-    background: rgba(255, 182, 193, 0.7);
+    background: rgba(102, 187, 106, 0.7);
     border-radius: 50%;
     animation: particleFloat linear infinite;
   }
