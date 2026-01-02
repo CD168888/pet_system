@@ -50,28 +50,30 @@
     display: flex;
     height: 100vh;
     min-height: 100vh;
-    background-color: #FFF9E6;
+    background: 
+      linear-gradient(to bottom, transparent 0%, transparent 5%, #fff 20%),
+      linear-gradient(135deg, #e8f5e9 0%, #b3e5fc 30%, #fff9c4 60%, #ffccbc 100%);
+    background-attachment: fixed;
     overflow: hidden;
     position: relative;
+
+    &::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(129, 199, 132, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(100, 181, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 238, 88, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
   }
   
-  .sidebar {
-    width: 200px;
-    background-color: #333;
-    color: white;
-    padding: 1rem;
-  }
-  
-  .sidebar nav {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .sidebar a {
-    color: white;
-    text-decoration: none;
-  }
+  /* 侧边栏样式将在Sidebar.vue中处理 */
   
   .main-content {
     flex: 1;
@@ -79,20 +81,17 @@
     flex-direction: column;
     overflow: hidden;
     height: 100%;
-    background-color: #FFF9E6;
+    background: transparent;
     position: relative;
     z-index: 1;
   }
   
   .content-container {
     flex: 1;
-    padding: 20px;
     overflow-y: auto;
     position: relative;
-    border-radius: 12px 0 0 0;
-    background-color: #ffffff;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-    margin: 0 0 0 10px;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
     
     &::-webkit-scrollbar {
@@ -100,7 +99,7 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background-color: rgba(255, 182, 193, 0.5);
+      background-color: rgba(129, 199, 132, 0.5);
       border-radius: 3px;
     }
 
@@ -121,7 +120,7 @@
     .decoration-bubble {
       position: absolute;
       border-radius: 50%;
-      background: linear-gradient(135deg, #FFB6C1 0%, #FFEE93 100%);
+      background: linear-gradient(135deg, #e8f5e9 0%, #66bb6a 50%, #43a047 100%);
       opacity: 0.05;
       
       &.bubble-1 {

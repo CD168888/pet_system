@@ -106,9 +106,10 @@ const handleLogout = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  background: #ffffff;
-  box-shadow: 0 1px 8px rgba(255, 182, 193, 0.15);
+  padding: 0 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 24px rgba(129, 199, 132, 0.15);
   z-index: 10;
   position: relative;
 
@@ -119,7 +120,7 @@ const handleLogout = () => {
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, #FFB6C1, #FFEE93);
+    background: linear-gradient(90deg, #66bb6a, #43a047);
     opacity: 0.7;
   }
 
@@ -135,28 +136,28 @@ const handleLogout = () => {
       cursor: pointer;
       padding: 8px;
       border-radius: 8px;
-      color: #683e35;
+      color: #2E7D32;
       height: 32px;
       width: 32px;
       transition: all 0.3s ease;
       
       &:hover {
-        background: rgba(255, 182, 193, 0.1);
+        background: rgba(129, 199, 132, 0.1);
         transform: scale(1.05);
       }
     }
 
     :deep(.el-breadcrumb__inner) {
-      color: #683e35;
+      color: #2E7D32;
       line-height: 32px;
       font-family: 'Open Sans', sans-serif;
       
       &.is-link {
-        color: #6E4C1E;
+        color: #388E3C;
         opacity: 0.8;
         
         &:hover {
-          color: #FFA726;
+          color: #43a047;
           opacity: 1;
         }
       }
@@ -173,15 +174,15 @@ const handleLogout = () => {
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      color: #683e35;
+      color: #2E7D32;
       border-radius: 8px;
       transition: all 0.3s;
       height: 36px;
       width: 36px;
       
       &:hover {
-        background: rgba(255, 182, 193, 0.1);
-        color: #FFA726;
+        background: rgba(129, 199, 132, 0.1);
+        color: #43a047;
         transform: scale(1.05);
       }
     }
@@ -196,12 +197,12 @@ const handleLogout = () => {
       transition: all 0.3s;
       
       &:hover {
-        background: rgba(255, 182, 193, 0.1);
+        background: rgba(129, 199, 132, 0.1);
       }
       
       :deep(.el-avatar) {
-        background: linear-gradient(135deg, #FFB6C1, #FFEE93);
-        color: #683e35;
+        background: linear-gradient(135deg, #66bb6a, #43a047);
+        color: #ffffff;
         font-family: 'Nunito Sans', sans-serif;
         font-weight: 600;
       }
@@ -209,13 +210,13 @@ const handleLogout = () => {
       .user-name {
         margin: 0 8px;
         font-size: 14px;
-        color: #683e35;
+        color: #2E7D32;
         font-family: 'Open Sans', sans-serif;
         line-height: 32px;
       }
 
       .el-icon {
-        color: #683e35;
+        color: #2E7D32;
         opacity: 0.7;
         display: flex;
         align-items: center;
@@ -229,12 +230,12 @@ const handleLogout = () => {
     gap: 8px;
     padding: 8px 16px;
     height: 40px;
-    color: #683e35;
+    color: #2E7D32;
     font-family: 'Open Sans', sans-serif;
     
     &:hover {
-      background-color: rgba(255, 182, 193, 0.1);
-      color: #FFA726;
+      background-color: rgba(129, 199, 132, 0.1);
+      color: #43a047;
     }
     
     .el-icon {
