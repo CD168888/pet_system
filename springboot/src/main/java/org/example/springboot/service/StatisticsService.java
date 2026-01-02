@@ -111,11 +111,24 @@ public class StatisticsService {
         statistics.setActiveBoardingCount(Math.toIntExact(boardingMapper.selectCount(activeWrapper)));
 
         // 设置月度趋势数据
-        statistics.setUserTrend(getUserMonthlyTrend());
-        statistics.setPetTrend(getPetMonthlyTrend());
-        statistics.setServiceTrend(getServiceMonthlyTrend());
-        statistics.setTrainingTrend(getTrainingMonthlyTrend());
-        statistics.setBoardingTrend(getBoardingMonthlyTrend());
+        List<MonthlyStatDTO> userTrend = getUserMonthlyTrend();
+        List<MonthlyStatDTO> petTrend = getPetMonthlyTrend();
+        List<MonthlyStatDTO> serviceTrend = getServiceMonthlyTrend();
+        List<MonthlyStatDTO> trainingTrend = getTrainingMonthlyTrend();
+        List<MonthlyStatDTO> boardingTrend = getBoardingMonthlyTrend();
+        
+        statistics.setUserTrend(userTrend);
+        statistics.setPetTrend(petTrend);
+        statistics.setServiceTrend(serviceTrend);
+        statistics.setTrainingTrend(trainingTrend);
+        statistics.setBoardingTrend(boardingTrend);
+        
+        // 计算较上月增长率
+        statistics.setUserGrowthRate(calculateMonthlyGrowthRate(userTrend));
+        statistics.setPetGrowthRate(calculateMonthlyGrowthRate(petTrend));
+        statistics.setServiceGrowthRate(calculateMonthlyGrowthRate(serviceTrend));
+        statistics.setTrainingGrowthRate(calculateMonthlyGrowthRate(trainingTrend));
+        statistics.setBoardingGrowthRate(calculateMonthlyGrowthRate(boardingTrend));
 
         return statistics;
     }
@@ -282,5 +295,35 @@ public class StatisticsService {
         }
         
         return months;
+    }
+    
+    /**
+     * 计算较上月增长率
+     * @param trend 月度趋势数据
+     * @return 增长率（百分比）
+     */
+    private Double calculateMonthlyGrowthRate(List<MonthlyStatDTO> trend) {
+        if (trend == null || trend.size() < 2) {
+            return 0.0;
+        }
+        
+        // 获取最近两个月的数据
+        MonthlyStatDTO currentMonth = trend.get(trend.size() - 1);
+        MonthlyStatDTO lastMonth = trend.get(trend.size() - 2);
+        
+        int currentCount = currentMonth.getCount();
+        int lastCount = lastMonth.getCount();
+        
+        // 计算增长率
+        if (lastCount == 0) {
+            // 如果上月数据为0，增长率为100%（如果本月有数据）
+            return currentCount > 0 ? 100.0 : 0.0;
+        }
+        
+        // 计算公式：((本月数 - 上月数) / 上月数) * 100
+        double growthRate = ((double) (currentCount - lastCount) / lastCount) * 100;
+        
+        // 保留一位小数
+        return Math.round(growthRate * 10) / 10.0;
     }
 } 
