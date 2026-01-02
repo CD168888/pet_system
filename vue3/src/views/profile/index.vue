@@ -94,13 +94,13 @@
                             <el-radio-group v-model="userForm.sex" class="gender-group">
                               <el-radio label="男" class="gender-radio">
                                 <el-icon>
-                                  <UserFilled />
+                                  <Male />
                                 </el-icon>
                                 男
                               </el-radio>
                               <el-radio label="女" class="gender-radio">
                                 <el-icon>
-                                  <UserFilled />
+                                  <Female />
                                 </el-icon>
                                 女
                               </el-radio>
@@ -208,7 +208,9 @@ import {
   Lock, 
   Key, 
   Check,
-  ArrowUp
+  ArrowUp,
+  Male,
+  Female
 } from '@element-plus/icons-vue';
 
 const baseAPI = process.env.VUE_APP_BASE_API || "/api";
@@ -580,7 +582,7 @@ onMounted(() => {
 }
 
 .modern-tabs .el-tabs__header {
-  border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+  border-bottom: 2px solid rgba(102, 187, 106, 0.2);
   margin-bottom: 30px;
 }
 
@@ -600,22 +602,47 @@ onMounted(() => {
 }
 
 .modern-tabs .el-tabs__item:hover {
-  color: #FF9800;
-  border-bottom-color: rgba(255, 152, 0, 0.3);
+  color: #66bb6a !important;
+  border-bottom-color: rgba(102, 187, 106, 0.3) !important;
   transform: translateY(-2px);
 }
 
 .modern-tabs .el-tabs__item.is-active {
-  color: #FF9800;
-  border-bottom-color: #FF9800;
+  color: #66bb6a !important;
+  border-bottom-color: #66bb6a !important;
   font-weight: 600;
 }
 
 .modern-tabs .el-tabs__active-bar {
-  background-color: #FF9800;
+  background-color: #66bb6a !important;
   height: 3px;
   border-radius: 3px;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* 确保完全覆盖Element Plus默认样式 */
+.modern-tabs .el-tabs__item::after,
+.modern-tabs .el-tabs__item.is-active::after {
+  border-bottom-color: transparent !important;
+}
+
+/* 穿透样式，确保Element Plus内部样式被完全覆盖 */
+.modern-tabs :deep(.el-tabs__nav-wrap::after) {
+  border-bottom-color: rgba(102, 187, 106, 0.2);
+}
+
+.modern-tabs :deep(.el-tabs__item:hover) {
+  color: #66bb6a !important;
+  border-bottom-color: rgba(102, 187, 106, 0.3) !important;
+}
+
+.modern-tabs :deep(.el-tabs__item.is-active) {
+  color: #66bb6a !important;
+  border-bottom-color: #66bb6a !important;
+}
+
+.modern-tabs :deep(.el-tabs__active-bar) {
+  background-color: #66bb6a !important;
 }
 
 .tab-label {
@@ -632,7 +659,7 @@ onMounted(() => {
 
 .modern-tabs .el-tabs__item:hover .label-icon,
 .modern-tabs .el-tabs__item.is-active .label-icon {
-  fill: #FF9800;
+  fill: #66bb6a;
   transform: translateY(-2px) scale(1.1);
 }
 
@@ -674,20 +701,20 @@ onMounted(() => {
 
 .user-avatar {
   border-radius: 50%;
-  border: 4px solid rgba(255, 152, 0, 0.2);
-  box-shadow: 0 8px 25px rgba(255, 152, 0, 0.15);
+  border: 4px solid rgba(102, 187, 106, 0.2);
+  box-shadow: 0 8px 25px rgba(102, 187, 106, 0.15);
   transition: all 0.3s ease;
   animation: avatarPulse 3s ease-in-out infinite;
 }
 
 .user-avatar:hover {
   transform: scale(1.05);
-  box-shadow: 0 12px 35px rgba(255, 152, 0, 0.25);
+  box-shadow: 0 12px 35px rgba(102, 187, 106, 0.25);
 }
 
 .avatar-fallback {
   font-size: 40px;
-  color: #FF9800;
+  color: #66bb6a;
   font-weight: 600;
 }
 
@@ -698,7 +725,7 @@ onMounted(() => {
 
 .avatar-uploader:hover .user-avatar {
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(102, 187, 106, 0.4);
 }
 
 .avatar-info .user-name {
@@ -742,13 +769,14 @@ onMounted(() => {
 }
 
 .card-title:hover {
-  color: #FF9800;
+  color: #66bb6a;
 }
 
 .card-title .title-icon {
   width: 24px;
   height: 24px;
-  fill: #FF9800;
+  fill: none;
+  stroke: #66bb6a;
   transition: all 0.3s ease;
 }
 
@@ -791,7 +819,7 @@ onMounted(() => {
 
 .form-input {
   border-radius: 10px;
-  border: 1px solid rgba(255, 152, 0, 0.15);
+  border: 1px solid rgba(102, 187, 106, 0.15);
   transition: all 0.3s ease;
   background-color: rgba(255, 255, 255, 0.9);
   position: relative;
@@ -805,19 +833,19 @@ onMounted(() => {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 152, 0, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(102, 187, 106, 0.1), transparent);
   transition: all 0.5s ease;
 }
 
 .form-input:hover {
-  border-color: rgba(255, 152, 0, 0.3);
+  border-color: rgba(102, 187, 106, 0.3);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(102, 187, 106, 0.1);
 }
 
 .form-input:focus-within {
-  border-color: #FF9800;
-  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+  border-color: #66bb6a;
+  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.1);
   transform: translateY(-1px);
 }
 
@@ -828,6 +856,27 @@ onMounted(() => {
   border: none;
   background-color: transparent;
   transition: all 0.3s ease;
+}
+
+/* 穿透样式，确保输入框内部样式一致 */
+.form-input :deep(.el-input__inner) {
+  border-radius: 10px;
+  border: none;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.form-input :deep(.el-input__inner:focus) {
+  border-color: #66bb6a !important;
+  box-shadow: 0 0 0 1px #66bb6a !important;
+}
+
+.form-input :deep(.el-input__prefix-inner) {
+  color: #66bb6a;
+}
+
+.form-input :deep(.el-input__suffix-inner) {
+  color: #66bb6a;
 }
 
 /* 性别选择 */
@@ -850,38 +899,54 @@ onMounted(() => {
 }
 
 .gender-radio:hover {
-  color: #FFD700;
+  color: #66bb6a;
   transform: translateY(-2px);
-  background-color: rgba(255, 215, 0, 0.05);
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.1);
+  background-color: rgba(102, 187, 106, 0.05);
+  box-shadow: 0 2px 8px rgba(102, 187, 106, 0.1);
 }
 
 .gender-radio .el-icon {
   font-size: 18px;
   transition: all 0.3s ease;
+  transform: translateY(1px);
+  vertical-align: middle;
 }
 
 .gender-radio:hover .el-icon {
-  transform: scale(1.2);
+  transform: translateY(1px) scale(1.2);
 }
 
 .gender-radio .el-radio__input.is-checked .el-radio__inner {
-    border-color: #FFD700;
-    background-color: #FFD700;
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  }
+  border-color: #66bb6a !important;
+  background-color: #66bb6a !important;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
 
-  .gender-radio .el-radio__input.is-checked .el-radio__inner::after {
-    background-color: #333;
-  }
+.gender-radio .el-radio__input.is-checked .el-radio__inner::after {
+  background-color: white !important;
+}
 
-  .gender-radio .el-radio__input.is-checked + span {
-    color: #FFD700;
-  }
+.gender-radio .el-radio__input.is-checked + span {
+  color: #66bb6a !important;
+}
 
-  .gender-radio .el-radio__input.is-checked .el-icon {
-    color: #FFD700;
-  }
+.gender-radio .el-radio__input.is-checked .el-icon {
+  color: #66bb6a !important;
+}
+
+/* 穿透样式，确保完全覆盖Element Plus默认样式 */
+.gender-radio :deep(.el-radio__input.is-checked .el-radio__inner) {
+  border-color: #66bb6a !important;
+  background-color: #66bb6a !important;
+}
+
+.gender-radio :deep(.el-radio__input.is-checked .el-radio__inner::after) {
+  background-color: white !important;
+}
+
+.gender-radio :deep(.el-radio__input.is-checked + span) {
+  color: #66bb6a !important;
+}
 
 /* 表单操作按钮 */
 .form-actions {
@@ -896,14 +961,14 @@ onMounted(() => {
 }
 
 .save-btn {
-  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
   border: none;
   border-radius: 12px;
   padding: 12px 30px;
   font-weight: 600;
   font-size: 1rem;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
   position: relative;
   overflow: hidden;
   z-index: 1;
@@ -923,7 +988,7 @@ onMounted(() => {
 
 .save-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+  box-shadow: 0 8px 25px rgba(102, 187, 106, 0.4);
 }
 
 .save-btn:hover::before {
@@ -954,10 +1019,10 @@ onMounted(() => {
 .security-icon {
   width: 50px;
   height: 50px;
-  fill: #FF9800;
+  fill: #66bb6a;
+  stroke: #66bb6a;
   margin-bottom: 15px;
   transition: all 0.3s ease;
-  animation: securityPulse 3s ease-in-out infinite;
 }
 
 .security-icon:hover {
@@ -973,7 +1038,7 @@ onMounted(() => {
 }
 
 .password-title:hover {
-  color: #FF9800;
+  color: #66bb6a;
 }
 
 .password-desc {
@@ -1029,10 +1094,10 @@ onMounted(() => {
 
 @keyframes avatarPulse {
   0%, 100% {
-    box-shadow: 0 8px 25px rgba(255, 152, 0, 0.15);
+    box-shadow: 0 8px 25px rgba(102, 187, 106, 0.15);
   }
   50% {
-    box-shadow: 0 12px 35px rgba(255, 152, 0, 0.25);
+    box-shadow: 0 12px 35px rgba(102, 187, 106, 0.25);
   }
 }
 
@@ -1047,11 +1112,11 @@ onMounted(() => {
 
 @keyframes securityPulse {
   0%, 100% {
-    fill: #FF9800;
+    fill: #66bb6a;
     transform: scale(1);
   }
   50% {
-    fill: #F57C00;
+    fill: #43a047;
     transform: scale(1.05);
   }
 }
