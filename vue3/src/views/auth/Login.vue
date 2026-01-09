@@ -1,10 +1,11 @@
 <template>
   <Auth 
+    ref="authRef"
     :formData="loginForm" 
     :rules="rules" 
     :loading="loading"
     submitText="登录"
-    @submit="handleSubmit"
+    @submit="handleLogin"
   >
     <template #form-items>
       <div class="welcome-text">欢迎回来！</div>
@@ -23,7 +24,7 @@
           :prefix-icon="Lock"
           type="password"
           placeholder="请输入密码"
-          @keyup.enter="handleSubmit">
+          @keyup.enter="handleLoginByEnter">
         </el-input>
       </el-form-item>
     </template>
@@ -48,7 +49,7 @@ import Auth from './Auth.vue'
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
-const formRef = ref(null)
+const authRef = ref(null)
 const loading = ref(false)
 
 const loginForm = reactive({
@@ -65,16 +66,8 @@ const rules = {
   ]
 }
 
-const handleSubmit = (form) => {
-  formRef.value = form.value
-  loginFormRef.value = form.value
-  handleLogin()
-}
-
-const loginFormRef = ref(null)
-
-const handleLogin = () => {
-  loginFormRef.value.validate(async valid => {
+const handleLogin = (form) => {
+  form.validate(async valid => {
     if (valid) {
       loading.value = true
       try {
@@ -112,6 +105,13 @@ const handleLogin = () => {
       }
     }
   })
+}
+
+// 处理回车登录
+const handleLoginByEnter = () => {
+  if (authRef.value && authRef.value.formRef && authRef.value.formRef.value) {
+    handleLogin(authRef.value.formRef.value)
+  }
 }
 </script>
 

@@ -101,7 +101,7 @@ const emit = defineEmits(['submit'])
 const handleSubmit = () => {
   formRef.value.validate(valid => {
     if (valid) {
-      emit('submit', formRef)
+      emit('submit', formRef.value)
     }
   })
 }
