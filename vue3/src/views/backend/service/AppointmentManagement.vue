@@ -1,39 +1,42 @@
 <template>
   <div class="appointment-management-container">
     <el-card shadow="never" class="search-card">
-      <div class="search-section">
-        <el-form :inline="true" :model="searchForm" class="search-form">
-          <el-form-item label="服务名称">
-            <el-input v-model="searchForm.serviceName" placeholder="服务名称" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="宠物名称">
-            <el-input v-model="searchForm.petName" placeholder="宠物名称" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="联系电话">
-            <el-input v-model="searchForm.contactPhone" placeholder="联系电话" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="预约状态">
-            <el-select v-model="searchForm.status" placeholder="预约状态" clearable>
-              <el-option value="已预约" label="待确认"></el-option>
-              <el-option value="已确认" label="已确认"></el-option>
-              <el-option value="已完成" label="已完成"></el-option>
-              <el-option value="已取消" label="已取消"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch">搜索</el-button>
-            <el-button @click="resetSearch">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="服务名称">
+          <el-input v-model="searchForm.serviceName" placeholder="服务名称" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="宠物名称">
+          <el-input v-model="searchForm.petName" placeholder="宠物名称" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="联系电话">
+          <el-input v-model="searchForm.contactPhone" placeholder="联系电话" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="预约状态">
+          <el-select v-model="searchForm.status" placeholder="预约状态" clearable>
+            <el-option value="已预约" label="待确认"></el-option>
+            <el-option value="已确认" label="已确认"></el-option>
+            <el-option value="已完成" label="已完成"></el-option>
+            <el-option value="已取消" label="已取消"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
     </el-card>
     
     <el-card shadow="never" v-loading="loading" class="table-card">
       <template #header>
         <div class="card-header">
-          <span>服务预约管理</span>
-          <div class="header-actions">
-            <el-button type="success" size="small" @click="exportData">导出数据</el-button>
+          <div class="left">
+            <span class="title">服务预约管理</span>
+            <el-button :icon="refreshIcon" circle @click="handleRefresh" />
+          </div>
+          <div class="right">
+            <el-button :icon="downloadIcon" @click="handleExport">导出</el-button>
+            <el-button :icon="settingIcon" @click="columnSettingVisible = true">列设置</el-button>
+            <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete">批量删除</el-button>
             <el-date-picker
               v-model="dateRange"
               type="daterange"
@@ -49,30 +52,31 @@
         </div>
       </template>
       
-      <el-table :data="tableData" border style="width: 100%">
-        <el-table-column prop="id" label="ID" width="80" align="center"></el-table-column>
-        <el-table-column prop="serviceName" label="服务名称" min-width="120" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="petName" label="宠物名称" width="120"></el-table-column>
-        <el-table-column prop="userName" label="预约用户" width="120"></el-table-column>
-        <el-table-column prop="contactPhone" label="联系电话" width="120"></el-table-column>
-        <el-table-column label="预约时间" width="170" align="center">
+      <el-table :data="tableData" border style="width: 100%" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" />
+        <el-table-column v-if="isColumnVisible('id')" prop="id" label="ID" width="80" align="center"></el-table-column>
+        <el-table-column v-if="isColumnVisible('serviceName')" prop="serviceName" label="服务名称" min-width="120" show-overflow-tooltip></el-table-column>
+        <el-table-column v-if="isColumnVisible('petName')" prop="petName" label="宠物名称" min-width="100"></el-table-column>
+        <el-table-column v-if="isColumnVisible('userName')" prop="userName" label="预约用户" min-width="100"></el-table-column>
+        <el-table-column v-if="isColumnVisible('contactPhone')" prop="contactPhone" label="联系电话" min-width="120"></el-table-column>
+        <el-table-column v-if="isColumnVisible('appointmentTime')" label="预约时间" min-width="150" align="center">
           <template #default="scope">
             {{ formatDateTime(scope.row.appointmentTime) }}
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="100" align="center">
+        <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" min-width="100" align="center">
           <template #default="scope">
             <el-tag :type="getStatusType(scope.row.status)">
               {{ scope.row.status }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" width="170" align="center">
+        <el-table-column v-if="isColumnVisible('createTime')" label="创建时间" min-width="150" align="center">
           <template #default="scope">
             {{ formatDateTime(scope.row.createTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="250" fixed="right" align="center">
+        <el-table-column label="操作" width="250" align="center">
           <template #default="scope">
             <el-button 
               v-if="scope.row.status === '已预约'" 
@@ -108,7 +112,7 @@
         </el-table-column>
       </el-table>
       
-      <div class="pagination-container">
+      <div class="pagination">
         <el-pagination
           :current-page="currentPage"
           :page-size="pageSize"
@@ -120,6 +124,20 @@
         ></el-pagination>
       </div>
     </el-card>
+    
+    <!-- 列设置抽屉 -->
+    <el-drawer
+      v-model="columnSettingVisible"
+      title="列设置"
+      direction="rtl"
+      size="300px"
+    >
+      <el-checkbox-group v-model="visibleColumns" class="column-list">
+        <el-checkbox v-for="col in allColumns" :key="col.prop" :label="col.prop">
+          {{ col.label }}
+        </el-checkbox>
+      </el-checkbox-group>
+    </el-drawer>
     
     <!-- 预约详情对话框 -->
     <el-dialog 
@@ -209,12 +227,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Refresh, Download, Setting } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 import { useUserStore } from '@/store/user'
+import * as XLSX from 'xlsx'
+import { format } from '@/utils/dateUtils'
 
 const userStore = useUserStore()
+
+// 将图标暴露给模板使用
+const refreshIcon = Refresh
+const downloadIcon = Download
+const settingIcon = Setting
 
 // 数据定义
 const loading = ref(false)
@@ -230,6 +256,7 @@ const remarkTitle = ref('')
 const remarkContent = ref('')
 const statusAction = ref('')
 const dateRange = ref([])
+const selectedRows = ref([])
 
 // 搜索表单
 const searchForm = ref({
@@ -238,6 +265,34 @@ const searchForm = ref({
   contactPhone: '',
   status: ''
 })
+
+// 列设置相关代码
+const STORAGE_KEY = 'appointmentListVisibleColumns'
+const columnSettingVisible = ref(false)
+const allColumns = [
+  { prop: 'id', label: 'ID' },
+  { prop: 'serviceName', label: '服务名称' },
+  { prop: 'petName', label: '宠物名称' },
+  { prop: 'userName', label: '预约用户' },
+  { prop: 'contactPhone', label: '联系电话' },
+  { prop: 'appointmentTime', label: '预约时间' },
+  { prop: 'status', label: '状态' },
+  { prop: 'createTime', label: '创建时间' }
+]
+
+// 从localStorage获取保存的列设置，如果没有则使用默认值
+const visibleColumns = ref(
+  JSON.parse(localStorage.getItem(STORAGE_KEY)) || allColumns.map(col => col.prop)
+)
+
+// 监听列设置变化并保存到localStorage
+watch(visibleColumns, (newVal) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
+}, { deep: true })
+
+const isColumnVisible = (prop) => {
+  return visibleColumns.value.includes(prop)
+}
 
 // 获取预约列表
 const fetchAppointments = async () => {
@@ -323,9 +378,9 @@ const handleDateRangeChange = () => {
   handleSearch()
 }
 
-// 导出数据
-const exportData = () => {
-  ElMessage.info('数据导出功能开发中...')
+// 处理表格选择
+const handleSelectionChange = (rows) => {
+  selectedRows.value = rows
 }
 
 // 处理分页大小改变
@@ -338,6 +393,72 @@ const handleSizeChange = (size) => {
 const handleCurrentChange = (page) => {
   currentPage.value = page
   fetchAppointments()
+}
+
+// 刷新数据
+const handleRefresh = () => {
+  fetchAppointments()
+  ElMessage.success('刷新成功')
+}
+
+// 批量删除
+const handleBatchDelete = async () => {
+  if (selectedRows.value.length === 0) return
+  
+  try {
+    await ElMessageBox.confirm(`确认删除选中的 ${selectedRows.value.length} 个预约记录吗？`, '提示', {
+      type: 'warning'
+    })
+    const ids = selectedRows.value.map(row => row.id)
+    await request.post('/service/appointment/batch-delete', { ids }, {
+      successMsg: '批量删除成功',
+      onSuccess: () => {
+        fetchAppointments()
+      }
+    })
+  } catch (error) {
+    console.error('批量删除失败:', error)
+  }
+}
+
+// 优化导出功能
+const handleExport = () => {
+  try {
+    loading.value = true
+    
+    // 获取当前可见列的配置
+    const visibleColumnConfigs = allColumns.filter(col => isColumnVisible(col.prop))
+    
+    // 准备导出数据
+    const exportData = tableData.value.map(item => {
+      const row = {}
+      visibleColumnConfigs.forEach(col => {
+        if (col.prop === 'appointmentTime' || col.prop === 'createTime') {
+          row[col.label] = formatDateTime(item[col.prop])
+        } else if (col.prop === 'status') {
+          row[col.label] = item[col.prop]
+        } else {
+          row[col.label] = item[col.prop]
+        }
+      })
+      return row
+    })
+
+    // 创建工作簿
+    const worksheet = XLSX.utils.json_to_sheet(exportData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, '服务预约列表')
+
+    // 导出文件
+    XLSX.writeFile(workbook, `服务预约列表_${format(new Date())}.xlsx`)
+    
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出失败:', error)
+    ElMessage.error('导出失败')
+  } finally {
+    loading.value = false
+  }
 }
 
 // 查看详情
@@ -439,6 +560,7 @@ onMounted(() => {
 .search-form {
   display: flex;
   flex-wrap: wrap;
+  gap: 10px;
 }
 
 .card-header {
@@ -447,17 +569,24 @@ onMounted(() => {
   align-items: center;
 }
 
-.card-header span {
+.card-header .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-header .right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.title {
   font-size: 16px;
   font-weight: bold;
 }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-}
-
-.pagination-container {
+.pagination {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
@@ -472,16 +601,38 @@ onMounted(() => {
   color: #606266;
 }
 
+.column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+
+/* 搜索表单的表单项间距 */
+.search-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
 @media (max-width: 768px) {
   .el-form-item {
     margin-right: 0;
     width: 100%;
   }
   
-  .header-actions {
+  .card-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+  }
+  
+  .card-header .right {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .card-header .right .el-button {
+    flex: 1;
+    min-width: 120px;
   }
 }
 </style> 
