@@ -73,18 +73,18 @@
     <el-dialog
       :title="dialogTitle"
       v-model="dialogVisible"
-      width="500px"
+      width="650px"
       @close="resetForm"
     >
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="dialog-form">
         <el-form-item label="角色编码" prop="code">
-          <el-input v-model="form.code" :disabled="!!form.id" />
+          <el-input v-model="form.code" :disabled="!!form.id" placeholder="请输入角色编码" style="width: 100%" />
         </el-form-item>
         <el-form-item label="角色名称" prop="name">
-          <el-input v-model="form.name" />
+          <el-input v-model="form.name" placeholder="请输入角色名称" style="width: 100%" />
         </el-form-item>
         <el-form-item label="角色描述" prop="description">
-          <el-input v-model="form.description" type="textarea" />
+          <el-input v-model="form.description" type="textarea" placeholder="请输入角色描述" style="width: 100%" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -490,8 +490,14 @@ onMounted(() => {
   gap: 10px;
 }
 
-:deep(.el-form-item) {
+/* 搜索表单的表单项间距 */
+.search-form :deep(.el-form-item) {
   margin-bottom: 0;
+}
+
+/* 弹窗表单的表单项间距 */
+.dialog-form :deep(.el-form-item) {
+  margin-bottom: 24px;
 }
 
 .column-list {
