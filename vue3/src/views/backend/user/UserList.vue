@@ -84,27 +84,27 @@
     </el-card>
 
     <!-- 用户表单对话框 -->
-    <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px" @close="resetForm">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="dialogTitle" v-model="dialogVisible" width="650px" @close="resetForm">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="dialog-form">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" :disabled="!!form.id" />
+          <el-input v-model="form.username" :disabled="!!form.id" style="width: 100%" />
         </el-form-item>
         <el-form-item label="姓名" prop="name">
-          <el-input v-model="form.name" />
+          <el-input v-model="form.name" placeholder="请输入姓名" style="width: 100%" />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" />
+          <el-input v-model="form.email" placeholder="请输入邮箱" style="width: 100%" />
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
-          <el-input v-model="form.phone" />
+          <el-input v-model="form.phone" placeholder="请输入手机号" style="width: 100%" />
         </el-form-item>
         <el-form-item label="角色" prop="roleCode">
-          <el-select v-model="form.roleCode" placeholder="请选择角色" clearable>
+          <el-select v-model="form.roleCode" placeholder="请选择角色" clearable style="width: 100%">
             <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.code" />
           </el-select>
         </el-form-item>
         <el-form-item label="密码" prop="password" v-if="!form.id">
-          <el-input v-model="form.password" type="password" show-password />
+          <el-input v-model="form.password" type="password" show-password placeholder="请输入密码" style="width: 100%" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -496,12 +496,23 @@ onMounted(() => {
   gap: 10px;
 }
 
-:deep(.el-form-item) {
+/* 搜索表单的表单项间距 */
+.search-form :deep(.el-form-item) {
   margin-bottom: 0;
+}
+
+/* 弹窗表单的表单项间距 */
+.dialog-form :deep(.el-form-item) {
+  margin-bottom: 24px;
 }
 
 :deep(.el-select) {
   width: 200px;
+}
+
+/* 弹窗表单内的选择器宽度 */
+.dialog-form :deep(.el-select) {
+  width: 100%;
 }
 
 .column-list {
