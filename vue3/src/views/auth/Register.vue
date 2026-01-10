@@ -137,8 +137,8 @@ const rules = {
 }
 
 const handleSubmit = (form) => {
-  formRef.value = form.value
-  registerFormRef.value = form.value
+  formRef.value = form
+  registerFormRef.value = form
   handleRegister()
 }
 
