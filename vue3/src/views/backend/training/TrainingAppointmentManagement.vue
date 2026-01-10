@@ -57,34 +57,34 @@
         <el-table-column type="selection" width="55" />
         <el-table-column v-if="isColumnVisible('id')" prop="id" label="ID" width="80" />
         <el-table-column v-if="isColumnVisible('courseName')" prop="courseName" label="课程名称" min-width="120" show-overflow-tooltip />
-        <el-table-column v-if="isColumnVisible('petName')" prop="petName" label="宠物名称" width="100" />
-        <el-table-column v-if="isColumnVisible('userName')" prop="userName" label="预约用户" width="100" />
-        <el-table-column v-if="isColumnVisible('contactPhone')" prop="contactPhone" label="联系电话" width="120" />
-        <el-table-column v-if="isColumnVisible('appointmentTime')" prop="appointmentTime" label="预约时间" width="180">
+        <el-table-column v-if="isColumnVisible('petName')" prop="petName" label="宠物名称" min-width="100" />
+        <el-table-column v-if="isColumnVisible('userName')" prop="userName" label="预约用户" min-width="100" />
+        <el-table-column v-if="isColumnVisible('contactPhone')" prop="contactPhone" label="联系电话" min-width="120" />
+        <el-table-column v-if="isColumnVisible('appointmentTime')" prop="appointmentTime" label="预约时间" min-width="150">
           <template #default="scope">
             {{ formatDateTime(scope.row.appointmentTime) }}
           </template>
         </el-table-column>
-        <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" width="100">
+        <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" min-width="100">
           <template #default="scope">
             <el-tag :type="getStatusType(scope.row.status)">
               {{ scope.row.status }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column v-if="isColumnVisible('progress')" prop="progress" label="训练进度" width="120">
+        <el-table-column v-if="isColumnVisible('progress')" prop="progress" label="训练进度" min-width="120">
           <template #default="scope">
             <el-progress :percentage="scope.row.progress || 0" :format="progressFormat" />
           </template>
         </el-table-column>
-        <el-table-column v-if="isColumnVisible('hasFeedback')" prop="hasFeedback" label="客户评价" width="100">
+        <el-table-column v-if="isColumnVisible('hasFeedback')" prop="hasFeedback" label="客户评价" min-width="100">
           <template #default="scope">
             <el-tag v-if="scope.row.hasFeedback" type="success">已评价</el-tag>
             <el-tag v-else-if="scope.row.status === '已完成'" type="info">未评价</el-tag>
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" width="180">
+        <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" min-width="150">
           <template #default="scope">
             {{ formatDateTime(scope.row.createTime) }}
           </template>

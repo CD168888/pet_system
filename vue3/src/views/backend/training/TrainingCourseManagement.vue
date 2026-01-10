@@ -58,22 +58,22 @@
         <el-table-column type="selection" width="55" />
         <el-table-column v-if="isColumnVisible('id')" prop="id" label="ID" width="80" />
         <el-table-column v-if="isColumnVisible('name')" prop="name" label="课程名称" min-width="150" show-overflow-tooltip />
-        <el-table-column v-if="isColumnVisible('category')" prop="category" label="分类" width="120" />
-        <el-table-column v-if="isColumnVisible('price')" prop="price" label="价格(¥)" width="100">
+        <el-table-column v-if="isColumnVisible('category')" prop="category" label="分类" min-width="100" />
+        <el-table-column v-if="isColumnVisible('price')" prop="price" label="价格(¥)" min-width="100">
           <template #default="scope">
             {{ formatPrice(scope.row.price) }}
           </template>
         </el-table-column>
-        <el-table-column v-if="isColumnVisible('duration')" prop="duration" label="时长(分钟)" width="100" />
-        <el-table-column v-if="isColumnVisible('maxParticipants')" prop="maxParticipants" label="最大人数" width="100" />
-        <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" width="100">
+        <el-table-column v-if="isColumnVisible('duration')" prop="duration" label="时长(分钟)" min-width="100" />
+        <el-table-column v-if="isColumnVisible('maxParticipants')" prop="maxParticipants" label="最大人数" min-width="100" />
+        <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" min-width="100">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
               {{ scope.row.status === 1 ? '启用' : '停用' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" width="180">
+        <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" min-width="150">
           <template #default="scope">
             {{ formatDateTime(scope.row.createTime) }}
           </template>

@@ -48,7 +48,7 @@
         <el-table-column v-if="isColumnVisible('id')" prop="id" label="ID" width="80" />
         <el-table-column v-if="isColumnVisible('name')" prop="name" label="分类名称" min-width="150" />
         <el-table-column v-if="isColumnVisible('description')" prop="description" label="分类描述" min-width="200" show-overflow-tooltip />
-        <el-table-column v-if="isColumnVisible('icon')" prop="icon" label="图标" width="100">
+        <el-table-column v-if="isColumnVisible('icon')" prop="icon" label="图标" min-width="100">
           <template #default="scope">
             <el-icon v-if="scope.row.icon" :size="20">
               <component :is="scope.row.icon" />
@@ -56,15 +56,15 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="isColumnVisible('sortOrder')" prop="sortOrder" label="排序" width="80" />
-        <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" width="100">
+        <el-table-column v-if="isColumnVisible('sortOrder')" prop="sortOrder" label="排序" min-width="80" />
+        <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" min-width="100">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
               {{ scope.row.status === 1 ? '启用' : '停用' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" width="180">
+        <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" min-width="150">
           <template #default="scope">
             {{ formatDateTime(scope.row.createTime) }}
           </template>
