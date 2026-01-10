@@ -1,81 +1,90 @@
 <template>
   <div class="service-management-container">
-    <el-card shadow="never" class="search-card">
-      <div class="search-section">
-        <el-form :inline="true" :model="searchForm" class="search-form">
-          <el-form-item label="服务名称">
-            <el-input v-model="searchForm.name" placeholder="请输入服务名称" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="服务分类">
-            <el-select v-model="searchForm.categoryId" placeholder="请选择分类" clearable>
-              <el-option
-                v-for="item in categories"
-                :key="item.id"
-                :label="item.name"
-                :disabled="item.status === 0"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="状态">
-            <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
-              <el-option :value="1" label="启用"></el-option>
-              <el-option :value="0" label="停用"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch">搜索</el-button>
-            <el-button @click="resetSearch">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
+    <!-- 搜索栏 -->
+    <el-card class="search-card">
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="服务名称">
+          <el-input v-model="searchForm.name" placeholder="请输入服务名称" clearable />
+        </el-form-item>
+        <el-form-item label="服务分类">
+          <el-select v-model="searchForm.categoryId" placeholder="请选择分类" clearable style="width: 200px">
+            <el-option
+              v-for="item in categories"
+              :key="item.id"
+              :label="item.name"
+              :disabled="item.status === 0"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 200px">
+            <el-option :value="1" label="启用" />
+            <el-option :value="0" label="停用" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
     </el-card>
-    
-    <el-card shadow="never" v-loading="loading" class="table-card">
+
+    <!-- 操作栏 -->
+    <el-card class="table-card">
       <template #header>
         <div class="card-header">
-          <span>服务列表</span>
-          <el-button type="primary" @click="openDialog()">添加服务</el-button>
+          <div class="left">
+            <span class="title">服务列表</span>
+            <el-button :icon="refreshIcon" circle @click="handleRefresh" />
+          </div>
+          <div class="right">
+            <el-button :icon="downloadIcon" @click="handleExport">导出</el-button>
+            <el-button :icon="settingIcon" @click="columnSettingVisible = true">列设置</el-button>
+            <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete">批量删除</el-button>
+            <el-button type="primary" @click="handleAdd">添加服务</el-button>
+          </div>
         </div>
       </template>
       
-      <el-table :data="tableData" border stripe style="width: 100%">
-        <el-table-column prop="id" label="ID" width="80" align="center"></el-table-column>
-        <el-table-column prop="name" label="服务名称" min-width="120" show-overflow-tooltip></el-table-column>
-        <el-table-column label="服务分类" min-width="120">
+      <el-table :data="tableData" border style="width: 100%" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" />
+        <el-table-column v-if="isColumnVisible('id')" prop="id" label="ID" width="80" align="center" />
+        <el-table-column v-if="isColumnVisible('name')" prop="name" label="服务名称" min-width="120" show-overflow-tooltip />
+        <el-table-column v-if="isColumnVisible('category')" label="服务分类" min-width="120">
           <template #default="scope">
             {{ getCategoryName(scope.row.categoryId) }}
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="价格" width="100" align="center">
+        <el-table-column v-if="isColumnVisible('price')" prop="price" label="价格" width="100" align="center">
           <template #default="scope">
             ¥{{ scope.row.price }}
           </template>
         </el-table-column>
-        <el-table-column label="时长" width="100" align="center">
+        <el-table-column v-if="isColumnVisible('duration')" label="时长" width="100" align="center">
           <template #default="scope">
             {{ getDurationText(scope.row.duration) }}
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="100" align="center">
+        <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" width="100" align="center">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
               {{ scope.row.status === 1 ? '启用' : '停用' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" width="180" align="center">
+        <el-table-column v-if="isColumnVisible('createTime')" label="创建时间" width="180" align="center">
           <template #default="scope">
             {{ formatDateTime(scope.row.createTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right" align="center">
+        <el-table-column label="操作" width="200">
           <template #default="scope">
-            <el-button size="small" type="primary" @click="openDialog(scope.row)">编辑</el-button>
+            <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
             <el-button 
-              size="small" 
-              :type="scope.row.status === 1 ? 'danger' : 'success'"
-              @click="changeStatus(scope.row)"
+              :type="scope.row.status === 1 ? 'danger' : 'success'" 
+              link 
+              @click="handleChangeStatus(scope.row)"
             >
               {{ scope.row.status === 1 ? '停用' : '启用' }}
             </el-button>
@@ -83,16 +92,16 @@
         </el-table-column>
       </el-table>
       
-      <div class="pagination-container">
-        <el-pagination
-          :current-page="currentPage"
-          :page-size="pageSize"
+      <div class="pagination">
+        <el-pagination 
+          :current-page="currentPage" 
+          :page-size="pageSize" 
+          :total="total" 
           :page-sizes="[10, 20, 50, 100]"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        ></el-pagination>
+          layout="total, sizes, prev, pager, next, jumper" 
+          @size-change="handleSizeChange" 
+          @current-change="handleCurrentChange" 
+        />
       </div>
     </el-card>
     
@@ -102,6 +111,7 @@
       :title="form.id ? '编辑服务' : '添加服务'" 
       width="600px"
       :close-on-click-modal="false"
+      @close="resetForm"
     >
       <el-form 
         ref="formRef" 
@@ -110,6 +120,7 @@
         label-width="100px" 
         label-position="right"
         status-icon
+        class="dialog-form"
       >
         <el-form-item label="服务名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入服务名称"></el-input>
@@ -170,20 +181,38 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitForm" :loading="submitting">确定</el-button>
+          <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
         </div>
       </template>
     </el-dialog>
     
-    <!-- 分类管理对话框 -->
- 
+    <!-- 列设置抽屉 -->
+    <el-drawer
+      v-model="columnSettingVisible"
+      title="列设置"
+      direction="rtl"
+      size="300px"
+    >
+      <el-checkbox-group v-model="visibleColumns" class="column-list">
+        <el-checkbox v-for="col in allColumns" :key="col.prop" :label="col.prop">
+          {{ col.label }}
+        </el-checkbox>
+      </el-checkbox-group>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Refresh, Download, Setting } from '@element-plus/icons-vue'
 import request from '@/utils/request'
+import * as XLSX from 'xlsx'
+
+// 将图标暴露给模板使用
+const refreshIcon = Refresh
+const downloadIcon = Download
+const settingIcon = Setting
 
 // 数据定义
 const loading = ref(false)
@@ -198,6 +227,8 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const formRef = ref(null)
 const categoryFormRef = ref(null)
+const selectedRows = ref([])
+const columnSettingVisible = ref(false)
 
 // 搜索表单
 const searchForm = ref({
@@ -352,86 +383,218 @@ const handleCurrentChange = (page) => {
   fetchServices()
 }
 
-// 打开对话框
-const openDialog = (row) => {
-  if (row) {
-    form.value = JSON.parse(JSON.stringify(row))
-  } else {
-    form.value = {
-      id: null,
-      name: '',
-      categoryId: '',
-      price: 0,
-      duration: 60,
-      description: '',
-      status: 1
-    }
+// 表格选择
+const handleSelectionChange = (rows) => {
+  selectedRows.value = rows
+}
+
+// 新增服务
+const handleAdd = () => {
+  form.value = {
+    id: null,
+    name: '',
+    categoryId: '',
+    price: 0,
+    duration: 60,
+    description: '',
+    status: 1
   }
   dialogVisible.value = true
 }
 
-// 提交表单
-const submitForm = async () => {
-  if (!formRef.value) return
-  
-  await formRef.value.validate(async (valid) => {
-    if (valid) {
-      submitting.value = true
-      try {
-        if (form.value.id) {
-          // 编辑
-          await request.put(`/service/${form.value.id}`, form.value, {
-            successMsg: '更新成功',
-            onSuccess: () => {
-              dialogVisible.value = false
-              fetchServices()
-            }
-          })
-        } else {
-          // 新增
-          await request.post('/service', form.value, {
-            successMsg: '添加成功',
-            onSuccess: () => {
-              dialogVisible.value = false
-              fetchServices()
-            }
-          })
-        }
-      } catch (error) {
-        console.error('提交服务信息失败:', error)
-      } finally {
-        submitting.value = false
-      }
-    }
-  })
+// 编辑服务
+const handleEdit = (row) => {
+  form.value = JSON.parse(JSON.stringify(row))
+  dialogVisible.value = true
 }
 
-// 更改服务状态
-const changeStatus = async (row) => {
-  const newStatus = row.status === 1 ? 0 : 1
-  const actionText = newStatus === 1 ? '启用' : '停用'
+// 重置表单
+const resetForm = () => {
+  if (formRef.value) {
+    formRef.value.resetFields()
+  }
+  form.value = {
+    id: null,
+    name: '',
+    categoryId: '',
+    price: 0,
+    duration: 60,
+    description: '',
+    status: 1
+  }
+}
+
+// 提交表单
+const handleSubmit = async () => {
+  if (!formRef.value) return
   
-  ElMessageBox.confirm(
-    `确定要${actionText}该服务吗？`,
-    '提示',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(async () => {
-    try {
-      await request.put(`/service/${row.id}/status?status=${newStatus}`, null, {
-        successMsg: `${actionText}成功`,
+  try {
+    await formRef.value.validate()
+    submitting.value = true
+    if (form.value.id) {
+      // 编辑
+      await request.put(`/service/${form.value.id}`, form.value, {
+        successMsg: '更新成功',
         onSuccess: () => {
+          dialogVisible.value = false
           fetchServices()
         }
       })
-    } catch (error) {
-      console.error(`${actionText}失败:`, error)
+    } else {
+      // 新增
+      await request.post('/service', form.value, {
+        successMsg: '添加成功',
+        onSuccess: () => {
+          dialogVisible.value = false
+          fetchServices()
+        }
+      })
     }
-  }).catch(() => {})
+  } catch (error) {
+    console.error('提交服务信息失败:', error)
+  } finally {
+    submitting.value = false
+  }
 }
+
+// 更改服务状态
+const handleChangeStatus = async (row) => {
+  const newStatus = row.status === 1 ? 0 : 1
+  const actionText = newStatus === 1 ? '启用' : '停用'
+  
+  try {
+    await ElMessageBox.confirm(
+      `确定要${actionText}该服务吗？`,
+      '提示',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+    
+    await request.put(`/service/${row.id}/status?status=${newStatus}`, null, {
+      successMsg: `${actionText}成功`,
+      onSuccess: () => {
+        fetchServices()
+      }
+    })
+  } catch (error) {
+    console.error(`${actionText}失败:`, error)
+  }
+}
+
+// 批量删除
+const handleBatchDelete = async () => {
+  if (selectedRows.value.length === 0) {
+    ElMessage.warning('请选择要删除的服务')
+    return
+  }
+  
+  try {
+    await ElMessageBox.confirm(
+      `确定要删除选中的 ${selectedRows.value.length} 个服务吗？`,
+      '提示',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+    
+    const ids = selectedRows.value.map(row => row.id)
+    await request.post('/service/batch-delete', { ids }, {
+      successMsg: '删除成功',
+      onSuccess: () => {
+        fetchServices()
+      }
+    })
+  } catch (error) {
+    console.error('删除失败:', error)
+  }
+}
+
+// 刷新
+const handleRefresh = () => {
+  fetchServices()
+  ElMessage.success('刷新成功')
+}
+
+// 导出功能
+const handleExport = () => {
+  try {
+    loading.value = true
+    
+    // 获取当前可见列的配置
+    const visibleColumnConfigs = allColumns.filter(col => isColumnVisible(col.prop))
+    
+    // 准备导出数据
+    const exportData = tableData.value.map(item => {
+      const row = {}
+      visibleColumnConfigs.forEach(col => {
+        if (col.prop === 'category') {
+          row[col.label] = getCategoryName(item.categoryId)
+        } else if (col.prop === 'duration') {
+          row[col.label] = getDurationText(item.duration)
+        } else if (col.prop === 'status') {
+          row[col.label] = item.status === 1 ? '启用' : '停用'
+        } else if (col.prop === 'createTime') {
+          row[col.label] = formatDateTime(item.createTime)
+        } else {
+          row[col.label] = item[col.prop]
+        }
+      })
+      return row
+    })
+
+    // 创建工作簿
+    const worksheet = XLSX.utils.json_to_sheet(exportData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, '服务列表')
+
+    // 导出文件
+    XLSX.writeFile(workbook, `服务列表_${new Date().toISOString().slice(0, 10)}.xlsx`)
+    
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出失败:', error)
+    ElMessage.error('导出失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 列设置相关代码
+const STORAGE_KEY = 'serviceManagementVisibleColumns'
+const allColumns = [
+  { prop: 'id', label: 'ID' },
+  { prop: 'name', label: '服务名称' },
+  { prop: 'category', label: '服务分类' },
+  { prop: 'price', label: '价格' },
+  { prop: 'duration', label: '时长' },
+  { prop: 'status', label: '状态' },
+  { prop: 'createTime', label: '创建时间' }
+]
+
+// 从localStorage获取保存的列设置，如果没有则使用默认值
+const visibleColumns = ref(
+  JSON.parse(localStorage.getItem(STORAGE_KEY)) || allColumns.map(col => col.prop)
+)
+
+// 监听列设置变化并保存到localStorage
+watch(visibleColumns, (newVal) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
+}, { deep: true })
+
+const isColumnVisible = (prop) => {
+  return visibleColumns.value.includes(prop)
+}
+
+// 页面加载时获取数据
+onMounted(() => {
+  fetchCategories()
+  fetchServices()
+})
 
 
 
@@ -457,6 +620,7 @@ onMounted(() => {
 .search-form {
   display: flex;
   flex-wrap: wrap;
+  gap: 10px;
 }
 
 .card-header {
@@ -465,15 +629,45 @@ onMounted(() => {
   align-items: center;
 }
 
-.card-header span {
+.card-header .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-header .right {
+  display: flex;
+  gap: 10px;
+}
+
+.title {
   font-size: 16px;
   font-weight: bold;
 }
 
-.pagination-container {
+.pagination {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+/* 搜索表单的表单项间距 */
+.search-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+/* 弹窗表单的表单项间距 */
+.dialog-form :deep(.el-form-item) {
+  margin-bottom: 24px;
+}
+
+:deep(.el-select) {
+  width: 200px;
+}
+
+/* 弹窗表单内的选择器宽度 */
+.dialog-form :deep(.el-select) {
+  width: 100%;
 }
 
 .duration-hint {
@@ -495,6 +689,14 @@ onMounted(() => {
 .category-header span {
   font-size: 16px;
   font-weight: bold;
+}
+
+/* 列设置样式 */
+.column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
 }
 
 @media (max-width: 768px) {
