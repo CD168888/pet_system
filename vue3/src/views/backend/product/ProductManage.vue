@@ -1,27 +1,8 @@
 <template>
   <div class="product-manage-container">
-    <div class="page-header">
-      <h2>商品管理</h2>
-      <div class="header-buttons">
-        <el-dropdown @command="handleExport" class="export-dropdown">
-          <el-button type="success">
-            导出数据
-            <el-icon class="el-icon--right"><arrow-down /></el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="excel">导出为Excel</el-dropdown-item>
-              <el-dropdown-item command="txt">导出为TXT</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-        <el-button type="primary" @click="handleAdd">添加商品</el-button>
-      </div>
-    </div>
-
-    <!-- 搜索区域 -->
-    <div class="search-container">
-      <el-form :inline="true" :model="searchForm">
+    <!-- 搜索栏 -->
+    <el-card shadow="never" class="search-card">
+      <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="商品名称">
           <el-input
             v-model="searchForm.name"
@@ -59,81 +40,115 @@
           <el-button @click="resetSearch">重置</el-button>
         </el-form-item>
       </el-form>
-    </div>
+    </el-card>
 
-    <!-- 表格区域 -->
-    <el-table
-      v-loading="loading"
-      :data="productList"
-      border
-      style="width: 100%"
-    >
-      <el-table-column prop="id" label="ID" width="80"></el-table-column>
-      <el-table-column label="商品图片" width="100">
-        <template #default="scope">
-          <el-image
-            :src="getImageUrl(scope.row.images)"
-            style="width: 60px; height: 60px"
-            :preview-src-list="[getImageUrl(scope.row.images)]"
-            fit="cover"
-                 :preview-teleported="true"
-          >
-          </el-image>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="name"
-        label="商品名称"
-        show-overflow-tooltip
-      ></el-table-column>
-      <el-table-column
-        prop="category"
-        label="分类"
-        width="100"
-      ></el-table-column>
-      <el-table-column prop="price" label="价格" width="100">
-        <template #default="scope">¥{{ scope.row.price }}</template>
-      </el-table-column>
-      <el-table-column prop="stock" label="库存" width="100"></el-table-column>
-      <el-table-column prop="status" label="状态" width="100">
-        <template #default="scope">
-          <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-            {{ scope.row.status === 1 ? "上架" : "下架" }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="200" fixed="right">
-        <template #default="scope">
-          <el-button type="primary" size="small" @click="handleEdit(scope.row)"
-            >编辑</el-button
-          >
-          <el-button
-            :type="scope.row.status === 1 ? 'warning' : 'success'"
-            size="small"
-            @click="handleChangeStatus(scope.row)"
-          >
-            {{ scope.row.status === 1 ? "下架" : "上架" }}
-          </el-button>
-          <el-button type="danger" size="small" @click="handleDelete(scope.row)"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- 操作栏和表格 -->
+    <el-card shadow="never" class="table-card">
+      <template #header>
+        <div class="card-header">
+          <div class="left">
+            <span class="title">商品管理</span>
+            <el-button :icon="refreshIcon" circle @click="handleRefresh" />
+          </div>
+          <div class="right">
+            <el-button :icon="downloadIcon" @click="handleExport">导出</el-button>
+            <el-button :icon="settingIcon" @click="columnSettingVisible = true">列设置</el-button>
+            <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete">批量删除</el-button>
+            <el-button type="primary" @click="handleAdd">添加商品</el-button>
+          </div>
+        </div>
+      </template>
 
-    <!-- 分页器 -->
-    <div class="pagination-container">
-      <el-pagination
-        :current-page="currentPage"
-        :page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
+      <!-- 表格区域 -->
+      <el-table
+        v-loading="loading"
+        :data="productList"
+        border
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
       >
-      </el-pagination>
-    </div>
+        <el-table-column type="selection" width="55" />
+        <el-table-column v-if="isColumnVisible('id')" prop="id" label="ID" width="80"></el-table-column>
+        <el-table-column v-if="isColumnVisible('images')" label="商品图片" width="100">
+          <template #default="scope">
+            <el-image
+              :src="getImageUrl(scope.row.images)"
+              style="width: 60px; height: 60px"
+              :preview-src-list="[getImageUrl(scope.row.images)]"
+              fit="cover"
+                   :preview-teleported="true"
+            >
+            </el-image>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="isColumnVisible('name')"
+          prop="name"
+          label="商品名称"
+          show-overflow-tooltip
+        ></el-table-column>
+        <el-table-column v-if="isColumnVisible('category')"
+          prop="category"
+          label="分类"
+          min-width="100"
+        ></el-table-column>
+        <el-table-column v-if="isColumnVisible('price')" prop="price" label="价格" min-width="100">
+          <template #default="scope">¥{{ scope.row.price }}</template>
+        </el-table-column>
+        <el-table-column v-if="isColumnVisible('stock')" prop="stock" label="库存" min-width="100"></el-table-column>
+        <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" min-width="100">
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
+              {{ scope.row.status === 1 ? "上架" : "下架" }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="200" align="center">
+          <template #default="scope">
+            <el-button type="primary" size="small" @click="handleEdit(scope.row)"
+              >编辑</el-button
+            >
+            <el-button
+              :type="scope.row.status === 1 ? 'warning' : 'success'"
+              size="small"
+              @click="handleChangeStatus(scope.row)"
+            >
+              {{ scope.row.status === 1 ? "下架" : "上架" }}
+            </el-button>
+            <el-button type="danger" size="small" @click="handleDelete(scope.row)"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 分页器 -->
+      <div class="pagination">
+        <el-pagination
+          :current-page="currentPage"
+          :page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        >
+        </el-pagination>
+      </div>
+    </el-card>
+    
+    <!-- 列设置抽屉 -->
+    <el-drawer
+      v-model="columnSettingVisible"
+      title="列设置"
+      direction="rtl"
+      size="300px"
+    >
+      <el-checkbox-group v-model="visibleColumns" class="column-list">
+        <el-checkbox v-for="col in allColumns" :key="col.prop" :label="col.prop">
+          {{ col.label }}
+        </el-checkbox>
+      </el-checkbox-group>
+    </el-drawer>
 
     <!-- 编辑/添加商品对话框 -->
     <el-dialog
@@ -233,11 +248,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from "vue";
+import { ref, reactive, onMounted, computed, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Plus, arrowDown } from "@element-plus/icons-vue";
+import { Plus, arrowDown, Refresh, Download, Setting } from "@element-plus/icons-vue";
 import request from "@/utils/request";
 import * as XLSX from 'xlsx';
+import { format } from '@/utils/dateUtils';
+
+// 将图标暴露给模板使用
+const refreshIcon = Refresh;
+const downloadIcon = Download;
+const settingIcon = Setting;
 
 // 数据定义
 const loading = ref(false);
@@ -251,6 +272,7 @@ const submitting = ref(false);
 const productFormRef = ref(null);
 const fileList = ref([]);
 const baseAPI = process.env.VUE_APP_BASE_API || "/api";
+const selectedRows = ref([]);
 
 // 商品分类
 const categories = [
@@ -269,6 +291,33 @@ const searchForm = reactive({
   category: "",
   status: "",
 });
+
+// 列设置相关代码
+const STORAGE_KEY = 'productListVisibleColumns';
+const columnSettingVisible = ref(false);
+const allColumns = [
+  { prop: 'id', label: 'ID' },
+  { prop: 'images', label: '商品图片' },
+  { prop: 'name', label: '商品名称' },
+  { prop: 'category', label: '分类' },
+  { prop: 'price', label: '价格' },
+  { prop: 'stock', label: '库存' },
+  { prop: 'status', label: '状态' }
+];
+
+// 从localStorage获取保存的列设置，如果没有则使用默认值
+const visibleColumns = ref(
+  JSON.parse(localStorage.getItem(STORAGE_KEY)) || allColumns.map(col => col.prop)
+);
+
+// 监听列设置变化并保存到localStorage
+watch(visibleColumns, (newVal) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal));
+}, { deep: true });
+
+const isColumnVisible = (prop) => {
+  return visibleColumns.value.includes(prop);
+};
 
 // 商品表单
 const productForm = reactive({
@@ -327,6 +376,11 @@ const fetchProducts = async () => {
   }
 };
 
+// 处理表格选择
+const handleSelectionChange = (rows) => {
+  selectedRows.value = rows;
+};
+
 // 处理搜索
 const handleSearch = () => {
   currentPage.value = 1;
@@ -340,6 +394,73 @@ const resetSearch = () => {
   });
   currentPage.value = 1;
   fetchProducts();
+};
+
+// 刷新数据
+const handleRefresh = () => {
+  fetchProducts();
+  ElMessage.success('刷新成功');
+};
+
+// 批量删除
+const handleBatchDelete = async () => {
+  if (selectedRows.value.length === 0) return;
+  
+  try {
+    await ElMessageBox.confirm(`确认删除选中的 ${selectedRows.value.length} 个商品吗？`, '提示', {
+      type: 'warning'
+    });
+    const ids = selectedRows.value.map(row => row.id);
+    await request.post('/product/batch-delete', { ids }, {
+      successMsg: '批量删除成功',
+      onSuccess: () => {
+        fetchProducts();
+      }
+    });
+  } catch (error) {
+    console.error('批量删除失败:', error);
+  }
+};
+
+// 优化导出功能
+const handleExport = () => {
+  try {
+    loading.value = true;
+    
+    // 获取当前可见列的配置
+    const visibleColumnConfigs = allColumns.filter(col => isColumnVisible(col.prop));
+    
+    // 准备导出数据
+    const exportData = productList.value.map(item => {
+      const row = {};
+      visibleColumnConfigs.forEach(col => {
+        if (col.prop === 'status') {
+          row[col.label] = item[col.prop] === 1 ? '上架' : '下架';
+        } else if (col.prop === 'images') {
+          // 图片列不导出具体内容，只导出是否有图片
+          row[col.label] = item[col.prop] ? '有图片' : '无图片';
+        } else {
+          row[col.label] = item[col.prop] || '';
+        }
+      });
+      return row;
+    });
+
+    // 创建工作簿
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, '商品列表');
+
+    // 导出文件
+    XLSX.writeFile(workbook, `商品列表_${format(new Date())}.xlsx`);
+    
+    ElMessage.success('导出成功');
+  } catch (error) {
+    console.error('导出失败:', error);
+    ElMessage.error('导出失败');
+  } finally {
+    loading.value = false;
+  }
 };
 
 const getImageUrl = (images) => {
@@ -662,84 +783,6 @@ const handleCurrentChange = (val) => {
 onMounted(() => {
   fetchProducts();
 });
-
-// 导出处理函数
-const handleExport = (command) => {
-  if (command === 'excel') {
-    exportToExcel();
-  } else if (command === 'txt') {
-    exportToTxt();
-  }
-};
-
-// 导出为Excel
-const exportToExcel = () => {
-  // 准备导出数据
-  const exportData = productList.value.map(item => ({
-    'ID': item.id,
-    '商品名称': item.name,
-    '分类': item.category,
-    '价格': item.price,
-    '库存': item.stock,
-    '状态': item.status === 1 ? '上架' : '下架',
-    '描述': item.description
-  }));
-
-  // 创建工作簿
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.json_to_sheet(exportData);
-
-  // 设置列宽
-  const colWidth = [
-    { wch: 8 },  // ID
-    { wch: 20 }, // 商品名称
-    { wch: 10 }, // 分类
-    { wch: 10 }, // 价格
-    { wch: 10 }, // 库存
-    { wch: 8 },  // 状态
-    { wch: 30 }, // 描述
-  ];
-  ws['!cols'] = colWidth;
-
-  // 添加工作表到工作簿
-  XLSX.utils.book_append_sheet(wb, ws, '商品列表');
-
-  // 生成文件并下载
-  const now = new Date();
-  const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
-  XLSX.writeFile(wb, `商品列表_${timestamp}.xlsx`);
-  
-  ElMessage.success('Excel文件导出成功');
-};
-
-// 导出为TXT
-const exportToTxt = () => {
-  // 准备导出数据
-  let content = '商品列表\n\n';
-  content += '序号\t商品名称\t分类\t价格\t库存\t状态\t描述\n';
-  content += '================================================\n';
-  
-  productList.value.forEach((item, index) => {
-    content += `${index + 1}\t${item.name}\t${item.category}\t${item.price}\t${item.stock}\t${item.status === 1 ? '上架' : '下架'}\t${item.description || ''}\n`;
-  });
-
-  // 创建Blob对象
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-  
-  // 创建下载链接
-  const now = new Date();
-  const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `商品列表_${timestamp}.txt`;
-  
-  // 触发下载
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  ElMessage.success('TXT文件导出成功');
-};
 </script>
 
 <style scoped>
@@ -747,30 +790,53 @@ const exportToTxt = () => {
   padding: 20px;
 }
 
-.page-header {
+.search-card {
+  margin-bottom: 20px;
+}
+
+.table-card {
+  margin-bottom: 20px;
+}
+
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
 
-.page-header h2 {
-  margin: 0;
-  font-size: 22px;
+.card-header .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.search-container {
-  margin-bottom: 20px;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+.card-header .right {
+  display: flex;
+  gap: 10px;
 }
 
-.pagination-container {
+.title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pagination {
   margin-top: 20px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
+}
+
+.column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
 }
 
 .upload-tip {
@@ -779,13 +845,31 @@ const exportToTxt = () => {
   margin-top: 8px;
 }
 
-.header-buttons {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+/* 搜索表单的表单项间距 */
+.search-form :deep(.el-form-item) {
+  margin-bottom: 0;
 }
 
-.export-dropdown {
-  margin-right: 10px;
+@media (max-width: 768px) {
+  .el-form-item {
+    margin-right: 0;
+    width: 100%;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .card-header .right {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .card-header .right .el-button {
+    flex: 1;
+    min-width: 120px;
+  }
 }
 </style> 
