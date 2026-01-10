@@ -59,7 +59,7 @@
         </el-table-column>
         <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态">
           <template #default="{ row }">
-            <el-switch v-model="row.status" :active-value="1" :inactive-value="0" @change="(val) => handleStatusChange(row.id, val)" />
+            <el-switch v-model="row.status" :active-value="1" :inactive-value="0" @change="(val) => handleStatusChange(row.id, val)" :disabled="row.roleCode === 'ADMIN'" />
           </template>
         </el-table-column>
         <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间">
@@ -69,9 +69,9 @@
         </el-table-column>
         <el-table-column label="操作" width="200">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
-            <el-button type="primary" link @click="handleResetPwd(row)">重置密码</el-button>
-            <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
+            <el-button type="primary" link @click="handleEdit(row)" :disabled="row.roleCode === 'ADMIN'">编辑</el-button>
+            <el-button type="primary" link @click="handleResetPwd(row)" :disabled="row.roleCode === 'ADMIN'">重置密码</el-button>
+            <el-button type="danger" link @click="handleDelete(row)" :disabled="row.roleCode === 'ADMIN'">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -98,9 +98,9 @@
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入手机号" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="角色" prop="roleCode">
-          <el-select v-model="form.roleCode" placeholder="请选择角色" clearable style="width: 100%">
-            <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.code" />
+        <el-form-item label="角色" prop="roleCode" :disabled="form.roleCode === 'ADMIN'">
+          <el-select v-model="form.roleCode" placeholder="请选择角色" clearable>
+            <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.code" :disabled="role.code === 'ADMIN'" />
           </el-select>
         </el-form-item>
         <el-form-item label="密码" prop="password" v-if="!form.id">
