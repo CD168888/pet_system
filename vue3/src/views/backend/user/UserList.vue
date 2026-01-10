@@ -315,7 +315,9 @@ const handleResetPwd = async (row) => {
 // 修改用户状态
 const handleStatusChange = async (id, status) => {
   try {
-    await request.put(`/user/status/${id}?status=${status}`)
+    await request.put(`/user/status/${id}?status=${status}`, {}, {
+      successMsg: '状态修改成功'
+    })
   } catch (error) {
     console.error('修改状态失败:', error)
   }

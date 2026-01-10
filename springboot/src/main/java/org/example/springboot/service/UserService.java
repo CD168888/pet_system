@@ -42,11 +42,9 @@ public class UserService {
     public User login(User user) {
         User dbUser = getByUsername(user.getUsername());
         // 用户存在性检查已经在 getByUsername 中处理
-        if (dbUser.getStatus().equals(AccountStatus.PENDING_REVIEW.getValue())) {
-            throw new ServiceException("账号正在审核");
-        }
-        if (dbUser.getStatus().equals(AccountStatus.REVIEW_FAILED.getValue())) {
-            throw new ServiceException("账号审核不通过，请修改个人信息");
+        // 检查账号状态
+        if (dbUser.getStatus() == 0) {
+            throw new ServiceException("账号已被禁用");
         }
         if (!bCryptPasswordEncoder.matches(user.getPassword(), dbUser.getPassword())) {
             throw new ServiceException("用户名或密码错误");
