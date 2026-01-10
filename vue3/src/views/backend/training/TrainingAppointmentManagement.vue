@@ -1,128 +1,113 @@
 <template>
   <div class="training-appointment-management">
-    <el-card shadow="hover">
+    <!-- 搜索栏 -->
+    <el-card class="search-card">
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="课程名称">
+          <el-input v-model="searchForm.courseName" placeholder="课程名称" clearable />
+        </el-form-item>
+        <el-form-item label="宠物名称">
+          <el-input v-model="searchForm.petName" placeholder="宠物名称" clearable />
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="searchForm.status" placeholder="预约状态" clearable style="width: 200px">
+            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="预约时间">
+          <el-date-picker
+            v-model="searchForm.dateRange"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="YYYY-MM-DD"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+
+    <!-- 操作栏 -->
+    <el-card class="table-card">
       <template #header>
         <div class="card-header">
-          <span>训练预约管理</span>
-          <el-button-group>
-            <el-button type="primary" @click="exportData" :loading="exporting" plain>
-              导出数据
-            </el-button>
-          </el-button-group>
+          <div class="left">
+            <span class="title">训练预约管理</span>
+            <el-button :icon="refreshIcon" circle @click="handleRefresh" />
+          </div>
+          <div class="right">
+            <el-button :icon="downloadIcon" @click="handleExport" :loading="exporting">导出数据</el-button>
+            <el-button :icon="settingIcon" @click="columnSettingVisible = true">列设置</el-button>
+          </div>
         </div>
       </template>
-      
-      <div class="filter-container">
-        <el-form :inline="true" :model="filterForm" class="filter-form">
-          <el-form-item label="课程名称">
-            <el-input v-model="filterForm.courseName" placeholder="课程名称" clearable />
-          </el-form-item>
-          <el-form-item label="宠物名称">
-            <el-input v-model="filterForm.petName" placeholder="宠物名称" clearable />
-          </el-form-item>
-          <el-form-item label="状态">
-            <el-select v-model="filterForm.status" placeholder="预约状态" clearable>
-              <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="预约时间">
-            <el-date-picker
-              v-model="filterForm.dateRange"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              value-format="YYYY-MM-DD"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="searchAppointments">查询</el-button>
-            <el-button @click="resetForm">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-      
+
+      <!-- 表格 -->
       <el-table
         v-loading="loading"
-        :data="appointments"
-        stripe
+        :data="tableData"
         border
         style="width: 100%"
+        @selection-change="handleSelectionChange"
       >
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="courseName" label="课程名称" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="petName" label="宠物名称" width="100" />
-        <el-table-column prop="userName" label="预约用户" width="100" />
-        <el-table-column prop="contactPhone" label="联系电话" width="120" />
-        <el-table-column prop="appointmentTime" label="预约时间" width="180">
+        <el-table-column type="selection" width="55" />
+        <el-table-column v-if="isColumnVisible('id')" prop="id" label="ID" width="80" />
+        <el-table-column v-if="isColumnVisible('courseName')" prop="courseName" label="课程名称" min-width="120" show-overflow-tooltip />
+        <el-table-column v-if="isColumnVisible('petName')" prop="petName" label="宠物名称" width="100" />
+        <el-table-column v-if="isColumnVisible('userName')" prop="userName" label="预约用户" width="100" />
+        <el-table-column v-if="isColumnVisible('contactPhone')" prop="contactPhone" label="联系电话" width="120" />
+        <el-table-column v-if="isColumnVisible('appointmentTime')" prop="appointmentTime" label="预约时间" width="180">
           <template #default="scope">
             {{ formatDateTime(scope.row.appointmentTime) }}
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" width="100">
           <template #default="scope">
             <el-tag :type="getStatusType(scope.row.status)">
               {{ scope.row.status }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="progress" label="训练进度" width="120">
+        <el-table-column v-if="isColumnVisible('progress')" prop="progress" label="训练进度" width="120">
           <template #default="scope">
             <el-progress :percentage="scope.row.progress || 0" :format="progressFormat" />
           </template>
         </el-table-column>
-        <el-table-column prop="hasFeedback" label="客户评价" width="100">
+        <el-table-column v-if="isColumnVisible('hasFeedback')" prop="hasFeedback" label="客户评价" width="100">
           <template #default="scope">
             <el-tag v-if="scope.row.hasFeedback" type="success">已评价</el-tag>
             <el-tag v-else-if="scope.row.status === '已完成'" type="info">未评价</el-tag>
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="180">
+        <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" width="180">
           <template #default="scope">
             {{ formatDateTime(scope.row.createTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="200">
           <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              @click="viewDetail(scope.row)"
-              plain
-            >
-              详情
-            </el-button>
-            <el-button
-              type="warning"
-              size="small"
-              @click="updateStatus(scope.row)"
-              plain
-            >
-              状态
-            </el-button>
-            <el-button
-              type="success"
-              size="small"
-              @click="updateProgress(scope.row)"
-              plain
-            >
-              进度
-            </el-button>
+            <el-button type="primary" link @click="viewDetail(scope.row)">详情</el-button>
+            <el-button type="warning" link @click="updateStatus(scope.row)">状态</el-button>
+            <el-button type="success" link @click="updateProgress(scope.row)">进度</el-button>
           </template>
         </el-table-column>
       </el-table>
-      
-      <div class="pagination-container">
-        <el-pagination
-          background
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          :page-size="pageSize"
-          :current-page="currentPage"
+
+      <!-- 分页 -->
+      <div class="pagination">
+        <el-pagination 
+          :current-page="currentPage" 
+          :page-size="pageSize" 
+          :total="total" 
           :page-sizes="[10, 20, 50, 100]"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          layout="total, sizes, prev, pager, next, jumper" 
+          @size-change="handleSizeChange" 
+          @current-change="handleCurrentChange" 
         />
       </div>
     </el-card>
@@ -284,20 +269,40 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 列设置抽屉 -->
+    <el-drawer
+      v-model="columnSettingVisible"
+      title="列设置"
+      direction="rtl"
+      size="300px"
+    >
+      <el-checkbox-group v-model="visibleColumns" class="column-list">
+        <el-checkbox v-for="col in allColumns" :key="col.prop" :label="col.prop">
+          {{ col.label }}
+        </el-checkbox>
+      </el-checkbox-group>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Refresh, Download, Setting } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 import { useUserStore } from '@/store/user'
+
+// 将图标暴露给模板使用
+const refreshIcon = Refresh
+const downloadIcon = Download
+const settingIcon = Setting
 
 // 数据定义
 const loading = ref(false)
 const submitting = ref(false)
 const exporting = ref(false)
-const appointments = ref([])
+const tableData = ref([])
 const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -307,6 +312,8 @@ const progressDialogVisible = ref(false)
 const currentAppointment = ref(null)
 const statusFormRef = ref(null)
 const progressFormRef = ref(null)
+const selectedRows = ref([])
+const columnSettingVisible = ref(false)
 
 // 状态选项
 const statusOptions = ['已预约', '已确认', '进行中', '已完成', '已取消']
@@ -329,8 +336,8 @@ const availableStatuses = computed(() => {
   return []
 })
 
-// 过滤表单
-const filterForm = reactive({
+// 搜索表单
+const searchForm = reactive({
   courseName: '',
   petName: '',
   status: '',
@@ -355,26 +362,26 @@ const progressForm = reactive({
 const userStore = useUserStore()
 
 // 加载预约列表
-const loadAppointments = async () => {
+const fetchAppointments = async () => {
   loading.value = true
   try {
     const params = {
       page: currentPage.value,
       pageSize: pageSize.value,
-      courseName: filterForm.courseName || undefined,
-      petName: filterForm.petName || undefined,
-      status: filterForm.status || undefined
+      courseName: searchForm.courseName || undefined,
+      petName: searchForm.petName || undefined,
+      status: searchForm.status || undefined
     }
     
     // 添加日期范围
-    if (filterForm.dateRange && filterForm.dateRange.length === 2) {
-      params.startDate = filterForm.dateRange[0]
-      params.endDate = filterForm.dateRange[1]
+    if (searchForm.dateRange && searchForm.dateRange.length === 2) {
+      params.startDate = searchForm.dateRange[0]
+      params.endDate = searchForm.dateRange[1]
     }
     
     await request.get('/training/appointment/page', params, {
       onSuccess: (res) => {
-        appointments.value = res.records || []
+        tableData.value = res.records || []
         total.value = res.total || 0
       }
     })
@@ -383,6 +390,11 @@ const loadAppointments = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 表格选择
+const handleSelectionChange = (rows) => {
+  selectedRows.value = rows
 }
 
 // 查看详情
@@ -442,7 +454,7 @@ const submitStatusUpdate = async () => {
       successMsg: '状态更新成功',
       onSuccess: () => {
         statusDialogVisible.value = false
-        loadAppointments()
+        fetchAppointments()
       }
     })
   } catch (error) {
@@ -460,7 +472,7 @@ const submitProgressUpdate = async () => {
       successMsg: '进度更新成功',
       onSuccess: () => {
         progressDialogVisible.value = false
-        loadAppointments()
+        fetchAppointments()
       }
     })
   } catch (error) {
@@ -471,19 +483,19 @@ const submitProgressUpdate = async () => {
 }
 
 // 导出数据
-const exportData = async () => {
+const handleExport = async () => {
   exporting.value = true
   try {
     const params = {
-      courseName: filterForm.courseName || undefined,
-      petName: filterForm.petName || undefined,
-      status: filterForm.status || undefined
+      courseName: searchForm.courseName || undefined,
+      petName: searchForm.petName || undefined,
+      status: searchForm.status || undefined
     }
     
     // 添加日期范围
-    if (filterForm.dateRange && filterForm.dateRange.length === 2) {
-      params.startDate = filterForm.dateRange[0]
-      params.endDate = filterForm.dateRange[1]
+    if (searchForm.dateRange && searchForm.dateRange.length === 2) {
+      params.startDate = searchForm.dateRange[0]
+      params.endDate = searchForm.dateRange[1]
     }
     
     await request.get('/training/appointment/export', params, {
@@ -506,31 +518,37 @@ const exportData = async () => {
   }
 }
 
-// 搜索预约
-const searchAppointments = () => {
+// 搜索
+const handleSearch = () => {
   currentPage.value = 1
-  loadAppointments()
+  fetchAppointments()
 }
 
-// 重置表单
-const resetForm = () => {
-  filterForm.courseName = ''
-  filterForm.petName = ''
-  filterForm.status = ''
-  filterForm.dateRange = []
+// 重置搜索
+const resetSearch = () => {
+  searchForm.courseName = ''
+  searchForm.petName = ''
+  searchForm.status = ''
+  searchForm.dateRange = []
   currentPage.value = 1
-  loadAppointments()
+  fetchAppointments()
+}
+
+// 刷新
+const handleRefresh = () => {
+  fetchAppointments()
+  ElMessage.success('刷新成功')
 }
 
 // 分页处理
 const handleSizeChange = (val) => {
   pageSize.value = val
-  loadAppointments()
+  fetchAppointments()
 }
 
 const handleCurrentChange = (val) => {
   currentPage.value = val
-  loadAppointments()
+  fetchAppointments()
 }
 
 // 获取状态标签类型
@@ -543,6 +561,35 @@ const getStatusType = (status) => {
     '已取消': 'danger'
   }
   return statusMap[status] || 'info'
+}
+
+// 列设置相关代码
+const STORAGE_KEY = 'trainingAppointmentVisibleColumns'
+const allColumns = [
+  { prop: 'id', label: 'ID' },
+  { prop: 'courseName', label: '课程名称' },
+  { prop: 'petName', label: '宠物名称' },
+  { prop: 'userName', label: '预约用户' },
+  { prop: 'contactPhone', label: '联系电话' },
+  { prop: 'appointmentTime', label: '预约时间' },
+  { prop: 'status', label: '状态' },
+  { prop: 'progress', label: '训练进度' },
+  { prop: 'hasFeedback', label: '客户评价' },
+  { prop: 'createTime', label: '创建时间' }
+]
+
+// 从localStorage获取保存的列设置，如果没有则使用默认值
+const visibleColumns = ref(
+  JSON.parse(localStorage.getItem(STORAGE_KEY)) || allColumns.map(col => col.prop)
+)
+
+// 监听列设置变化并保存到localStorage
+watch(visibleColumns, (newVal) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
+}, { deep: true })
+
+const isColumnVisible = (prop) => {
+  return visibleColumns.value.includes(prop)
 }
 
 // 格式化日期时间
@@ -565,13 +612,16 @@ const progressFormat = (percentage) => {
 
 // 页面加载时获取数据
 onMounted(() => {
-  loadAppointments()
-})
-</script>
+  fetchAppointments()
+})</script>
 
 <style scoped>
 .training-appointment-management {
   padding: 20px;
+}
+
+.search-card {
+  margin-bottom: 20px;
 }
 
 .card-header {
@@ -580,19 +630,41 @@ onMounted(() => {
   align-items: center;
 }
 
-.filter-container {
-  margin-bottom: 20px;
-}
-
-.filter-form {
+.card-header .left {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
 }
 
-.pagination-container {
+.card-header .right {
+  display: flex;
+  gap: 10px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.pagination {
   margin-top: 20px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* 搜索表单的表单项间距 */
+.search-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+:deep(.el-select) {
+  width: 200px;
 }
 
 .detail-content {
@@ -641,5 +713,12 @@ onMounted(() => {
 
 :deep(.el-table .cell) {
   white-space: nowrap;
+}
+
+.column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
 }
 </style>
