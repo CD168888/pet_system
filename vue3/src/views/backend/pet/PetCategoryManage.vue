@@ -1,118 +1,147 @@
 <template>
   <div class="pet-category-container">
-    <div class="category-header">
-      <div class="search-form">
-        <el-form :inline="true" :model="searchForm" class="demo-form-inline">
-          <el-form-item label="名称">
-            <el-input v-model="searchForm.name" placeholder="分类名称" clearable />
-          </el-form-item>
-          <el-form-item label="父分类">
-            <el-input v-model="searchForm.parentId" placeholder="请输入父分类ID" clearable type="number" />
-          </el-form-item>
-          <el-form-item label="状态">
-            <el-select v-model="searchForm.status" placeholder="状态" clearable>
-              <el-option :label="'启用'" :value="1" />
-              <el-option :label="'禁用'" :value="0" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch">查询</el-button>
-            <el-button @click="resetSearch">重置</el-button>
-          </el-form-item>
-        </el-form>
+    <!-- 搜索栏 -->
+    <el-card class="search-card">
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="名称">
+          <el-input v-model="searchForm.name" placeholder="分类名称" clearable />
+        </el-form-item>
+        <el-form-item label="父分类">
+          <el-input v-model="searchForm.parentId" placeholder="请输入父分类ID" clearable type="number" />
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="searchForm.status" placeholder="状态" clearable>
+            <el-option :label="'启用'" :value="1" />
+            <el-option :label="'禁用'" :value="0" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">查询</el-button>
+          <el-button @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+
+    <!-- 操作栏和表格 -->
+    <el-card class="table-card">
+      <template #header>
+        <div class="card-header">
+          <div class="left">
+            <span class="title">宠物分类管理</span>
+            <el-button :icon="refreshIcon" circle @click="handleRefresh" :loading="refreshLoading" />
+          </div>
+          <div class="right">
+            <el-button :icon="downloadIcon" @click="handleExport">导出</el-button>
+            <el-button :icon="settingIcon" @click="columnSettingVisible = true">列设置</el-button>
+            <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete">批量删除</el-button>
+            <el-button type="primary" @click="handleAdd">添加分类</el-button>
+          </div>
+        </div>
+      </template>
+
+      <!-- 数据加载状态 -->
+      <div v-if="loading" class="loading-container">
+        <el-skeleton :rows="6" animated />
       </div>
-      <div class="action-buttons">
-        <el-button type="primary" @click="handleAdd">添加分类</el-button>
-        <el-button type="success" @click="handleRefresh" :loading="refreshLoading">
-          <el-icon><Refresh /></el-icon> 刷新
-        </el-button>
+
+      <!-- 错误状态 -->
+      <div v-else-if="loadError" class="error-container">
+        <el-result
+          icon="error"
+          title="数据加载失败"
+          sub-title="无法获取分类信息，请检查网络连接或稍后重试"
+        >
+          <template #extra>
+            <el-button type="primary" @click="handleRefresh">重新加载</el-button>
+          </template>
+        </el-result>
       </div>
-    </div>
 
-    <!-- 数据加载状态 -->
-    <div v-if="loading" class="loading-container">
-      <el-skeleton :rows="6" animated />
-    </div>
+      <!-- 空数据状态 -->
+      <div v-else-if="categoryList.length === 0" class="empty-container">
+        <el-empty 
+          description="暂无分类信息" 
+          :image-size="200"
+        >
+          <template #description>
+            <p>系统中尚未添加任何分类信息</p>
+            <p class="empty-hint">您可以点击"添加分类"按钮创建新的分类</p>
+          </template>
+          <el-button type="primary" @click="handleAdd">添加分类</el-button>
+        </el-empty>
+      </div>
 
-    <!-- 错误状态 -->
-    <div v-else-if="loadError" class="error-container">
-      <el-result
-        icon="error"
-        title="数据加载失败"
-        sub-title="无法获取分类信息，请检查网络连接或稍后重试"
+      <!-- 数据展示 -->
+      <el-table
+        v-else
+        :data="categoryList"
+        border
+        style="width: 100%"
+        row-key="id"
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+        @selection-change="handleSelectionChange"
       >
-        <template #extra>
-          <el-button type="primary" @click="handleRefresh">重新加载</el-button>
-        </template>
-      </el-result>
-    </div>
+        <el-table-column type="selection" width="55" />
+        <el-table-column v-if="isColumnVisible('id')" prop="id" label="ID" width="80" />
+        <el-table-column v-if="isColumnVisible('name')" prop="name" label="分类名称" min-width="150" />
+        <el-table-column v-if="isColumnVisible('description')" prop="description" label="描述" min-width="200" :show-overflow-tooltip="true" />
+        <el-table-column v-if="isColumnVisible('sort')" prop="sort" label="排序" min-width="80" />
+        <el-table-column v-if="isColumnVisible('status')" label="状态" min-width="100">
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
+              {{ scope.row.status === 1 ? '启用' : '禁用' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="isColumnVisible('createTime')" label="创建时间" min-width="160">
+          <template #default="scope">
+            {{ formatDateTime(scope.row.createTime) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="380" align="center">
+          <template #default="scope">
+            <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
+            <el-button 
+              type="warning" 
+              size="small" 
+              @click="handleStatusChange(scope.row)"
+              :disabled="scope.row.id === 1"
+            >
+              {{ scope.row.status === 1 ? '禁用' : '启用' }}
+            </el-button>
+            <el-button type="success" size="small" @click="handleAddChild(scope.row)">添加子分类</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <!-- 空数据状态 -->
-    <div v-else-if="categoryList.length === 0" class="empty-container">
-      <el-empty 
-        description="暂无分类信息" 
-        :image-size="200"
-      >
-        <template #description>
-          <p>系统中尚未添加任何分类信息</p>
-          <p class="empty-hint">您可以点击"添加分类"按钮创建新的分类</p>
-        </template>
-        <el-button type="primary" @click="handleAdd">添加分类</el-button>
-      </el-empty>
-    </div>
+      <div class="pagination" v-if="categoryList.length > 0 && !isTreeData">
+        <el-pagination
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          :page-size="pageSize"
+          :current-page="currentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          @current-change="handlePageChange"
+          @size-change="handleSizeChange"
+        />
+      </div>
+    </el-card>
 
-    <!-- 数据展示 -->
-    <el-table
-      v-else
-      :data="categoryList"
-      border
-      style="width: 100%"
-      row-key="id"
-      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+    <!-- 列设置抽屉 -->
+    <el-drawer
+      v-model="columnSettingVisible"
+      title="列设置"
+      direction="rtl"
+      size="300px"
     >
-      <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="name" label="分类名称" min-width="150" />
-      <el-table-column prop="description" label="描述" min-width="200" :show-overflow-tooltip="true" />
-      <el-table-column prop="sort" label="排序" width="80" />
-      <el-table-column label="状态" width="100">
-        <template #default="scope">
-          <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
-            {{ scope.row.status === 1 ? '启用' : '禁用' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="180">
-        <template #default="scope">
-          {{ formatDateTime(scope.row.createTime) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="380" fixed="right">
-        <template #default="scope">
-          <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
-          <el-button 
-            type="warning" 
-            size="small" 
-            @click="handleStatusChange(scope.row)"
-            :disabled="scope.row.id === 1"
-          >
-            {{ scope.row.status === 1 ? '禁用' : '启用' }}
-          </el-button>
-          <el-button type="success" size="small" @click="handleAddChild(scope.row)">添加子分类</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <div class="pagination-container" v-if="categoryList.length > 0 && !isTreeData">
-      <el-pagination
-        background
-        layout="prev, pager, next, jumper"
-        :total="total"
-        :page-size="pageSize"
-        :current-page="currentPage"
-        @current-change="handlePageChange"
-      />
-    </div>
+      <el-checkbox-group v-model="visibleColumns" class="column-list">
+        <el-checkbox v-for="col in allColumns" :key="col.prop" :label="col.prop">
+          {{ col.label }}
+        </el-checkbox>
+      </el-checkbox-group>
+    </el-drawer>
 
     <!-- 添加/编辑分类对话框 -->
     <el-dialog 
@@ -161,11 +190,18 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { formatDateTime as formatDateTimeUtil } from '@/utils/dateUtils'
 import request from '@/utils/request'
-import { Refresh } from '@element-plus/icons-vue'
+import { Refresh, Download, Setting } from '@element-plus/icons-vue'
+import * as XLSX from 'xlsx'
+import { format } from '@/utils/dateUtils'
+
+// 将图标暴露给模板使用
+const refreshIcon = Refresh
+const downloadIcon = Download
+const settingIcon = Setting
 
 // 分类列表数据
 const categoryList = ref([])
@@ -176,6 +212,7 @@ const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const isTreeData = ref(false)
+const selectedRows = ref([])
 
 // 搜索表单
 const searchForm = reactive({
@@ -215,6 +252,32 @@ const categoryRules = {
 
 // 添加刷新功能
 const refreshLoading = ref(false)
+
+// 修改列设置相关代码
+const STORAGE_KEY = 'petCategoryVisibleColumns'
+const columnSettingVisible = ref(false)
+const allColumns = [
+  { prop: 'id', label: 'ID' },
+  { prop: 'name', label: '分类名称' },
+  { prop: 'description', label: '描述' },
+  { prop: 'sort', label: '排序' },
+  { prop: 'status', label: '状态' },
+  { prop: 'createTime', label: '创建时间' }
+]
+
+// 从localStorage获取保存的列设置，如果没有则使用默认值
+const visibleColumns = ref(
+  JSON.parse(localStorage.getItem(STORAGE_KEY)) || allColumns.map(col => col.prop)
+)
+
+// 监听列设置变化并保存到localStorage
+watch(visibleColumns, (newVal) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
+}, { deep: true })
+
+const isColumnVisible = (prop) => {
+  return visibleColumns.value.includes(prop)
+}
 
 // 获取分类列表
 const fetchCategories = async () => {
@@ -320,12 +383,98 @@ const handlePageChange = (page) => {
   fetchCategories()
 }
 
+// 处理分页大小变化
+const handleSizeChange = (size) => {
+  pageSize.value = size
+  currentPage.value = 1
+  fetchCategories()
+}
+
+// 处理表格选择
+const handleSelectionChange = (rows) => {
+  selectedRows.value = rows
+}
+
 // 添加分类
 const handleAdd = () => {
   isEdit.value = false
   isAddChild.value = false
   resetCategoryForm()
   dialogVisible.value = true
+}
+
+// 批量删除
+const handleBatchDelete = async () => {
+  if (selectedRows.value.length === 0) return
+  
+  try {
+    await ElMessageBox.confirm(`确认删除选中的 ${selectedRows.value.length} 个分类吗？删除后无法恢复，且会同时删除其下所有子分类。`, '提示', {
+      type: 'warning'
+    })
+    const ids = selectedRows.value.map(row => row.id)
+    await request.post('/pet-category/batch-delete', { ids }, {
+      successMsg: '批量删除成功',
+      onSuccess: () => {
+        fetchCategories()
+      }
+    })
+  } catch (error) {
+    console.error('批量删除失败:', error)
+  }
+}
+
+// 优化导出功能
+const handleExport = () => {
+  try {
+    loading.value = true
+    
+    // 获取当前可见列的配置
+    const visibleColumnConfigs = allColumns.filter(col => isColumnVisible(col.prop))
+    
+    // 准备导出数据 - 需要将树形数据展平
+    const flatData = []
+    const flattenData = (items, level = 0) => {
+      items.forEach(item => {
+        const row = { ...item }
+        delete row.children
+        flatData.push(row)
+        if (item.children && item.children.length > 0) {
+          flattenData(item.children, level + 1)
+        }
+      })
+    }
+    flattenData(categoryList.value)
+    
+    // 准备导出数据
+    const exportData = flatData.map(item => {
+      const row = {}
+      visibleColumnConfigs.forEach(col => {
+        if (col.prop === 'createTime') {
+          row[col.label] = formatDateTime(item[col.prop])
+        } else if (col.prop === 'status') {
+          row[col.label] = item[col.prop] === 1 ? '启用' : '禁用'
+        } else {
+          row[col.label] = item[col.prop] || ''
+        }
+      })
+      return row
+    })
+
+    // 创建工作簿
+    const worksheet = XLSX.utils.json_to_sheet(exportData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, '宠物分类列表')
+
+    // 导出文件
+    XLSX.writeFile(workbook, `宠物分类列表_${format(new Date())}.xlsx`)
+    
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出失败:', error)
+    ElMessage.error('导出失败')
+  } finally {
+    loading.value = false
+  }
 }
 
 // 添加子分类
@@ -479,21 +628,46 @@ onMounted(() => {
   padding: 20px;
 }
 
-.category-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.search-card {
   margin-bottom: 20px;
 }
 
-.action-buttons {
+.table-card {
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-header .right {
   display: flex;
   gap: 10px;
 }
 
-.pagination-container {
+.title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pagination {
   margin-top: 20px;
-  text-align: center;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .loading-container,
@@ -502,7 +676,7 @@ onMounted(() => {
   padding: 50px 0;
   background-color: #f9f9f9;
   border-radius: 4px;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
 .error-container {
@@ -513,5 +687,40 @@ onMounted(() => {
   color: #909399;
   font-size: 14px;
   margin-top: 10px;
+}
+
+.column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+
+/* 搜索表单的表单项间距 */
+.search-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .el-form-item {
+    margin-right: 0;
+    width: 100%;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .card-header .right {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .card-header .right .el-button {
+    flex: 1;
+    min-width: 120px;
+  }
 }
 </style> 
