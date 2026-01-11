@@ -48,7 +48,7 @@
         <div class="card-header">
           <div class="left">
             <span class="title">商品管理</span>
-            <el-button :icon="refreshIcon" circle @click="handleRefresh" />
+            <el-button :icon="refreshIcon" circle @click="handleRefresh"></el-button>
           </div>
           <div class="right">
             <el-button :icon="downloadIcon" @click="handleExport">导出</el-button>
