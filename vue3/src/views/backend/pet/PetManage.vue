@@ -122,11 +122,11 @@
         <el-table-column v-if="isColumnVisible('description')" prop="description" label="描述" min-width="200" :show-overflow-tooltip="true" />
         <el-table-column label="操作" width="400" align="center">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
-            <el-button type="info" size="small" @click="handleApplications(scope.row)">查看申请</el-button>
-            <el-button type="success" size="small" @click="handleHealthRecord(scope.row)">健康记录</el-button>
-            <el-button type="warning" size="small" @click="handleVaccination(scope.row)">疫苗记录</el-button>
+            <el-button type="primary" size="small" link @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button type="danger" size="small" link @click="handleDelete(scope.row)">删除</el-button>
+            <el-button type="info" size="small" link @click="handleApplications(scope.row)">查看申请</el-button>
+            <el-button type="success" size="small" link @click="handleHealthRecord(scope.row)">健康记录</el-button>
+            <el-button type="warning" size="small" link @click="handleVaccination(scope.row)">疫苗记录</el-button>
           </template>
         </el-table-column>
       </el-table>
