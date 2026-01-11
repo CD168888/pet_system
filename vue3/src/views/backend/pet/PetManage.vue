@@ -1,135 +1,163 @@
 <template>
   <div class="pet-manage-container">
-    <div class="pet-header">
-      <div class="search-form">
-        <el-form :inline="true" :model="searchForm" class="demo-form-inline">
-          <el-form-item label="名称">
-            <el-input v-model="searchForm.name" placeholder="宠物名称" clearable />
-          </el-form-item>
-          <el-form-item label="分类">
-            <el-cascader
-              v-model="searchForm.categoryId"
-              :options="categoriesTree"
-              :props="{
-                checkStrictly: true,
-                value: 'id',
-                
-                label: 'name',
-                emitPath: false
-              }"
-              placeholder="请选择宠物分类"
-              clearable
-            />
-          </el-form-item>
-          <el-form-item label="领养状态">
-            <el-select v-model="searchForm.adoptionStatus" placeholder="领养状态" clearable>
-              <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch">查询</el-button>
-            <el-button @click="resetSearch">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-      <div class="action-buttons">
-        <el-button type="primary" @click="handleAdd">添加宠物</el-button>
-        <el-button type="success" @click="handleRefresh" :loading="refreshLoading">
-          <el-icon><Refresh /></el-icon> 刷新
-        </el-button>
-      </div>
-    </div>
-
-    <!-- 数据加载状态 -->
-    <div v-if="loading" class="loading-container">
-      <el-skeleton :rows="10" animated />
-    </div>
-
-    <!-- 错误状态 -->
-    <div v-else-if="loadError" class="error-container">
-      <el-result
-        icon="error"
-        title="数据加载失败"
-        sub-title="无法获取宠物信息，请检查网络连接或稍后重试"
-      >
-        <template #extra>
-          <el-button type="primary" @click="handleRefresh">重新加载</el-button>
-        </template>
-      </el-result>
-    </div>
-
-    <!-- 空数据状态 -->
-    <div v-else-if="petList.length === 0" class="empty-container">
-      <el-empty 
-        description="暂无宠物信息" 
-        :image-size="200"
-      >
-        <template #description>
-          <p>系统中尚未添加任何宠物信息</p>
-          <p class="empty-hint">您可以点击"添加宠物"按钮创建新的宠物记录</p>
-        </template>
-        <el-button type="primary" @click="handleAdd">添加宠物</el-button>
-      </el-empty>
-    </div>
-
-    <!-- 数据展示 -->
-    <el-table
-      v-else
-      :data="petList"
-      border
-      style="width: 100%"
-    >
-      <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column label="图片" width="120">
-        <template #default="scope">
-          <el-image 
-            :src="getImageUrl(scope.row.images)" 
-            :preview-src-list="[getImageUrl(scope.row.images)]"
-            style="width: 80px; height: 80px"
-            fit="cover"
-            :preview-teleported="true"
+    <!-- 搜索栏 -->
+    <el-card class="search-card">
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="名称">
+          <el-input v-model="searchForm.name" placeholder="宠物名称" clearable />
+        </el-form-item>
+        <el-form-item label="分类">
+          <el-cascader
+            v-model="searchForm.categoryId"
+            :options="categoriesTree"
+            :props="{
+              checkStrictly: true,
+              value: 'id',
+              label: 'name',
+              emitPath: false
+            }"
+            placeholder="请选择宠物分类"
+            clearable
           />
-        </template>
-      </el-table-column>
-      <el-table-column prop="name" label="名称" width="120" />
-      <el-table-column prop="categoryName" label="分类" width="120">
-        <template #default="scope">
-          <span>{{ scope.row.categoryName || '未分类' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="breed" label="品种" width="120" />
-      <el-table-column prop="age" label="年龄" width="80" />
-      <el-table-column prop="gender" label="性别" width="80" />
-      <el-table-column label="状态" width="120">
-        <template #default="scope">
-          <el-tag :type="getStatusType(scope.row.adoptionStatus)">
-            {{ scope.row.adoptionStatus }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="healthStatus" label="健康状况" width="150" />
-      <el-table-column prop="description" label="描述" min-width="200" :show-overflow-tooltip="true" />
-      <el-table-column label="操作" width="400" fixed="right">
-        <template #default="scope">
-          <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
-          <el-button type="info" size="small" @click="handleApplications(scope.row)">查看申请</el-button>
-          <el-button type="success" size="small" @click="handleHealthRecord(scope.row)">健康记录</el-button>
-          <el-button type="warning" size="small" @click="handleVaccination(scope.row)">疫苗记录</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        </el-form-item>
+        <el-form-item label="领养状态">
+          <el-select v-model="searchForm.adoptionStatus" placeholder="领养状态" clearable>
+            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">查询</el-button>
+          <el-button @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
 
-    <div class="pagination-container" v-if="petList.length > 0">
-      <el-pagination
-        background
-        layout="prev, pager, next, jumper"
-        :total="total"
-        :page-size="pageSize"
-        :current-page="currentPage"
-        @current-change="handlePageChange"
-      />
-    </div>
+    <!-- 操作栏和表格 -->
+    <el-card class="table-card">
+      <template #header>
+        <div class="card-header">
+          <div class="left">
+            <span class="title">宠物管理</span>
+            <el-button :icon="refreshIcon" circle @click="handleRefresh" :loading="refreshLoading" />
+          </div>
+          <div class="right">
+            <el-button :icon="downloadIcon" @click="handleExport">导出</el-button>
+            <el-button :icon="settingIcon" @click="columnSettingVisible = true">列设置</el-button>
+            <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete">批量删除</el-button>
+            <el-button type="primary" @click="handleAdd">添加宠物</el-button>
+          </div>
+        </div>
+      </template>
+
+      <!-- 数据加载状态 -->
+      <div v-if="loading" class="loading-container">
+        <el-skeleton :rows="10" animated />
+      </div>
+
+      <!-- 错误状态 -->
+      <div v-else-if="loadError" class="error-container">
+        <el-result
+          icon="error"
+          title="数据加载失败"
+          sub-title="无法获取宠物信息，请检查网络连接或稍后重试"
+        >
+          <template #extra>
+            <el-button type="primary" @click="handleRefresh">重新加载</el-button>
+          </template>
+        </el-result>
+      </div>
+
+      <!-- 空数据状态 -->
+      <div v-else-if="petList.length === 0" class="empty-container">
+        <el-empty 
+          description="暂无宠物信息" 
+          :image-size="200"
+        >
+          <template #description>
+            <p>系统中尚未添加任何宠物信息</p>
+            <p class="empty-hint">您可以点击"添加宠物"按钮创建新的宠物记录</p>
+          </template>
+          <el-button type="primary" @click="handleAdd">添加宠物</el-button>
+        </el-empty>
+      </div>
+
+      <!-- 数据展示 -->
+      <el-table
+        v-else
+        :data="petList"
+        border
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" />
+        <el-table-column v-if="isColumnVisible('id')" prop="id" label="ID" width="80" />
+        <el-table-column v-if="isColumnVisible('image')" label="图片" min-width="120">
+          <template #default="scope">
+            <el-image 
+              :src="getImageUrl(scope.row.images)" 
+              :preview-src-list="[getImageUrl(scope.row.images)]"
+              style="width: 80px; height: 80px"
+              fit="cover"
+              :preview-teleported="true"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column v-if="isColumnVisible('name')" prop="name" label="名称" min-width="120" />
+        <el-table-column v-if="isColumnVisible('categoryName')" prop="categoryName" label="分类" min-width="120">
+          <template #default="scope">
+            <span>{{ scope.row.categoryName || '未分类' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="isColumnVisible('breed')" prop="breed" label="品种" min-width="120" />
+        <el-table-column v-if="isColumnVisible('age')" prop="age" label="年龄" min-width="80" />
+        <el-table-column v-if="isColumnVisible('gender')" prop="gender" label="性别" min-width="80" />
+        <el-table-column v-if="isColumnVisible('adoptionStatus')" label="状态" min-width="120">
+          <template #default="scope">
+            <el-tag :type="getStatusType(scope.row.adoptionStatus)">
+              {{ scope.row.adoptionStatus }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="isColumnVisible('healthStatus')" prop="healthStatus" label="健康状况" min-width="150" />
+        <el-table-column v-if="isColumnVisible('description')" prop="description" label="描述" min-width="200" :show-overflow-tooltip="true" />
+        <el-table-column label="操作" width="400" align="center">
+          <template #default="scope">
+            <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
+            <el-button type="info" size="small" @click="handleApplications(scope.row)">查看申请</el-button>
+            <el-button type="success" size="small" @click="handleHealthRecord(scope.row)">健康记录</el-button>
+            <el-button type="warning" size="small" @click="handleVaccination(scope.row)">疫苗记录</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <div class="pagination" v-if="petList.length > 0">
+        <el-pagination
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          :page-size="pageSize"
+          :current-page="currentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          @current-change="handlePageChange"
+          @size-change="handleSizeChange"
+        />
+      </div>
+    </el-card>
+
+    <!-- 列设置抽屉 -->
+    <el-drawer
+      v-model="columnSettingVisible"
+      title="列设置"
+      direction="rtl"
+      size="300px"
+    >
+      <el-checkbox-group v-model="visibleColumns" class="column-list">
+        <el-checkbox v-for="col in allColumns" :key="col.prop" :label="col.prop">
+          {{ col.label }}
+        </el-checkbox>
+      </el-checkbox-group>
+    </el-drawer>
 
     <!-- 添加/编辑宠物对话框 -->
     <el-dialog 
@@ -228,7 +256,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="申请时间" width="160" :formatter="formatDateTime" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="200" align="center">
           <template #default="scope">
             <el-button 
               v-if="scope.row.status === '已申请' || scope.row.status === '审核中'"
@@ -256,6 +284,7 @@
       v-model="healthRecordDialogVisible" 
       :title="`${currentPet?.name || ''} - 健康记录管理`" 
       width="800px"
+      append-to-body
     >
       <div class="dialog-toolbar">
         <el-button type="primary" @click="handleAddHealthRecord">添加记录</el-button>
@@ -274,7 +303,7 @@
         <el-table-column prop="weight" label="体重(kg)" width="100" />
         <el-table-column prop="temperature" label="体温(℃)" width="100" />
         <el-table-column prop="diagnosisResults" label="诊断结果" min-width="150" :show-overflow-tooltip="true" />
-        <el-table-column label="操作" width="160" fixed="right">
+        <el-table-column label="操作" width="160" align="center">
           <template #default="scope">
             <el-button type="primary" size="small" @click="handleEditHealthRecord(scope.row)">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDeleteHealthRecord(scope.row)">删除</el-button>
@@ -282,7 +311,7 @@
         </el-table-column>
       </el-table>
       
-      <div class="pagination-container" v-if="healthRecordList.length > 0">
+      <div class="pagination" v-if="healthRecordList.length > 0">
         <el-pagination
           background
           layout="prev, pager, next"
@@ -433,6 +462,7 @@
       v-model="vaccinationDialogVisible" 
       :title="`${currentPet?.name || ''} - 疫苗接种记录`" 
       width="800px"
+      append-to-body
     >
       <div class="dialog-toolbar">
         <el-button type="primary" @click="handleAddVaccination">添加记录</el-button>
@@ -450,7 +480,7 @@
         <el-table-column prop="nextDate" label="下次接种日期" width="160" :formatter="formatDateTime" />
         <el-table-column prop="batchNumber" label="疫苗批号" width="120" />
         <el-table-column prop="notes" label="备注" min-width="150" :show-overflow-tooltip="true" />
-        <el-table-column label="操作" width="160" fixed="right">
+        <el-table-column label="操作" width="160" align="center">
           <template #default="scope">
             <el-button type="primary" size="small" @click="handleEditVaccination(scope.row)">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDeleteVaccination(scope.row)">删除</el-button>
@@ -458,7 +488,7 @@
         </el-table-column>
       </el-table>
       
-      <div class="pagination-container" v-if="vaccinationList.length > 0">
+      <div class="pagination" v-if="vaccinationList.length > 0">
         <el-pagination
           background
           layout="prev, pager, next"
@@ -521,13 +551,20 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { formatDate, formatDateTime as formatDateTimeUtil } from '@/utils/dateUtils'
 import request from '@/utils/request'
-import { Plus, Refresh } from '@element-plus/icons-vue'
+import { Plus, Refresh, Download, Setting } from '@element-plus/icons-vue'
+import * as XLSX from 'xlsx'
+import { format } from '@/utils/dateUtils'
 
 const baseAPI = process.env.VUE_APP_BASE_API || '/api'
+
+// 将图标暴露给模板使用
+const refreshIcon = Refresh
+const downloadIcon = Download
+const settingIcon = Setting
 
 // 宠物列表数据
 const petList = ref([])
@@ -537,6 +574,7 @@ const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const statusOptions = ['可领养', '已领养']
+const selectedRows = ref([])
 
 // 分类列表和树形结构
 const categoriesList = ref([])
@@ -548,6 +586,36 @@ const searchForm = reactive({
   categoryId: '',
   adoptionStatus: ''
 })
+
+// 修改列设置相关代码
+const STORAGE_KEY = 'petListVisibleColumns'
+const columnSettingVisible = ref(false)
+const allColumns = [
+  { prop: 'id', label: 'ID' },
+  { prop: 'image', label: '图片' },
+  { prop: 'name', label: '名称' },
+  { prop: 'categoryName', label: '分类' },
+  { prop: 'breed', label: '品种' },
+  { prop: 'age', label: '年龄' },
+  { prop: 'gender', label: '性别' },
+  { prop: 'adoptionStatus', label: '状态' },
+  { prop: 'healthStatus', label: '健康状况' },
+  { prop: 'description', label: '描述' }
+]
+
+// 从localStorage获取保存的列设置，如果没有则使用默认值
+const visibleColumns = ref(
+  JSON.parse(localStorage.getItem(STORAGE_KEY)) || allColumns.map(col => col.prop)
+)
+
+// 监听列设置变化并保存到localStorage
+watch(visibleColumns, (newVal) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
+}, { deep: true })
+
+const isColumnVisible = (prop) => {
+  return visibleColumns.value.includes(prop)
+}
 
 // 宠物表单
 const dialogVisible = ref(false)
@@ -802,12 +870,82 @@ const handlePageChange = (page) => {
   fetchPets()
 }
 
+// 处理分页大小变化
+const handleSizeChange = (size) => {
+  pageSize.value = size
+  currentPage.value = 1
+  fetchPets()
+}
+
+// 处理表格选择
+const handleSelectionChange = (rows) => {
+  selectedRows.value = rows
+}
+
 // 添加宠物
 const handleAdd = () => {
   isEdit.value = false
   resetPetForm()
   fileList.value = []
   dialogVisible.value = true
+}
+
+// 批量删除
+const handleBatchDelete = async () => {
+  if (selectedRows.value.length === 0) return
+  
+  try {
+    await ElMessageBox.confirm(`确认删除选中的 ${selectedRows.value.length} 个宠物吗？`, '提示', {
+      type: 'warning'
+    })
+    const ids = selectedRows.value.map(row => row.id)
+    await request.post('/pet/batch-delete', { ids }, {
+      successMsg: '批量删除成功',
+      onSuccess: () => {
+        fetchPets()
+      }
+    })
+  } catch (error) {
+    console.error('批量删除失败:', error)
+  }
+}
+
+// 优化导出功能
+const handleExport = () => {
+  try {
+    loading.value = true
+    
+    // 获取当前可见列的配置
+    const visibleColumnConfigs = allColumns.filter(col => isColumnVisible(col.prop))
+    
+    // 准备导出数据
+    const exportData = petList.value.map(item => {
+      const row = {}
+      visibleColumnConfigs.forEach(col => {
+        if (col.prop === 'image') {
+          row[col.label] = '有图片' // 图片无法直接导出，显示有图片即可
+        } else {
+          row[col.label] = item[col.prop] || ''
+        }
+      })
+      return row
+    })
+
+    // 创建工作簿
+    const worksheet = XLSX.utils.json_to_sheet(exportData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, '宠物列表')
+
+    // 导出文件
+    XLSX.writeFile(workbook, `宠物列表_${format(new Date())}.xlsx`)
+    
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出失败:', error)
+    ElMessage.error('导出失败')
+  } finally {
+    loading.value = false
+  }
 }
 
 // 编辑宠物
@@ -1489,21 +1627,46 @@ onMounted(() => {
   padding: 20px;
 }
 
-.pet-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.search-card {
   margin-bottom: 20px;
 }
 
-.action-buttons {
+.table-card {
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-header .right {
   display: flex;
   gap: 10px;
 }
 
-.pagination-container {
+.title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pagination {
   margin-top: 20px;
-  text-align: center;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .loading-container,
@@ -1512,7 +1675,7 @@ onMounted(() => {
   padding: 50px 0;
   background-color: #f9f9f9;
   border-radius: 4px;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
 .error-container {
@@ -1538,5 +1701,40 @@ onMounted(() => {
 
 .el-divider {
   margin: 15px 0;
+}
+
+.column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+
+/* 搜索表单的表单项间距 */
+.search-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .el-form-item {
+    margin-right: 0;
+    width: 100%;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .card-header .right {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .card-header .right .el-button {
+    flex: 1;
+    min-width: 120px;
+  }
 }
 </style> 
