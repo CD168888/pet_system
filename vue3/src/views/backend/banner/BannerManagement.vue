@@ -1,12 +1,8 @@
 <template>
   <div class="banner-management">
-    <div class="page-header">
-      <h1 class="page-title">轮播图管理</h1>
-      <p class="page-subtitle">管理网站轮播图，控制首页展示内容</p>
-    </div>
-    
-    <el-card shadow="never" class="filter-card">
-      <el-form :inline="true" :model="searchForm" class="filter-form">
+    <!-- 搜索栏 -->
+    <el-card class="search-card">
+      <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="标题">
           <el-input v-model="searchForm.title" placeholder="请输入标题" clearable />
         </el-form-item>
@@ -17,24 +13,34 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="fetchBanners" :icon="Search">搜索</el-button>
-          <el-button @click="resetSearch" :icon="Refresh">重置</el-button>
+          <el-button type="primary" @click="fetchBanners">搜索</el-button>
+          <el-button @click="resetSearch">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
-    
-    <el-card shadow="never" class="table-card">
+
+    <!-- 操作栏 -->
+    <el-card class="table-card">
       <template #header>
         <div class="card-header">
-          <span>轮播图列表</span>
-          <el-button type="primary" @click="handleAdd" :icon="Plus">新增轮播图</el-button>
+          <div class="left">
+            <span class="title">轮播图列表</span>
+            <el-button :icon="refreshIcon" circle @click="handleRefresh" />
+          </div>
+          <div class="right">
+            <el-button :icon="downloadIcon" @click="handleExport">导出</el-button>
+            <el-button :icon="settingIcon" @click="columnSettingVisible = true">列设置</el-button>
+            <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete">批量删除</el-button>
+            <el-button type="primary" @click="handleAdd" :icon="Plus">新增轮播图</el-button>
+          </div>
         </div>
       </template>
       
-      <el-table :data="tableData" style="width: 100%" v-loading="loading" border>
-        <el-table-column prop="id" label="ID" min-width="80" />
-        <el-table-column prop="title" label="标题" min-width="150" />
-        <el-table-column label="图片" min-width="180">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading" border @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" />
+        <el-table-column v-if="isColumnVisible('id')" prop="id" label="ID" min-width="80" />
+        <el-table-column v-if="isColumnVisible('title')" prop="title" label="标题" min-width="150" />
+        <el-table-column v-if="isColumnVisible('imageUrl')" label="图片" min-width="180">
           <template #default="scope">
             <el-image 
               :src="getImageUrl(scope.row.imageUrl)" 
@@ -44,21 +50,19 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="linkUrl" label="链接" min-width="180" show-overflow-tooltip />
-        <el-table-column prop="sort" label="排序" min-width="80" />
-        <el-table-column label="状态" min-width="100">
+        <el-table-column v-if="isColumnVisible('linkUrl')" prop="linkUrl" label="链接" min-width="180" show-overflow-tooltip />
+        <el-table-column v-if="isColumnVisible('sort')" prop="sort" label="排序" min-width="80" />
+        <el-table-column v-if="isColumnVisible('status')" label="状态" min-width="100">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-              {{ scope.row.status === 1 ? '启用' : '禁用' }}
-            </el-tag>
+            <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" @change="(val) => handleStatusChange(scope.row.id, val)" />
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" min-width="180" show-overflow-tooltip>
+        <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" min-width="180" show-overflow-tooltip>
           <template #default="scope">
             {{ formatDateTime(scope.row.createTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" min-width="220" fixed="right">
+        <el-table-column label="操作" min-width="180">
           <template #default="scope">
             <el-button 
               size="small" 
@@ -80,15 +84,6 @@
             </el-button>
             <el-button 
               size="small" 
-              :type="scope.row.status === 1 ? 'danger' : 'success'" 
-              link 
-              @click="handleToggleStatus(scope.row)" 
-              :icon="scope.row.status === 1 ? 'el-icon-close' : 'el-icon-check'"
-            >
-              {{ scope.row.status === 1 ? '禁用' : '启用' }}
-            </el-button>
-            <el-button 
-              size="small" 
               type="danger" 
               link 
               @click="handleDelete(scope.row)" 
@@ -100,7 +95,7 @@
         </el-table-column>
       </el-table>
       
-      <div class="pagination-container">
+      <div class="pagination">
         <el-pagination
           :current-page="currentPage"
           :page-size="pageSize"
@@ -109,8 +104,6 @@
           :total="total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          @update:current-page="val => currentPage = val"
-          @update:page-size="val => pageSize = val"
           background
         />
       </div>
@@ -121,6 +114,7 @@
       :title="dialogType === 'add' ? '新增轮播图' : '编辑轮播图'" 
       v-model="dialogVisible" 
       width="650px"
+      append-to-body
     >
       <el-form 
         :model="form" 
@@ -128,6 +122,7 @@
         ref="bannerFormRef" 
         label-width="100px"
         label-position="right"
+        class="dialog-form"
       >
         <el-form-item label="标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入标题" />
@@ -177,7 +172,7 @@
     </el-dialog>
     
     <!-- 预览对话框 -->
-    <el-dialog title="轮播图预览" v-model="previewVisible" width="950px">
+    <el-dialog title="轮播图预览" v-model="previewVisible" width="950px" append-to-body>
       <div class="preview-container">
         <div 
           class="preview-banner" 
@@ -213,14 +208,30 @@
         </div>
       </div>
     </el-dialog>
+
+    <!-- 列设置抽屉 -->
+    <el-drawer
+      v-model="columnSettingVisible"
+      title="列设置"
+      direction="rtl"
+      size="300px"
+    >
+      <el-checkbox-group v-model="visibleColumns" class="column-list">
+        <el-checkbox v-for="col in allColumns" :key="col.prop" :label="col.prop">
+          {{ col.label }}
+        </el-checkbox>
+      </el-checkbox-group>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { 
   Search, 
   Refresh, 
+  Download, 
+  Setting,
   Plus, 
   Edit, 
   Delete, 
@@ -231,6 +242,8 @@ import {
 import { ElMessage, ElMessageBox } from 'element-plus'
 import request from '@/utils/request'
 import { useUserStore } from '@/store/user'
+import { format } from '@/utils/dateUtils'
+import * as XLSX from 'xlsx'
 
 const userStore = useUserStore()
 const baseAPI = process.env.VUE_APP_BASE_API || '/api'
@@ -240,12 +253,18 @@ const uploadHeaders = computed(() => {
   }
 })
 
+// 将图标暴露给模板使用
+const refreshIcon = Refresh
+const downloadIcon = Download
+const settingIcon = Setting
+
 // 表格数据
 const tableData = ref([])
 const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+const selectedRows = ref([])
 
 // 搜索表单
 const searchForm = reactive({
@@ -253,12 +272,112 @@ const searchForm = reactive({
   status: ''
 })
 
+// 列设置相关代码
+const STORAGE_KEY = 'bannerListVisibleColumns'
+const columnSettingVisible = ref(false)
+const allColumns = [
+  { prop: 'id', label: 'ID' },
+  { prop: 'title', label: '标题' },
+  { prop: 'imageUrl', label: '图片' },
+  { prop: 'linkUrl', label: '链接' },
+  { prop: 'sort', label: '排序' },
+  { prop: 'status', label: '状态' },
+  { prop: 'createTime', label: '创建时间' }
+]
+
+// 从localStorage获取保存的列设置，如果没有则使用默认值
+const visibleColumns = ref(
+  JSON.parse(localStorage.getItem(STORAGE_KEY)) || allColumns.map(col => col.prop)
+)
+
+// 监听列设置变化并保存到localStorage
+watch(visibleColumns, (newVal) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
+}, { deep: true })
+
+const isColumnVisible = (prop) => {
+  return visibleColumns.value.includes(prop)
+}
+
 // 重置搜索
 const resetSearch = () => {
   searchForm.title = ''
   searchForm.status = ''
   currentPage.value = 1
   fetchBanners()
+}
+
+// 表格选择
+const handleSelectionChange = (rows) => {
+  selectedRows.value = rows
+}
+
+// 刷新方法
+const handleRefresh = () => {
+  fetchBanners()
+  ElMessage.success('刷新成功')
+}
+
+// 批量删除方法
+const handleBatchDelete = async () => {
+  if (selectedRows.value.length === 0) return
+  
+  try {
+    await ElMessageBox.confirm(`确认删除选中的 ${selectedRows.value.length} 个轮播图吗？`, '提示', {
+      type: 'warning'
+    })
+    const ids = selectedRows.value.map(row => row.id)
+    await request.post('/banner/batch-delete', { ids }, {
+      successMsg: '批量删除成功',
+      onSuccess: () => {
+        fetchBanners()
+      }
+    })
+  } catch (error) {
+    console.error('批量删除失败:', error)
+  }
+}
+
+// 导出方法
+const handleExport = () => {
+  try {
+    loading.value = true
+    
+    // 获取当前可见列的配置
+    const visibleColumnConfigs = allColumns.filter(col => isColumnVisible(col.prop))
+    
+    // 准备导出数据
+    const exportData = tableData.value.map(item => {
+      const row = {}
+      visibleColumnConfigs.forEach(col => {
+        if (col.prop === 'status') {
+          row[col.label] = item.status === 1 ? '启用' : '禁用'
+        } else if (col.prop === 'createTime') {
+          row[col.label] = formatDateTime(item.createTime)
+        } else if (col.prop === 'imageUrl') {
+          row[col.label] = getImageUrl(item.imageUrl)
+        } else {
+          row[col.label] = item[col.prop]
+        }
+      })
+      return row
+    })
+
+    // 创建工作簿
+    const worksheet = XLSX.utils.json_to_sheet(exportData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, '轮播图列表')
+
+    // 导出文件
+    XLSX.writeFile(workbook, `轮播图列表_${format(new Date())}.xlsx`)
+    
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出失败:', error)
+    ElMessage.error('导出失败')
+  } finally {
+    loading.value = false
+  }
 }
 
 // 获取轮播图列表
@@ -462,26 +581,16 @@ const handleDelete = (row) => {
 }
 
 // 切换轮播图状态
-const handleToggleStatus = (row) => {
-  const newStatus = row.status === 1 ? 0 : 1
-  const statusText = newStatus === 1 ? '启用' : '禁用'
-  
-  ElMessageBox.confirm(`确定要${statusText}该轮播图吗？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async () => {
-    try {
-      await request.put(`/banner/${row.id}/status/${newStatus}`, null, {
-        successMsg: `轮播图已${statusText}`,
-        onSuccess: () => {
-          fetchBanners()
-        }
-      })
-    } catch (error) {
-      console.error(`${statusText}轮播图失败:`, error)
-    }
-  }).catch(() => {})
+const handleStatusChange = async (id, status) => {
+  try {
+    await request.put(`/banner/${id}/status/${status}`, null, {
+      successMsg: `轮播图已${status === 1 ? '启用' : '禁用'}`
+    })
+  } catch (error) {
+    console.error('切换轮播图状态失败:', error)
+    // 如果失败，重新获取数据以恢复正确状态
+    fetchBanners()
+  }
 }
 
 // 预览轮播图
@@ -514,161 +623,173 @@ onMounted(() => {
 <style lang="scss" scoped>
 .banner-management {
   padding: 20px;
-  
-  .page-header {
-    margin-bottom: 20px;
-    
-    .page-title {
-      font-size: 24px;
-      font-weight: 600;
-      color: #333;
-      margin: 0 0 8px;
-    }
-    
-    .page-subtitle {
-      color: #666;
-      font-size: 14px;
-      margin: 0;
-    }
-  }
-  
-  .filter-card {
-    margin-bottom: 20px;
-    
-    .filter-form {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-  }
-  
-  .table-card {
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 600;
-      font-size: 16px;
-    }
-  }
-  
-  .pagination-container {
-    margin-top: 20px;
+}
+
+.search-card {
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .left {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .right {
+    display: flex;
+    gap: 10px;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* 搜索表单的表单项间距 */
+.search-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+/* 弹窗表单的表单项间距 */
+.dialog-form :deep(.el-form-item) {
+  margin-bottom: 24px;
+}
+
+.column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+
+.banner-upload {
+  .banner-image {
+    width: 100%;
+    height: 200px;
+    border-radius: 6px;
+    object-fit: cover;
   }
   
-  .banner-upload {
-    .banner-image {
-      width: 100%;
-      height: 200px;
-      border-radius: 6px;
-      object-fit: cover;
-    }
+  .upload-placeholder {
+    width: 100%;
+    height: 200px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background-color: #fafafa;
     
-    .upload-placeholder {
-      width: 100%;
-      height: 200px;
-      border: 1px dashed #d9d9d9;
-      border-radius: 6px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      background-color: #fafafa;
-      
-      &:hover {
-        border-color: #FFB6C1;
-        
-        .text {
-          color: #FFB6C1;
-        }
-      }
-      
-      .el-icon {
-        font-size: 32px;
-        color: #8c939d;
-        margin-bottom: 10px;
-      }
+    &:hover {
+      border-color: #FFB6C1;
       
       .text {
-        color: #606266;
-        font-size: 14px;
-        margin-bottom: 5px;
+        color: #FFB6C1;
       }
-      
-      .tips {
-        color: #999;
-        font-size: 12px;
-      }
+    }
+    
+    .el-icon {
+      font-size: 32px;
+      color: #8c939d;
+      margin-bottom: 10px;
+    }
+    
+    .text {
+      color: #606266;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    
+    .tips {
+      color: #999;
+      font-size: 12px;
+    }
+  }
+}
+
+.preview-container {
+  .preview-banner {
+    height: 300px;
+    width: 100%;
+    background-size: cover;
+    border-radius: 8px;
+    position: relative;
+    margin-bottom: 20px;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 100%);
+      border-radius: 8px;
     }
   }
   
-  .preview-container {
-    .preview-banner {
-      height: 300px;
-      width: 100%;
-      background-size: cover;
-      border-radius: 8px;
-      position: relative;
-      margin-bottom: 20px;
+  .preview-content {
+    position: absolute;
+    left: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    max-width: 500px;
+    z-index: 1;
+    text-align: left;
+  }
+  
+  .preview-title {
+    font-size: 32px;
+    margin: 0 0 10px;
+    font-weight: 700;
+  }
+  
+  .preview-info {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    
+    h3 {
+      margin: 0 0 15px;
+      font-size: 18px;
+      color: #333;
+      font-weight: 600;
+    }
+    
+    .info-item {
+      margin-bottom: 10px;
+      display: flex;
       
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 100%);
-        border-radius: 8px;
-      }
-    }
-    
-    .preview-content {
-      position: absolute;
-      left: 10%;
-      top: 50%;
-      transform: translateY(-50%);
-      color: white;
-      max-width: 500px;
-      z-index: 1;
-      text-align: left;
-    }
-    
-    .preview-title {
-      font-size: 32px;
-      margin: 0 0 10px;
-      font-weight: 700;
-    }
-    
-    .preview-info {
-      padding: 20px;
-      background-color: #f9f9f9;
-      border-radius: 8px;
-      
-      h3 {
-        margin: 0 0 15px;
-        font-size: 18px;
-        color: #333;
+      .label {
+        width: 80px;
         font-weight: 600;
+        color: #666;
       }
       
-      .info-item {
-        margin-bottom: 10px;
-        display: flex;
-        
-        .label {
-          width: 80px;
-          font-weight: 600;
-          color: #666;
-        }
-        
-        .value {
-          color: #333;
-          flex: 1;
-        }
+      .value {
+        color: #333;
+        flex: 1;
       }
     }
   }
