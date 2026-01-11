@@ -104,17 +104,18 @@
         </el-table-column>
         <el-table-column label="操作" width="200" align="center">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="handleEdit(scope.row)"
+            <el-button type="primary" size="small" link @click="handleEdit(scope.row)"
               >编辑</el-button
             >
             <el-button
               :type="scope.row.status === 1 ? 'warning' : 'success'"
               size="small"
+              link
               @click="handleChangeStatus(scope.row)"
             >
               {{ scope.row.status === 1 ? "下架" : "上架" }}
             </el-button>
-            <el-button type="danger" size="small" @click="handleDelete(scope.row)"
+            <el-button type="danger" size="small" link @click="handleDelete(scope.row)"
               >删除</el-button
             >
           </template>
