@@ -1,12 +1,8 @@
 <template>
   <div class="announcement-management">
-    <div class="page-header">
-      <h1 class="page-title">公告管理</h1>
-      <p class="page-subtitle">管理系统公告，发布重要通知</p>
-    </div>
-    
-    <el-card shadow="never" class="filter-card">
-      <el-form :inline="true" :model="searchForm" class="filter-form">
+    <!-- 搜索栏 -->
+    <el-card class="search-card">
+      <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="标题">
           <el-input v-model="searchForm.title" placeholder="请输入标题" clearable />
         </el-form-item>
@@ -25,44 +21,57 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="fetchAnnouncements" :icon="Search">搜索</el-button>
-          <el-button @click="resetSearch" :icon="Refresh">重置</el-button>
+          <el-button type="primary" @click="fetchAnnouncements">搜索</el-button>
+          <el-button @click="resetSearch">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
-    
-    <el-card shadow="never" class="table-card">
+
+    <!-- 操作栏 -->
+    <el-card class="table-card">
       <template #header>
         <div class="card-header">
-          <span>公告列表</span>
-          <el-button type="primary" @click="handleAdd" :icon="Plus">新增公告</el-button>
+          <div class="left">
+            <span class="title">公告列表</span>
+            <el-button :icon="refreshIcon" circle @click="handleRefresh" />
+          </div>
+          <div class="right">
+            <el-button :icon="downloadIcon" @click="handleExport">导出</el-button>
+            <el-button :icon="settingIcon" @click="columnSettingVisible = true">列设置</el-button>
+            <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete">批量删除</el-button>
+            <el-button type="primary" @click="handleAdd" :icon="Plus">新增公告</el-button>
+          </div>
         </div>
       </template>
       
-      <el-table :data="tableData" style="width: 100%" v-loading="loading" border>
-        <el-table-column prop="id" label="ID" min-width="80" />
-        <el-table-column prop="title" label="标题" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="type" label="类型" min-width="100">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading" border @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" />
+        <el-table-column v-if="isColumnVisible('id')" prop="id" label="ID" min-width="80" />
+        <el-table-column v-if="isColumnVisible('title')" prop="title" label="标题" min-width="150" show-overflow-tooltip />
+        <el-table-column v-if="isColumnVisible('type')" prop="type" label="类型" min-width="100">
           <template #default="scope">
             <el-tag :type="getTypeTagType(scope.row.type)">
               {{ getTypeLabel(scope.row.type) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="content" label="内容" min-width="200" show-overflow-tooltip />
-        <el-table-column label="状态" min-width="100">
+        <el-table-column v-if="isColumnVisible('content')" prop="content" label="内容" min-width="200" show-overflow-tooltip />
+        <el-table-column v-if="isColumnVisible('status')" label="状态" min-width="100">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-              {{ scope.row.status === 1 ? '启用' : '禁用' }}
-            </el-tag>
+            <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" @change="(val) => handleStatusChange(scope.row.id, val)" />
           </template>
         </el-table-column>
-        <el-table-column prop="createdTime" label="创建时间" min-width="180" show-overflow-tooltip>
+        <el-table-column v-if="isColumnVisible('createdTime')" prop="createdTime" label="创建时间" min-width="180" show-overflow-tooltip>
           <template #default="scope">
             {{ formatDateTime(scope.row.createdTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" min-width="220" fixed="right">
+        <el-table-column v-if="isColumnVisible('updatedTime')" prop="updatedTime" label="更新时间" min-width="180" show-overflow-tooltip>
+          <template #default="scope">
+            {{ formatDateTime(scope.row.updatedTime) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" min-width="180">
           <template #default="scope">
             <el-button 
               size="small" 
@@ -84,15 +93,6 @@
             </el-button>
             <el-button 
               size="small" 
-              :type="scope.row.status === 1 ? 'danger' : 'success'" 
-              link 
-              @click="handleToggleStatus(scope.row)" 
-              :icon="scope.row.status === 1 ? 'el-icon-close' : 'el-icon-check'"
-            >
-              {{ scope.row.status === 1 ? '禁用' : '启用' }}
-            </el-button>
-            <el-button 
-              size="small" 
               type="danger" 
               link 
               @click="handleDelete(scope.row)" 
@@ -104,7 +104,7 @@
         </el-table-column>
       </el-table>
       
-      <div class="pagination-container">
+      <div class="pagination">
         <el-pagination
           :current-page="currentPage"
           :page-size="pageSize"
@@ -113,8 +113,6 @@
           :total="total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          @update:current-page="val => currentPage = val"
-          @update:page-size="val => pageSize = val"
           background
         />
       </div>
@@ -126,6 +124,7 @@
       v-model="dialogVisible" 
       width="650px"
       @closed="handleDialogClosed"
+      append-to-body
     >
       <el-form 
         :model="form" 
@@ -133,6 +132,7 @@
         ref="announcementFormRef" 
         label-width="100px"
         label-position="right"
+        class="dialog-form"
       >
         <el-form-item label="标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入标题" />
@@ -176,6 +176,7 @@
       v-model="previewVisible" 
       width="650px"
       @closed="handlePreviewClosed"
+      append-to-body
     >
       <div class="preview-container">
         <div class="preview-header">
@@ -204,14 +205,30 @@
         </div>
       </div>
     </el-dialog>
+
+    <!-- 列设置抽屉 -->
+    <el-drawer
+      v-model="columnSettingVisible"
+      title="列设置"
+      direction="rtl"
+      size="300px"
+    >
+      <el-checkbox-group v-model="visibleColumns" class="column-list">
+        <el-checkbox v-for="col in allColumns" :key="col.prop" :label="col.prop">
+          {{ col.label }}
+        </el-checkbox>
+      </el-checkbox-group>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { 
   Search, 
   Refresh, 
+  Download, 
+  Setting,
   Plus, 
   Edit, 
   Delete, 
@@ -219,6 +236,13 @@ import {
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import request from '@/utils/request'
+import { format } from '@/utils/dateUtils'
+import * as XLSX from 'xlsx'
+
+// 将图标暴露给模板使用
+const refreshIcon = Refresh
+const downloadIcon = Download
+const settingIcon = Setting
 
 // 表格数据
 const tableData = ref([])
@@ -226,6 +250,7 @@ const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+const selectedRows = ref([])
 
 // 搜索表单
 const searchForm = reactive({
@@ -234,6 +259,33 @@ const searchForm = reactive({
   status: ''
 })
 
+// 列设置相关代码
+const STORAGE_KEY = 'announcementListVisibleColumns'
+const columnSettingVisible = ref(false)
+const allColumns = [
+  { prop: 'id', label: 'ID' },
+  { prop: 'title', label: '标题' },
+  { prop: 'type', label: '类型' },
+  { prop: 'content', label: '内容' },
+  { prop: 'status', label: '状态' },
+  { prop: 'createdTime', label: '创建时间' },
+  { prop: 'updatedTime', label: '更新时间' }
+]
+
+// 从localStorage获取保存的列设置，如果没有则使用默认值
+const visibleColumns = ref(
+  JSON.parse(localStorage.getItem(STORAGE_KEY)) || allColumns.map(col => col.prop)
+)
+
+// 监听列设置变化并保存到localStorage
+watch(visibleColumns, (newVal) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
+}, { deep: true })
+
+const isColumnVisible = (prop) => {
+  return visibleColumns.value.includes(prop)
+}
+
 // 重置搜索
 const resetSearch = () => {
   searchForm.title = ''
@@ -241,6 +293,79 @@ const resetSearch = () => {
   searchForm.status = ''
   currentPage.value = 1
   fetchAnnouncements()
+}
+
+// 表格选择
+const handleSelectionChange = (rows) => {
+  selectedRows.value = rows
+}
+
+// 刷新方法
+const handleRefresh = () => {
+  fetchAnnouncements()
+  ElMessage.success('刷新成功')
+}
+
+// 批量删除方法
+const handleBatchDelete = async () => {
+  if (selectedRows.value.length === 0) return
+  
+  try {
+    await ElMessageBox.confirm(`确认删除选中的 ${selectedRows.value.length} 个公告吗？`, '提示', {
+      type: 'warning'
+    })
+    const ids = selectedRows.value.map(row => row.id)
+    await request.post('/announcement/batch-delete', { ids }, {
+      successMsg: '批量删除成功',
+      onSuccess: () => {
+        fetchAnnouncements()
+      }
+    })
+  } catch (error) {
+    console.error('批量删除失败:', error)
+  }
+}
+
+// 导出方法
+const handleExport = () => {
+  try {
+    loading.value = true
+    
+    // 获取当前可见列的配置
+    const visibleColumnConfigs = allColumns.filter(col => isColumnVisible(col.prop))
+    
+    // 准备导出数据
+    const exportData = tableData.value.map(item => {
+      const row = {}
+      visibleColumnConfigs.forEach(col => {
+        if (col.prop === 'status') {
+          row[col.label] = item.status === 1 ? '启用' : '禁用'
+        } else if (col.prop === 'type') {
+          row[col.label] = getTypeLabel(item[col.prop])
+        } else if (col.prop === 'createdTime' || col.prop === 'updatedTime') {
+          row[col.label] = formatDateTime(item[col.prop])
+        } else {
+          row[col.label] = item[col.prop]
+        }
+      })
+      return row
+    })
+
+    // 创建工作簿
+    const worksheet = XLSX.utils.json_to_sheet(exportData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, '公告列表')
+
+    // 导出文件
+    XLSX.writeFile(workbook, `公告列表_${format(new Date())}.xlsx`)
+    
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出失败:', error)
+    ElMessage.error('导出失败')
+  } finally {
+    loading.value = false
+  }
 }
 
 // 获取公告列表
@@ -459,26 +584,16 @@ const handleDelete = (row) => {
 }
 
 // 切换公告状态
-const handleToggleStatus = (row) => {
-  const newStatus = row.status === 1 ? 0 : 1
-  const statusText = newStatus === 1 ? '启用' : '禁用'
-  
-  ElMessageBox.confirm(`确定要${statusText}该公告吗？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async () => {
-    try {
-      await request.put(`/announcement/${row.id}/status/${newStatus}`, null, {
-        successMsg: `公告已${statusText}`,
-        onSuccess: () => {
-          fetchAnnouncements()
-        }
-      })
-    } catch (error) {
-      console.error(`${statusText}公告失败:`, error)
-    }
-  }).catch(() => {})
+const handleStatusChange = async (id, status) => {
+  try {
+    await request.put(`/announcement/${id}/status/${status}`, null, {
+      successMsg: `公告已${status === 1 ? '启用' : '禁用'}`
+    })
+  } catch (error) {
+    console.error('切换公告状态失败:', error)
+    // 如果失败，重新获取数据以恢复正确状态
+    fetchAnnouncements()
+  }
 }
 
 // 预览公告
@@ -520,103 +635,115 @@ onMounted(() => {
 <style lang="scss" scoped>
 .announcement-management {
   padding: 20px;
-  
-  .page-header {
-    margin-bottom: 20px;
-    
-    .page-title {
-      font-size: 24px;
-      font-weight: 600;
-      color: #333;
-      margin: 0 0 8px;
-    }
-    
-    .page-subtitle {
-      color: #666;
-      font-size: 14px;
-      margin: 0;
-    }
-  }
-  
-  .filter-card {
-    margin-bottom: 20px;
-    
-    .filter-form {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-  }
-  
-  .table-card {
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 600;
-      font-size: 16px;
-    }
-  }
-  
-  .pagination-container {
-    margin-top: 20px;
+}
+
+.search-card {
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .left {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .right {
+    display: flex;
+    gap: 10px;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* 搜索表单的表单项间距 */
+.search-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+/* 弹窗表单的表单项间距 */
+.dialog-form :deep(.el-form-item) {
+  margin-bottom: 24px;
+}
+
+.column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+
+.preview-container {
+  .preview-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    
+    .preview-title {
+      font-size: 22px;
+      color: #333;
+      margin: 0 0 10px;
+    }
+    
+    .preview-meta {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      
+      .preview-time {
+        color: #999;
+        font-size: 14px;
+      }
+    }
   }
   
-  .preview-container {
-    .preview-header {
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #eee;
+  .preview-content {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    min-height: 150px;
+    
+    .content-text {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+  }
+  
+  .preview-info {
+    .info-item {
+      margin-bottom: 10px;
+      display: flex;
       
-      .preview-title {
-        font-size: 22px;
+      .label {
+        width: 80px;
+        font-weight: 600;
+        color: #666;
+      }
+      
+      .value {
         color: #333;
-        margin: 0 0 10px;
-      }
-      
-      .preview-meta {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        
-        .preview-time {
-          color: #999;
-          font-size: 14px;
-        }
-      }
-    }
-    
-    .preview-content {
-      padding: 15px;
-      background-color: #f9f9f9;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      min-height: 150px;
-      
-      .content-text {
-        margin: 0;
-        white-space: pre-wrap;
-        line-height: 1.6;
-      }
-    }
-    
-    .preview-info {
-      .info-item {
-        margin-bottom: 10px;
-        display: flex;
-        
-        .label {
-          width: 80px;
-          font-weight: 600;
-          color: #666;
-        }
-        
-        .value {
-          color: #333;
-          flex: 1;
-        }
+        flex: 1;
       }
     }
   }
