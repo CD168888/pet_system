@@ -89,9 +89,6 @@ public class OrderService {
         // 3. 遍历购物车项，创建订单
         List<CartItemDTO> items = orderCreateDTO.getItems();
         
-        // 为整个订单生成一个订单号
-        String orderNo = generateOrderNo();
-        
         for (CartItemDTO item : items) {
             // 检查商品是否存在
             Product product = productService.getProductById(item.getProductId());
@@ -108,6 +105,9 @@ public class OrderService {
             if (product.getStock() < item.getQuantity()) {
                 throw new ServiceException("商品库存不足：" + product.getName());
             }
+            
+            // 为每个商品生成一个唯一的订单号
+            String orderNo = generateOrderNo();
             
             // 创建订单对象
             Order order = new Order();
@@ -145,11 +145,11 @@ public class OrderService {
             }
         }
         
-        // 查询所有创建的订单
+        // 查询所有创建的订单，使用时间倒序获取最近的订单
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Order::getOrderNo, orderNo);
         queryWrapper.eq(Order::getUserId, userId);
         queryWrapper.orderByDesc(Order::getCreateTime);
+        queryWrapper.last("limit " + items.size());
         
         // 创建订单成功后，删除购物车中的对应商品
         for (CartItemDTO item : items) {
@@ -474,10 +474,10 @@ public class OrderService {
      * @return 订单号
      */
     private String generateOrderNo() {
-        // 订单号格式：时间戳（毫秒级） + 随机6位数
+        // 订单号格式：时间戳（毫秒级） + 随机8位数
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
-        // 使用UUID的更多位来减少重复概率
-        String random = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 6);
+        // 使用UUID的前8位作为随机数，减少重复概率
+        String random = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8);
         return timestamp + random;
     }
     

@@ -8,6 +8,7 @@ import org.example.springboot.DTO.MergedOrderDTO;
 import org.example.springboot.DTO.OrderCreateDTO;
 import org.example.springboot.common.Result;
 import org.example.springboot.entity.Order;
+import org.example.springboot.entity.User;
 import org.example.springboot.service.OrderService;
 import org.example.springboot.util.JwtTokenUtils;
 import org.slf4j.Logger;
@@ -63,6 +64,12 @@ public class OrderController {
             @RequestParam(defaultValue = "1") Integer currentPage,
             @RequestParam(defaultValue = "10") Integer size) {
         Long userId = JwtTokenUtils.getCurrentUserId();
+        // 获取当前用户信息，判断是否为管理员
+        User currentUser = JwtTokenUtils.getCurrentUser();
+        // 如果是管理员，userId设为null，查询所有订单
+        if (currentUser != null && "ADMIN".equals(currentUser.getRoleCode())) {
+            userId = null;
+        }
         Page<Order> page = orderService.getOrdersByPage(userId, status, currentPage, size);
         return Result.success(page);
     }
@@ -74,6 +81,12 @@ public class OrderController {
             @RequestParam(defaultValue = "1") Integer currentPage,
             @RequestParam(defaultValue = "10") Integer size) {
         Long userId = JwtTokenUtils.getCurrentUserId();
+        // 获取当前用户信息，判断是否为管理员
+        User currentUser = JwtTokenUtils.getCurrentUser();
+        // 如果是管理员，userId设为null，查询所有合并订单
+        if (currentUser != null && "ADMIN".equals(currentUser.getRoleCode())) {
+            userId = null;
+        }
         Page<MergedOrderDTO> page = orderService.getMergedOrdersByPage(userId, status, currentPage, size);
         return Result.success(page);
     }
