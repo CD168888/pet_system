@@ -198,6 +198,13 @@ const frontendRoutes = [
         name: 'AnnouncementList',
         component: () => import('@/views/frontend/announcement/List.vue'),
         meta: { title: '公告列表' }
+      },
+      // 添加AI宠物助手路由
+      {
+        path: 'ai-chat',
+        name: 'AiChat',
+        component: () => import('@/views/frontend/ai/AiChat.vue'),
+        meta: { title: 'AI宠物助手', requiresAuth: true }
       }
     ] 
   },

@@ -50,6 +50,11 @@
               <span>宠物训练</span>
             </el-menu-item>
             
+            <el-menu-item index="/ai-chat">
+              <el-icon><Pet /></el-icon>
+              <span>AI宠物助手</span>
+            </el-menu-item>
+            
             <div class="flex-grow"></div>
             
             <div class="search-box">
@@ -189,6 +194,11 @@
           <el-menu-item index="/training">
             <el-icon><Trophy /></el-icon>
             <span>宠物训练</span>
+          </el-menu-item>
+          
+          <el-menu-item index="/ai-chat">
+            <el-icon><Pet /></el-icon>
+            <span>AI宠物助手</span>
           </el-menu-item>
           
           <el-menu-item index="/wiki">
