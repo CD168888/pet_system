@@ -199,12 +199,12 @@ const frontendRoutes = [
         component: () => import('@/views/frontend/announcement/List.vue'),
         meta: { title: '公告列表' }
       },
-      // 添加AI宠物助手路由
+      // 添加AI智能助手路由
       {
-        path: 'ai-chat',
+        path: 'ai',
         name: 'AiChat',
         component: () => import('@/views/frontend/ai/AiChat.vue'),
-        meta: { title: 'AI宠物助手', requiresAuth: true }
+        meta: { title: 'AI智能助手', requiresAuth: true }
       }
     ] 
   },

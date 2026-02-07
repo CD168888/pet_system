@@ -4,10 +4,11 @@
     <div class="chat-sessions">
       <div class="sessions-header">
         <div class="header-content">
-          <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
-          <h2 class="gradient-text">AI宠物助手</h2>
+          <h2 class="gradient-text">AI智能助手</h2>
         </div>
         <el-button class="new-session-btn" @click="openNewSession">
           <el-icon>
@@ -17,7 +18,7 @@
         </el-button>
       </div>
       <div class="sessions-list">
-        <div v-for="session in sessions" :key="session.id" class="session-item glass-effect" 
+        <div v-for="session in sessions" :key="session.id" class="session-item glass-effect"
           :class="{ active: currentSession?.id === session.id }" @click="selectSession(session)">
           <div class="session-icon">
             <el-icon>
@@ -49,36 +50,37 @@
       <div class="chat-hero" v-if="messages.length === 0">
         <div class="hero-content">
           <div class="hero-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
               <path d="M13 8H7"></path>
               <path d="M17 12H7"></path>
             </svg>
           </div>
           <h1 class="hero-title">AI 宠物助手</h1>
-          <p class="hero-subtitle">专业宠物顾问，为您的爱宠提供贴心建议</p>
+          <p class="hero-subtitle">智能解答宠物相关问题，提供专业饲养建议</p>
           <div class="quick-questions">
-            <div class="quick-question-item glass-card" @click="sendQuickQuestion('我的狗狗最近不爱吃饭，怎么办？')">
+            <div class="quick-question-item glass-card" @click="sendQuickQuestion('如何正确喂养猫咪？')">
               <el-icon>
-                <NotebookPen />
+                <Food />
               </el-icon>
-              <span>宠物饮食问题</span>
+              <span>猫咪喂养</span>
             </div>
-            <div class="quick-question-item glass-card" @click="sendQuickQuestion('如何训练猫咪使用猫砂盆？')">
+            <div class="quick-question-item glass-card" @click="sendQuickQuestion('狗狗常见疾病有哪些？')">
+              <el-icon>
+                <Suitcase />
+              </el-icon>
+              <span>狗狗疾病</span>
+            </div>
+            <div class="quick-question-item glass-card" @click="sendQuickQuestion('宠物训练的基本方法')">
               <el-icon>
                 <Trophy />
               </el-icon>
               <span>宠物训练</span>
             </div>
-            <div class="quick-question-item glass-card" @click="sendQuickQuestion('狗狗最近总是掉毛，正常吗？')">
+            <div class="quick-question-item glass-card" @click="sendQuickQuestion('如何照顾刚出生的宠物？')">
               <el-icon>
-                <FirstAid />
-              </el-icon>
-              <span>宠物健康</span>
-            </div>
-            <div class="quick-question-item glass-card" @click="sendQuickQuestion('如何照顾新生的小猫？')">
-              <el-icon>
-                <Pet />
+                <House />
               </el-icon>
               <span>宠物护理</span>
             </div>
@@ -88,14 +90,15 @@
 
       <!-- 消息列表 -->
       <div class="chat-messages" ref="chatMessages" v-else>
-        <div v-for="(message, index) in messages" :key="index" class="message-wrapper" 
+        <div v-for="(message, index) in messages" :key="index" class="message-wrapper"
           :class="{ 'user-message': message.type === 1, 'ai-message': message.type === 0 }">
           <div class="message-avatar">
             <div class="avatar-icon" :class="message.type === 1 ? 'user-avatar' : 'ai-avatar'">
               <el-icon v-if="message.type === 1">
                 <User />
               </el-icon>
-              <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
               </svg>
             </div>
@@ -136,15 +139,18 @@ import 'highlight.js/styles/github.css'
 import {
   Plus,
   ChatDotRound,
+  Location,
+  Calendar,
   User,
   Promotion,
   VideoPause,
+  Food,
+  Suitcase,
   Delete,
   Edit,
-  NotebookPen,
-  Trophy,
   FirstAid,
-  Pet
+  Trophy,
+  House
 } from '@element-plus/icons-vue'
 
 // 初始化 Markdown 解析器
@@ -228,7 +234,7 @@ const selectSession = async (session) => {
   isLoading.value = true
 
   try {
-    // 从后端加载历史消息
+    // 从后端加载历史消息（优先从Redis获取）
     const data = await request.get(`/ai/messages/${session.id}`)
     messages.value = (data || []).map(msg => ({
       type: msg.messageType,
@@ -259,12 +265,14 @@ const openNewSession = async () => {
       hour: '2-digit',
       minute: '2-digit'
     })}`
-    const res = await request.post('/ai/createSession', null, {
+
+    const newSession = await request.post('/ai/createSession', null, {
       params: { sessionName },
       successMsg: '已开启新会话'
     })
-    sessions.value.unshift(res)
-    currentSession.value = res
+
+    sessions.value.unshift(newSession)
+    currentSession.value = newSession
     messages.value = []
   } catch (error) {
     console.error('创建会话失败', error)
@@ -411,7 +419,7 @@ const streamChat = (message) => {
   // 用于累积接收到的文本
   let messageOrigin = ''
 
-  // 构建请求 URL
+  // 构建请求 URL（使用新的参数名sessionId和token）
   const url = `/api/ai/chatStream?message=${encodeURIComponent(message)}&sessionId=${currentSession.value.id}&token=${encodeURIComponent(token.value)}`
 
   // 创建 EventSource 连接
@@ -485,7 +493,7 @@ const cancelStream = () => {
     eventSource.value = null
   }
 
-  // 调用后端取消接口
+  // 调用后端取消接口（使用新的参数名sessionId）
   fetch(`/api/ai/cancelStream?sessionId=${currentSession.value.id}`, {
     method: 'POST'
   }).catch(err => {
@@ -522,12 +530,13 @@ onMounted(async () => {
 // 全局变量
 :root {
   --gradient-primary: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
-  --gradient-secondary: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
 
 .chat-container {
   display: flex;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 40px);
   padding: 0;
   font-family: "PingFang SC", "Helvetica Neue", Helvetica, Arial, "Microsoft YaHei", sans-serif;
   border-radius: 24px;
@@ -565,7 +574,7 @@ onMounted(async () => {
       .gradient-text {
         font-size: 24px;
         font-weight: 800;
-        background: var(--gradient-primary);
+        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -575,7 +584,7 @@ onMounted(async () => {
 
     .new-session-btn {
       width: 100%;
-      background: var(--gradient-primary);
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
       border: none;
       border-radius: 12px;
       color: white;
@@ -614,7 +623,7 @@ onMounted(async () => {
         width: 40px;
         height: 40px;
         border-radius: 12px;
-        background: var(--gradient-primary);
+        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -728,7 +737,7 @@ onMounted(async () => {
       height: 80px;
       margin: 0 auto 24px;
       padding: 20px;
-      background: var(--gradient-primary);
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
       border-radius: 24px;
       color: white;
       display: flex;
@@ -747,7 +756,7 @@ onMounted(async () => {
       font-size: 48px;
       font-weight: 800;
       margin: 0 0 16px;
-      background: var(--gradient-primary);
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -794,10 +803,12 @@ onMounted(async () => {
 }
 
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -808,6 +819,7 @@ onMounted(async () => {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -843,7 +855,7 @@ onMounted(async () => {
       justify-content: flex-start;
 
       .message-content {
-        background: var(--gradient-primary);
+        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
         color: white;
         border: none;
 
@@ -898,11 +910,11 @@ onMounted(async () => {
         font-size: 20px;
 
         &.user-avatar {
-          background: var(--gradient-secondary);
+          background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
         }
 
         &.ai-avatar {
-          background: var(--gradient-primary);
+          background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
 
           svg {
             width: 20px;
@@ -978,7 +990,7 @@ onMounted(async () => {
         border-radius: 6px;
         font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
         font-size: 14px;
-        color: #66bb6a;
+        color: #43a047;
         font-weight: 600;
       }
 
@@ -1004,7 +1016,7 @@ onMounted(async () => {
       }
 
       :deep(a) {
-        color: #66bb6a;
+        color: #43a047;
         text-decoration: none;
         font-weight: 600;
 
@@ -1021,6 +1033,7 @@ onMounted(async () => {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1036,7 +1049,7 @@ onMounted(async () => {
 }
 
 .chat-input-wrapper {
-  padding: 0 32px 32px;
+  padding: 0 32px 64px;
   background: transparent;
 
   .chat-input {
@@ -1095,7 +1108,7 @@ onMounted(async () => {
       }
 
       &.send-btn {
-        background: var(--gradient-primary);
+        background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
         color: white;
 
         &:hover:not(:disabled) {
@@ -1179,56 +1192,6 @@ onMounted(async () => {
 
   .chat-input-wrapper {
     padding: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .chat-container {
-    height: calc(100vh - 64px);
-  }
-
-  .chat-sessions {
-    margin: 8px;
-    border-radius: 16px;
-
-    .sessions-header {
-      padding: 20px 16px;
-
-      .header-content {
-        .gradient-text {
-          font-size: 20px;
-        }
-      }
-    }
-
-    .sessions-list {
-      padding: 12px;
-
-      .session-item {
-        padding: 12px;
-
-        .session-icon {
-          width: 32px;
-          height: 32px;
-        }
-
-        .session-name {
-          font-size: 13px;
-        }
-      }
-    }
-  }
-
-  .chat-window {
-    margin: 8px;
-  }
-
-  .chat-messages {
-    padding: 16px;
-  }
-
-  .chat-input-wrapper {
-    padding: 0 16px 16px;
   }
 }
 </style>
