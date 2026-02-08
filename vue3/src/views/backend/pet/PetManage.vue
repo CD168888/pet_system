@@ -165,6 +165,7 @@
       :title="isEdit ? '编辑宠物' : '添加宠物'" 
       width="700px"
       :before-close="handleDialogClose"
+      append-to-body
     >
       <el-form :model="petForm" label-width="100px" :rules="petRules" ref="petFormRef">
         <el-form-item label="名称" prop="name">
@@ -236,7 +237,7 @@
     </el-dialog>
     
     <!-- 查看申请对话框 -->
-    <el-dialog v-model="applicationsDialogVisible" title="领养申请列表" width="900px">
+    <el-dialog v-model="applicationsDialogVisible" title="领养申请列表" width="900px" append-to-body>
       <el-table
         v-loading="applicationsLoading"
         :data="applicationsList"
@@ -328,6 +329,7 @@
       v-model="healthRecordFormDialogVisible" 
       :title="isEditHealthRecord ? '编辑健康记录' : '添加健康记录'" 
       width="850px"
+      append-to-body
     >
       <el-form :model="healthRecordForm" label-width="120px" :rules="healthRecordRules" ref="healthRecordFormRef">
         <el-form-item label="记录类型" prop="recordType">
@@ -505,6 +507,7 @@
       v-model="vaccinationFormDialogVisible" 
       :title="isEditVaccination ? '编辑疫苗记录' : '添加疫苗记录'" 
       width="650px"
+      append-to-body
     >
       <el-form :model="vaccinationForm" label-width="100px" :rules="vaccinationRules" ref="vaccinationFormRef">
         <el-form-item label="疫苗名称" prop="vaccineName">

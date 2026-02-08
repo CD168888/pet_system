@@ -143,6 +143,7 @@
       title="列设置"
       direction="rtl"
       size="300px"
+      append-to-body
     >
       <el-checkbox-group v-model="visibleColumns" class="column-list">
         <el-checkbox v-for="col in allColumns" :key="col.prop" :label="col.prop">
@@ -156,6 +157,7 @@
       v-model="dialogVisible"
       :title="isEdit ? '编辑商品' : '添加商品'"
       width="650px"
+      append-to-body
     >
       <el-form
         ref="productFormRef"
