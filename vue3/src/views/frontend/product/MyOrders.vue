@@ -195,31 +195,40 @@
         <div class="pay-methods">
           <h3 class="method-title">
             <el-icon><CreditCard /></el-icon>
-            选择支付方式
+            支付方式
           </h3>
-          <el-radio-group v-model="paymentMethod" class="payment-options">
-            <el-radio label="微信支付">
-              <div class="payment-option">
-                <i class="payment-icon wechat">微信</i>
-                <span>微信支付</span>
-              </div>
-            </el-radio>
-            <el-radio label="支付宝">
-              <div class="payment-option">
-                <i class="payment-icon alipay">支付宝</i>
-                <span>支付宝</span>
-              </div>
-            </el-radio>
-            <el-radio label="货到付款">
-              <div class="payment-option">
-                <i class="payment-icon cod">货到付款</i>
-                <span>货到付款</span>
-              </div>
-            </el-radio>
-          </el-radio-group>
+          <div class="payment-option selected">
+            <div class="payment-icon">
+              <svg viewBox="0 0 1024 1024" width="24" height="24">
+                <path fill="#1677FF" d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z" />
+                <path fill="#1677FF" d="M464 336a48 48 0 1 0 96 0 48 48 0 1 0-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z" />
+              </svg>
+            </div>
+            <div class="payment-info">
+              <div class="payment-name">支付宝</div>
+              <div class="payment-desc">扫码支付，安全便捷</div>
+            </div>
+            <div class="payment-check">
+              <el-icon color="#1677FF">
+                <Check />
+              </el-icon>
+            </div>
+          </div>
         </div>
         
-        <div class="pay-qrcode" v-if="paymentMethod === '微信支付' || paymentMethod === '支付宝'">
+        <div class="pay-qrcode" v-if="qrCodeUrl">
+          <div class="qrcode-container">
+            <h4>请使用支付宝扫码支付</h4>
+            <div class="qrcode-image">
+              <img :src="qrCodeUrl" alt="支付宝支付二维码" />
+            </div>
+            <p class="qrcode-hint">请在30分钟内完成支付</p>
+          </div>
+        </div>
+        
+        <div class="pay-status" v-if="paying">
+          <el-icon class="loading-icon"><Loading /></el-icon>
+          <p>正在处理支付请求，请稍候...</p>
         </div>
       </div>
       
@@ -253,7 +262,8 @@ import {
   Money, 
   Calendar, 
   Phone,
-  CreditCard
+  CreditCard,
+  Loading
 } from '@element-plus/icons-vue'
 
 // 路由
@@ -272,8 +282,9 @@ const currentStatus = ref('')
 // 支付相关
 const payDialogVisible = ref(false)
 const currentOrder = ref(null)
-const paymentMethod = ref('微信支付')
+const paymentMethod = ref('支付宝')
 const paying = ref(false)
+const qrCodeUrl = ref('')
 
 // 获取订单列表
 const fetchOrders = async () => {
@@ -386,23 +397,72 @@ const payOrder = (order) => {
 const confirmPayment = async () => {
   paying.value = true
   try {
-    // 使用订单号批量更新订单状态
-    await request.put(`/order/${currentOrder.value.orderNo}/status`, null, {
-      params: {
-        status: '待发货'
+    // 调用后端支付宝支付接口获取二维码
+    await request.get(`/alipay/pay?account=${currentOrder.value.totalAmount}`, {
+      onSuccess: (res) => {
+        // 设置二维码链接
+        qrCodeUrl.value = res.data.qrCode
+        // 开始轮询支付状态
+        startPaymentPolling(res.data.orderNum)
       },
-      successMsg: '支付成功',
-      onSuccess: () => {
-        payDialogVisible.value = false
-        fetchOrders()
-      }
+      errorMsg: '生成二维码失败，请稍后重试'
     })
   } catch (error) {
-    console.error('支付失败:', error)
-    ElMessage.error('支付失败，请稍后重试')
+    console.error('生成二维码失败:', error)
+    ElMessage.error('生成二维码失败，请稍后重试')
   } finally {
     paying.value = false
   }
+}
+
+// 支付状态轮询
+let paymentTimer = null
+
+// 开始支付状态轮询
+const startPaymentPolling = (orderNum) => {
+  // 清除之前的定时器
+  if (paymentTimer) {
+    clearInterval(paymentTimer)
+  }
+  
+  // 每3秒检查一次支付状态
+  paymentTimer = setInterval(async () => {
+    try {
+      await request.get(`/alipay/check?orderNum=${orderNum}&account=${currentOrder.value.totalAmount}&userId=${userStore.userInfo.id}`, {
+        onSuccess: (res) => {
+          if (res.data === '已支付') {
+            // 支付成功
+            ElMessage.success('支付成功！')
+            // 清除定时器
+            clearInterval(paymentTimer)
+            paymentTimer = null
+            // 关闭对话框
+            payDialogVisible.value = false
+            // 刷新订单列表
+            fetchOrders()
+          } else if (res.data === '支付失败') {
+            // 支付失败
+            ElMessage.error('支付失败，请重试')
+            // 清除定时器
+            clearInterval(paymentTimer)
+            paymentTimer = null
+          }
+        }
+      })
+    } catch (error) {
+      console.error('查询支付状态失败:', error)
+    }
+  }, 3000)
+  
+  // 30分钟后自动停止轮询
+  setTimeout(() => {
+    if (paymentTimer) {
+      clearInterval(paymentTimer)
+      paymentTimer = null
+      ElMessage.warning('支付超时，请重新发起支付')
+      payDialogVisible.value = false
+    }
+  }, 30 * 60 * 1000)
 }
 
 // 确认收货
@@ -1144,6 +1204,154 @@ onMounted(() => {
     :deep(.el-card__body) {
       padding: 20px;
     }
+  }
+}
+
+/* 支付相关样式 */
+.payment-option {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border: 2px solid #e4e7ed;
+  border-radius: 12px;
+  background: #fff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  
+  &:hover {
+    border-color: #1677FF;
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+    box-shadow: 0 4px 12px rgba(22, 119, 255, 0.1);
+  }
+  
+  &.selected {
+    border-color: #1677FF;
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+    box-shadow: 0 4px 12px rgba(22, 119, 255, 0.1);
+  }
+  
+  .payment-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #1677FF 0%, #4096ff 100%);
+    border-radius: 12px;
+    margin-right: 16px;
+    box-shadow: 0 2px 8px rgba(22, 119, 255, 0.2);
+    
+    svg {
+      filter: brightness(0) invert(1);
+    }
+  }
+  
+  .payment-info {
+    flex: 1;
+  }
+  
+  .payment-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+  }
+  
+  .payment-desc {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+  }
+  
+  .payment-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #1677FF;
+    border-radius: 50%;
+    opacity: 1;
+    transition: all 0.3s ease;
+  }
+  
+  &.selected .payment-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  &:not(.selected) .payment-check {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+.qrcode-container {
+  text-align: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 20px;
+  
+  h4 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #303133;
+  }
+  
+  .qrcode-image {
+    margin: 0 auto 15px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    
+    img {
+      width: 200px;
+      height: 200px;
+    }
+  }
+  
+  .qrcode-hint {
+    margin: 0;
+    font-size: 14px;
+    color: #909399;
+  }
+}
+
+.pay-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 20px;
+  
+  .loading-icon {
+    font-size: 32px;
+    color: #1677FF;
+    margin-bottom: 15px;
+    animation: rotate 1s linear infinite;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #303133;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>

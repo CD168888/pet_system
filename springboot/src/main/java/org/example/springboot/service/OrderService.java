@@ -190,6 +190,20 @@ public class OrderService {
     }
     
     /**
+     * 根据订单号获取订单
+     * @param orderNo 订单号
+     * @return 订单对象
+     */
+    public Order getOrderByOrderNo(String orderNo) {
+        LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Order::getOrderNo, orderNo);
+        queryWrapper.last("limit 1");
+        Order order = orderMapper.selectOne(queryWrapper);
+        fillOrderInfo(order);
+        return order;
+    }
+    
+    /**
      * 分页查询用户订单
      * @param userId 用户ID
      * @param status 订单状态

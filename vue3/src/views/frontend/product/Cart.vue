@@ -215,28 +215,7 @@
           </el-input>
         </el-form-item>
         
-        <el-form-item label="支付方式" prop="paymentMethod">
-          <el-select v-model="orderForm.paymentMethod" placeholder="请选择支付方式" style="width: 100%;" clearable>
-            <el-option label="微信支付" value="微信支付">
-              <div class="payment-option">
-                <i class="payment-icon wechat">微信</i>
-                <span>微信支付</span>
-              </div>
-            </el-option>
-            <el-option label="支付宝" value="支付宝">
-              <div class="payment-option">
-                <i class="payment-icon alipay">支付宝</i>
-                <span>支付宝</span>
-              </div>
-            </el-option>
-            <el-option label="货到付款" value="货到付款">
-              <div class="payment-option">
-                <i class="payment-icon cod">货到付款</i>
-                <span>货到付款</span>
-              </div>
-            </el-option>
-          </el-select>
-        </el-form-item>
+
         
         <el-form-item label="订单备注" prop="remark">
           <el-input 
@@ -548,33 +527,35 @@ const goToProductDetail = (productId) => {
 }
 
 // 结算
-const checkout = () => {
-  if (!userStore.isLoggedIn) {
-    ElMessageBox.confirm(
-      '请先登录后再进行结算',
-      '提示',
-      {
-        confirmButtonText: '去登录',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    ).then(() => {
-      router.push({ path: '/login', query: { redirect: '/cart' } })
-    }).catch(() => {
-      // 用户取消操作
-    })
-    return
+  const checkout = () => {
+    if (!userStore.isLoggedIn) {
+      ElMessageBox.confirm(
+        '请先登录后再进行结算',
+        '提示',
+        {
+          confirmButtonText: '去登录',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).then(() => {
+        router.push({ path: '/login', query: { redirect: '/cart' } })
+      }).catch(() => {
+        // 用户取消操作
+      })
+      return
+    }
+    
+    // 打开结算对话框
+    checkoutDialogVisible.value = true
+    
+    // 初始化表单数据
+    if (userStore.userInfo) {
+      orderForm.contactName = userStore.userInfo.name || ''
+      orderForm.contactPhone = userStore.userInfo.phone || ''
+    }
+    // 默认使用支付宝支付
+    orderForm.paymentMethod = '支付宝'
   }
-  
-  // 打开结算对话框
-  checkoutDialogVisible.value = true
-  
-  // 初始化表单数据
-  if (userStore.userInfo) {
-    orderForm.contactName = userStore.userInfo.name || ''
-    orderForm.contactPhone = userStore.userInfo.phone || ''
-  }
-}
 
 // 提交订单
 const confirmOrder = async () => {
@@ -596,7 +577,7 @@ const confirmOrder = async () => {
           address: orderForm.address,
           contactName: orderForm.contactName,
           contactPhone: orderForm.contactPhone,
-          paymentMethod: orderForm.paymentMethod,
+          paymentMethod: '支付宝',
           remark: orderForm.remark
         }
         

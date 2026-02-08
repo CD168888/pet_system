@@ -280,9 +280,12 @@
       v-model="payDialogVisible"
       title="订单支付"
       width="500px"
-      class="pay-dialog">
+      class="pay-dialog"
+      :close-on-click-modal="false"
+      destroy-on-close>
       <div class="pay-dialog-content">
-        <div class="pay-order-info">
+        <!-- 第一步：显示订单信息 -->
+        <div v-if="!qrCodeUrl" class="pay-order-info">
           <h3 class="order-title">
             <el-icon><InfoFilled /></el-icon>
             订单信息
@@ -305,52 +308,84 @@
             </div>
             <p class="pay-amount"><span class="label">支付金额：</span><span>¥{{ getTotalAmount().toFixed(2) }}</span></p>
           </div>
-        </div>
-        
-        <div class="pay-methods">
-          <h3 class="method-title">
-            <el-icon><Wallet /></el-icon>
-            选择支付方式
-          </h3>
-          <div class="payment-options">
-            <el-radio-group v-model="paymentMethod">
-              <el-radio label="微信支付">
-                <div class="payment-option">
-                  <span class="payment-icon wechat">W</span>
-                  微信支付
-                </div>
-              </el-radio>
-              <el-radio label="支付宝">
-                <div class="payment-option">
-                  <span class="payment-icon alipay">A</span>
-                  支付宝
-                </div>
-              </el-radio>
-              <el-radio label="货到付款">
-                <div class="payment-option">
-                  <span class="payment-icon cod">C</span>
-                  货到付款
-                </div>
-              </el-radio>
-            </el-radio-group>
+          
+          <div class="pay-methods">
+            <h3 class="method-title">
+              <el-icon><Wallet /></el-icon>
+              支付方式
+            </h3>
+            <div class="payment-option selected">
+              <div class="payment-icon">
+                <svg viewBox="0 0 1024 1024" width="24" height="24">
+                  <path fill="#1677FF" d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z" />
+                  <path fill="#1677FF" d="M464 336a48 48 0 1 0 96 0 48 48 0 1 0-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z" />
+                </svg>
+              </div>
+              <div class="payment-info">
+                <div class="payment-name">支付宝</div>
+                <div class="payment-desc">扫码支付，安全便捷</div>
+              </div>
+              <div class="payment-check">
+                <el-icon color="#1677FF">
+                  <Check />
+                </el-icon>
+              </div>
+            </div>
           </div>
         </div>
         
-        <div class="pay-qrcode" v-if="paymentMethod === '微信支付' || paymentMethod === '支付宝'">
-<!--          <p>请扫描二维码支付</p>-->
-<!--          <div class="qrcode-image">-->
-<!--            <el-image src="https://via.placeholder.com/200" fit="contain"></el-image>-->
-<!--          </div>-->
-<!--          <p class="pay-note">此处为模拟支付，实际开发中接入真实支付接口</p>-->
+        <!-- 第二步：显示二维码 -->
+        <div v-if="qrCodeUrl" class="qr-step">
+          <div class="qr-container">
+            <div class="qr-header">
+              <h3>请使用支付宝扫码支付</h3>
+              <p>支付金额：<span class="amount">¥{{ getTotalAmount().toFixed(2) }}</span></p>
+            </div>
+
+            <div class="qr-code-wrapper">
+              <div class="qr-code" v-if="qrCodeUrl">
+                <QrcodeVue :value="qrCodeUrl" :size="200" level="H"></QrcodeVue>
+              </div>
+              <div class="qr-loading" v-if="qrLoading">
+                <el-icon class="is-loading">
+                  <Loading />
+                </el-icon>
+                <span>正在生成二维码...</span>
+              </div>
+            </div>
+
+            <div class="qr-tips">
+              <el-icon color="#409EFF">
+                <InfoFilled />
+              </el-icon>
+              <span>请使用支付宝扫描上方二维码完成支付</span>
+            </div>
+
+            <div class="payment-status" v-if="paymentStatus" :class="paymentStatus">
+              <el-icon :color="paymentStatus === 'success' ? '#67C23A' : '#E6A23C'">
+                <Check v-if="paymentStatus === 'success'" />
+                <Warning v-else />
+              </el-icon>
+              <span>{{ paymentStatus === 'success' ? '支付成功！' : '支付失败，请重试' }}</span>
+            </div>
+          </div>
         </div>
       </div>
       
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="payDialogVisible = false">取消</el-button>
-          <el-button type="primary" class="confirm-btn" @click="confirmPayment" :loading="paying">
-            <el-icon><CreditCard /></el-icon>
-            确认支付
+          <el-button @click="closePayDialog">取消</el-button>
+          <el-button v-if="!qrCodeUrl" type="primary" class="confirm-btn" @click="generateQRCode" :loading="generating">
+            <el-icon v-if="!generating">
+              <CreditCard />
+            </el-icon>
+            {{ generating ? '生成中...' : '生成二维码' }}
+          </el-button>
+          <el-button v-if="qrCodeUrl" type="primary" @click="checkPayment" :loading="checking">
+            <el-icon v-if="!checking">
+              <Refresh />
+            </el-icon>
+            {{ checking ? '检查中...' : '检查支付状态' }}
           </el-button>
         </span>
       </template>
@@ -437,7 +472,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
@@ -455,11 +490,14 @@ import {
   ArrowLeft,
   SwitchButton,
   ChatDotRound,
-  Timer
+  Timer,
+  Loading,
+  Refresh
 } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 import { useUserStore } from '@/store/user'
 import CountdownTimer from '@/components/CountdownTimer.vue'
+import QrcodeVue from 'qrcode.vue'
 
 // 路由
 const route = useRoute()
@@ -477,8 +515,15 @@ const reviewInfo = ref(null)
 
 // 支付相关
 const payDialogVisible = ref(false)
-const paymentMethod = ref('微信支付')
+const paymentMethod = ref('支付宝')
 const paying = ref(false)
+const qrCodeUrl = ref('')
+const orderNum = ref('')
+const qrLoading = ref(false)
+const generating = ref(false)
+const checking = ref(false)
+const paymentStatus = ref('')
+const paymentTimer = ref(null)
 
 // 物流相关
 const trackingDialogVisible = ref(false)
@@ -682,6 +727,204 @@ const cancelOrder = () => {
 // 支付订单
 const payOrder = () => {
   payDialogVisible.value = true
+  // 重置支付状态
+  qrCodeUrl.value = ''
+  orderNum.value = ''
+  paymentStatus.value = ''
+  if (paymentTimer.value) {
+    clearInterval(paymentTimer.value)
+    paymentTimer.value = null
+  }
+}
+
+// 生成二维码
+const generateQRCode = () => {
+  generating.value = true
+  qrLoading.value = true
+
+  // 调用后端支付宝支付接口获取二维码
+  request.post(`/order/pay/${order.value.id}`, null, {
+    onSuccess: (data) => {
+      generating.value = false
+      qrLoading.value = false
+
+      // 验证返回数据结构 - 注意：request 工具已经处理了 code === '200' 的检查
+      // 这里的 data 就是后端返回的 data 部分：{ qrCode: "二维码链接", orderNum: "订单号" }
+      if (data && data.orderNum) {
+        if (data.qrCode) {
+          // 正常情况：返回了二维码
+          qrCodeUrl.value = data.qrCode
+          orderNum.value = data.orderNum
+          ElMessage.success('二维码生成成功，请扫码支付')
+          // 只有在二维码生成成功后才开始轮询支付状态
+          startPaymentPolling()
+        } else {
+          // 特殊情况：返回了空二维码，说明交易已经支付
+          paymentStatus.value = 'success'
+          ElMessage.success('支付成功！')
+          
+          // 停止轮询（如果正在进行）
+          if (paymentTimer.value) {
+            clearInterval(paymentTimer.value)
+            paymentTimer.value = null
+          }
+          
+          // 刷新订单信息
+          fetchOrderDetail()
+          
+          // 3秒后关闭对话框
+          setTimeout(() => {
+            closePayDialog()
+          }, 3000)
+        }
+      } else {
+        ElMessage.error('二维码数据格式错误，请重试')
+        console.error('二维码数据格式错误:', data)
+      }
+    },
+    // 禁用默认错误提示，我们在 catch 块中手动处理
+    showDefaultMsg: false
+  }).catch(err => {
+    generating.value = false
+    qrLoading.value = false
+
+    // 处理特殊错误情况：交易已经支付
+    if (err && err.message && err.message.includes('交易已经支付')) {
+      // 交易已经支付，视为成功
+      paymentStatus.value = 'success'
+      ElMessage.success('支付成功！')
+      
+      // 停止轮询（如果正在进行）
+      if (paymentTimer.value) {
+        clearInterval(paymentTimer.value)
+        paymentTimer.value = null
+      }
+      
+      // 刷新订单信息
+      fetchOrderDetail()
+      
+      // 3秒后关闭对话框
+      setTimeout(() => {
+        closePayDialog()
+      }, 3000)
+    } else {
+      // 其他错误
+      ElMessage.error('网络错误，请检查网络连接后重试')
+      console.error('生成二维码失败:', err)
+    }
+  })
+}
+
+// 检查支付状态
+const checkPayment = () => {
+  checking.value = true
+  checkPaymentStatus()
+  setTimeout(() => {
+    checking.value = false
+  }, 1000)
+}
+
+// 检查支付状态
+const checkPaymentStatus = () => {
+  if (!orderNum.value || !order.value?.id) {
+    // 停止轮询
+    if (paymentTimer.value) {
+      clearInterval(paymentTimer.value)
+      paymentTimer.value = null
+    }
+    paymentStatus.value = 'error'
+    ElMessage.error('订单信息不完整，请重新发起支付')
+    return
+  }
+
+  request.get(`/order/check/${order.value.id}`, null, {
+    onSuccess: (data) => {
+      // 注意：request 工具已经处理了 code === '200' 的检查
+      // 这里的 data 就是后端返回的 data 部分，即支付状态字符串
+      if (data === '已支付') {
+        paymentStatus.value = 'success'
+        ElMessage.success('支付成功！')
+        // 停止轮询
+        if (paymentTimer.value) {
+          clearInterval(paymentTimer.value)
+          paymentTimer.value = null
+        }
+        // 刷新订单信息
+        fetchOrderDetail()
+        // 3秒后关闭对话框
+        setTimeout(() => {
+          closePayDialog()
+        }, 3000)
+      } else if (data === '未支付') {
+        paymentStatus.value = ''
+        // 继续轮询，不显示任何消息
+      } else if (data === '查询失败') {
+        paymentStatus.value = ''
+        // 继续轮询，不显示任何消息
+      } else {
+        paymentStatus.value = 'error'
+        ElMessage.error('订单状态异常: ' + (data || '未知状态'))
+        // 停止轮询
+        if (paymentTimer.value) {
+          clearInterval(paymentTimer.value)
+          paymentTimer.value = null
+        }
+      }
+    },
+    // 禁用默认错误提示，网络错误时继续轮询
+    showDefaultMsg: false
+  }).catch(err => {
+    // 网络错误时不停止轮询，继续尝试
+    // 只有在连续多次失败时才停止
+  })
+}
+
+// 开始支付状态轮询
+const startPaymentPolling = () => {
+  // 确保有有效的订单号和订单ID才开始轮询
+  if (!orderNum.value || !order.value?.id) {
+    paymentStatus.value = 'error'
+    ElMessage.error('订单信息不完整，请重新发起支付')
+    return
+  }
+
+  // 清除之前的定时器
+  if (paymentTimer.value) {
+    clearInterval(paymentTimer.value)
+    paymentTimer.value = null
+  }
+
+  // 立即检查一次支付状态
+  checkPaymentStatus()
+
+  // 每3秒检查一次支付状态
+  paymentTimer.value = setInterval(() => {
+    checkPaymentStatus()
+  }, 3000)
+
+  // 30分钟后自动停止轮询
+  setTimeout(() => {
+    if (paymentTimer.value) {
+      clearInterval(paymentTimer.value)
+      paymentTimer.value = null
+      if (paymentStatus.value !== 'success') {
+        ElMessage.warning('支付超时，请重新发起支付')
+        paymentStatus.value = 'error'
+      }
+    }
+  }, 30 * 60 * 1000)
+}
+
+// 关闭支付对话框
+const closePayDialog = () => {
+  payDialogVisible.value = false
+  qrCodeUrl.value = ''
+  orderNum.value = ''
+  paymentStatus.value = ''
+  if (paymentTimer.value) {
+    clearInterval(paymentTimer.value)
+    paymentTimer.value = null
+  }
 }
 
 // 页面加载时检查订单状态，如果是待付款则自动打开支付对话框
@@ -695,26 +938,13 @@ onMounted(() => {
   }, 500)
 })
 
-// 确认支付
-const confirmPayment = async () => {
-  paying.value = true
-  try {
-    await request.put(`/order/${order.value.orderNo}/status`, null, {
-      params: {
-        status: '待发货'
-      },
-      successMsg: '支付成功',
-      onSuccess: () => {
-        payDialogVisible.value = false
-        fetchOrderDetail()
-      }
-    })
-  } catch (error) {
-    console.error('支付失败:', error)
-  } finally {
-    paying.value = false
+// 组件销毁时清理定时器
+onUnmounted(() => {
+  if (paymentTimer.value) {
+    clearInterval(paymentTimer.value)
+    paymentTimer.value = null
   }
-}
+})
 
 // 确认收货
 const confirmReceipt = () => {
@@ -1352,6 +1582,86 @@ onMounted(() => {
   }
 }
 
+/* 支付相关样式 */
+.payment-option {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border: 2px solid #e4e7ed;
+  border-radius: 12px;
+  background: #fff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  
+  &:hover {
+    border-color: #1677FF;
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+    box-shadow: 0 4px 12px rgba(22, 119, 255, 0.1);
+  }
+  
+  &.selected {
+    border-color: #1677FF;
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+    box-shadow: 0 4px 12px rgba(22, 119, 255, 0.1);
+  }
+  
+  .payment-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #1677FF 0%, #4096ff 100%);
+    border-radius: 12px;
+    margin-right: 16px;
+    box-shadow: 0 2px 8px rgba(22, 119, 255, 0.2);
+    
+    svg {
+      filter: brightness(0) invert(1);
+    }
+  }
+  
+  .payment-info {
+    flex: 1;
+  }
+  
+  .payment-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+  }
+  
+  .payment-desc {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+  }
+  
+  .payment-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #1677FF;
+    border-radius: 50%;
+    opacity: 1;
+    transition: all 0.3s ease;
+  }
+  
+  &.selected .payment-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  &:not(.selected) .payment-check {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
 /* 订单总金额区域 */
 .order-total-section {
   margin-top: 25px;
@@ -1625,6 +1935,145 @@ onMounted(() => {
     font-size: 12px;
     margin-top: 10px;
   }
+}
+
+/* 二维码相关样式 */
+.qr-step {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.qr-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.qr-header {
+  margin-bottom: 24px;
+  
+  h3 {
+    margin: 0 0 8px;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .amount {
+    color: #f56c6c;
+    font-weight: 600;
+    font-size: 16px;
+  }
+}
+
+.qr-code-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 20px 0;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 2px solid #f0f0f0;
+}
+
+.qr-code {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  min-width: 200px;
+}
+
+.qr-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #409EFF;
+  font-size: 14px;
+}
+
+.qr-loading .el-icon {
+  font-size: 24px;
+}
+
+.qr-tips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+  border: 1px solid #b3d8ff;
+  border-radius: 8px;
+  margin: 20px 0;
+  font-size: 14px;
+  color: #409EFF;
+}
+
+.payment-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+  font-size: 14px;
+  font-weight: 500;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+.payment-status.success {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+  border: 1px solid #b3d8ff;
+  color: #67C23A;
+}
+
+.payment-status.error,
+.payment-status.failed {
+  background: linear-gradient(135deg, #fef7e6 0%, #fdf6ec 100%);
+  border: 1px solid #f5dab1;
+  color: #E6A23C;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 二维码样式优化 */
+.qr-code :deep(canvas) {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .confirm-btn {
